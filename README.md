@@ -12,6 +12,10 @@ Quickly set font-smoothing settings in Windows 10 and know what you are getting,
 
 ![Main Application Screenshot](https://i.imgur.com/R9qlQbv.png)
 
+## Usage
+
+Download from the [Releases Section](https://github.com/bp2008/BetterClearTypeTuner/releases), extract, and run.
+
 ## Caveats
 
 The ClearType tuner built-in to Windows appears to offer more customizability, but it does not actually work as of Windows 10 1903!
