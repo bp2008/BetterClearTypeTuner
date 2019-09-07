@@ -10,4 +10,4 @@ Quickly set font-smoothing settings in Windows 10 and know what you are getting,
 [*] Edit the contrast of font rendering (when using RGB or BGR subpixel antialiasing).
 [*] Preview the results at several font sizes and see a zoomed-in view to better-understand what is going on internally!
 
-![Main Application Screenshot](https://i.imgur.com/s2z8M46.png)
+![Main Application Screenshot](https://i.imgur.com/R9qlQbv.png)
