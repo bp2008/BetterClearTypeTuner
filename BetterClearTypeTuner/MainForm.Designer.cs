@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.label1 = new System.Windows.Forms.Label();
 			this.panelSmall = new System.Windows.Forms.Panel();
 			this.label3 = new System.Windows.Forms.Label();
@@ -46,9 +47,10 @@
 			this.btnRestoreDefaults = new System.Windows.Forms.Button();
 			this.label6 = new System.Windows.Forms.Label();
 			this.label7 = new System.Windows.Forms.Label();
-			this.button1 = new System.Windows.Forms.Button();
+			this.btnSet = new System.Windows.Forms.Button();
 			this.label8 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
+			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.panelSmall.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pbZoomed)).BeginInit();
 			this.statusStrip1.SuspendLayout();
@@ -243,6 +245,7 @@
 			this.btnRestoreDefaults.Size = new System.Drawing.Size(159, 23);
 			this.btnRestoreDefaults.TabIndex = 7;
 			this.btnRestoreDefaults.Text = "Restore Defaults";
+			this.toolTip1.SetToolTip(this.btnRestoreDefaults, "Restores common default settings\r\n(RGB subpixel antialiasing, 1200 contrast)");
 			this.btnRestoreDefaults.UseVisualStyleBackColor = true;
 			this.btnRestoreDefaults.Click += new System.EventHandler(this.BtnRestoreDefaults_Click);
 			// 
@@ -266,15 +269,17 @@
 			this.label7.TabIndex = 12;
 			this.label7.Text = "You may need to reboot your computer for changes to take effect everywhere.\r\n";
 			// 
-			// button1
+			// btnSet
 			// 
-			this.button1.Location = new System.Drawing.Point(129, 105);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(43, 23);
-			this.button1.TabIndex = 6;
-			this.button1.Text = "> set";
-			this.button1.UseVisualStyleBackColor = true;
-			this.button1.Click += new System.EventHandler(this.ControlsChanged);
+			this.btnSet.Location = new System.Drawing.Point(129, 105);
+			this.btnSet.Name = "btnSet";
+			this.btnSet.Size = new System.Drawing.Size(43, 23);
+			this.btnSet.TabIndex = 6;
+			this.btnSet.Text = "> set";
+			this.toolTip1.SetToolTip(this.btnSet, "Contrast is set when you unfocus the contrast control, or when you click this but" +
+        "ton.");
+			this.btnSet.UseVisualStyleBackColor = true;
+			this.btnSet.Click += new System.EventHandler(this.ControlsChanged);
 			// 
 			// label8
 			// 
@@ -305,7 +310,7 @@
 			this.ClientSize = new System.Drawing.Size(822, 539);
 			this.Controls.Add(this.label9);
 			this.Controls.Add(this.label8);
-			this.Controls.Add(this.button1);
+			this.Controls.Add(this.btnSet);
 			this.Controls.Add(this.label7);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.btnRestoreDefaults);
@@ -354,9 +359,10 @@
 		private System.Windows.Forms.Button btnRestoreDefaults;
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.Label label7;
-		private System.Windows.Forms.Button button1;
+		private System.Windows.Forms.Button btnSet;
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.Label label9;
+		private System.Windows.Forms.ToolTip toolTip1;
 	}
 }
 

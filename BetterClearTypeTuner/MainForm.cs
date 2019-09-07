@@ -104,18 +104,35 @@ namespace BetterClearTypeTuner
 				cbFontAntialiasing.Checked = aaEnabled;
 
 				if (smoothingType == FontSmoothingType.Standard)
+				{
 					rbGrayscale.Checked = true;
+					btnSet.Enabled = nudContrast.Enabled = false;
+				}
 				else
 				{
 					if (orientation == FontSmoothingOrientation.RGB)
+					{
 						rbRGB.Checked = true;
+						btnSet.Enabled = nudContrast.Enabled = true;
+					}
 					else if (orientation == FontSmoothingOrientation.BGR)
+					{
 						rbBGR.Checked = true;
+						btnSet.Enabled = nudContrast.Enabled = true;
+					}
 					else if (orientation == FontSmoothingOrientation.Unknown)
+					{
 						rbGrayscale.Checked = rbRGB.Checked = rbBGR.Checked = false;
+						btnSet.Enabled = nudContrast.Enabled = false;
+					}
 				}
 
 				nudContrast.Value = Clamp(contrast, (uint)nudContrast.Minimum, (uint)nudContrast.Maximum);
+
+				rbGrayscale.Enabled = rbRGB.Enabled = rbBGR.Enabled = aaEnabled;
+
+				if (!aaEnabled)
+					nudContrast.Enabled = btnSet.Enabled = false;
 
 				EnableEvents();
 
@@ -214,6 +231,5 @@ namespace BetterClearTypeTuner
 			rbBGR.CheckedChanged += ControlsChanged;
 		}
 		#endregion
-
 	}
 }
