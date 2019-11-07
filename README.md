@@ -3,7 +3,7 @@ A better way to configure ClearType font smoothing on Windows 10.
 
 ## Features
 
-Quickly set font-smoothing settings in Windows 10 and know what you are getting, unlike using the broken ClearType tuner that is built-in to the OS.
+Quickly set font-smoothing settings in Windows 10 and know what you are getting, unlike using the broken ClearType tuner that is built-in to the OS.  This program includes all font-smoothing settings that I have found to work in modern Windows, and does not expose settings that are non-functional.
 
 * Enable or disable font antialiasing.
 * Choose between Grayscale antialiasing or subpixel antialiasing using RGB or BGR subpixel layouts.
