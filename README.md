@@ -18,4 +18,6 @@ Download from the [Releases Section](https://github.com/bp2008/BetterClearTypeTu
 
 ## Caveats
 
-The ClearType tuner built-in to Windows appears to offer more customizability, but it does not actually work as of Windows 10 1903!
+As of Windows 10 1903, pages 3-5 of Windows' built-in ClearType tuner have no effect on text rendering.  Therefore, these settings were omitted from this program.  This program assigns sane default values to the affected registry keys so that if they begin working again in the future, ... they will at least have sane values.
+
+There appears to be some level of support for setting different ClearType settings on different monitors.  However, this appears to be entirely non-functional in modern Windows, so this program sets all monitors the same.
