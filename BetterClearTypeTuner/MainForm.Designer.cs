@@ -51,6 +51,7 @@
 			this.label8 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+			this.lblNotAdmin = new System.Windows.Forms.Label();
 			this.panelSmall.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pbZoomed)).BeginInit();
 			this.statusStrip1.SuspendLayout();
@@ -240,7 +241,7 @@
 			// btnRestoreDefaults
 			// 
 			this.btnRestoreDefaults.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnRestoreDefaults.Location = new System.Drawing.Point(12, 327);
+			this.btnRestoreDefaults.Location = new System.Drawing.Point(12, 342);
 			this.btnRestoreDefaults.Name = "btnRestoreDefaults";
 			this.btnRestoreDefaults.Size = new System.Drawing.Size(159, 23);
 			this.btnRestoreDefaults.TabIndex = 7;
@@ -263,7 +264,7 @@
 			// 
 			this.label7.AutoEllipsis = true;
 			this.label7.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label7.Location = new System.Drawing.Point(12, 165);
+			this.label7.Location = new System.Drawing.Point(12, 185);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(160, 50);
 			this.label7.TabIndex = 12;
@@ -285,7 +286,7 @@
 			// 
 			this.label8.AutoEllipsis = true;
 			this.label8.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label8.Location = new System.Drawing.Point(12, 215);
+			this.label8.Location = new System.Drawing.Point(12, 242);
 			this.label8.Name = "label8";
 			this.label8.Size = new System.Drawing.Size(160, 94);
 			this.label8.TabIndex = 14;
@@ -303,11 +304,25 @@
 			this.label9.TabIndex = 15;
 			this.label9.Text = "400% Zoomed Sample:";
 			// 
+			// lblNotAdmin
+			// 
+			this.lblNotAdmin.BackColor = System.Drawing.Color.White;
+			this.lblNotAdmin.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.lblNotAdmin.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblNotAdmin.ForeColor = System.Drawing.Color.Red;
+			this.lblNotAdmin.Location = new System.Drawing.Point(3, 153);
+			this.lblNotAdmin.Name = "lblNotAdmin";
+			this.lblNotAdmin.Size = new System.Drawing.Size(172, 27);
+			this.lblNotAdmin.TabIndex = 16;
+			this.lblNotAdmin.Text = "Please run as administrator";
+			this.lblNotAdmin.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(822, 539);
+			this.Controls.Add(this.lblNotAdmin);
 			this.Controls.Add(this.label9);
 			this.Controls.Add(this.label8);
 			this.Controls.Add(this.btnSet);
@@ -363,6 +378,7 @@
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.ToolTip toolTip1;
+		private System.Windows.Forms.Label lblNotAdmin;
 	}
 }
 

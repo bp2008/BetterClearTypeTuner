@@ -1,4 +1,5 @@
 ﻿using BetterClearTypeTuner.Native;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,21 +17,39 @@ namespace BetterClearTypeTuner
 	public partial class MainForm : Form
 	{
 		bool dirty = false;
+		bool initialized = false;
 
 		public MainForm()
 		{
 			InitializeComponent();
+			lblNotAdmin.Visible = false;
 			this.Text += " " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+			try
+			{
+				foreach (string displayName in GetDisplayNames())
+				{
+					RegistryKey key = Registry.LocalMachine.CreateSubKey("Software\\Microsoft\\Avalon.Graphics\\" + displayName);
+				}
+			}
+			catch (UnauthorizedAccessException)
+			{
+				this.Text += " [NOT ADMIN]";
+				lblNotAdmin.Visible = true;
+			}
 		}
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			UpdateStatus();
 			cbFontAntialiasing.Focus();
+			initialized = true;
 		}
 
 		private void ControlsChanged(object sender, EventArgs e)
 		{
+			if (initialized)
+				SetLegacyKeys();
 			if (rbGrayscale.Checked)
 			{
 				SetFontSmoothingTypeIfNotAlready(FontSmoothingType.Standard);
@@ -58,6 +77,35 @@ namespace BetterClearTypeTuner
 			if (dirty)
 				UpdateStatus();
 		}
+
+		private void SetLegacyKeys()
+		{
+			foreach (string displayName in GetDisplayNames())
+			{
+				int pixelStructure = 0;
+				if (rbGrayscale.Checked)
+					pixelStructure = 0;
+				else if (rbRGB.Checked)
+					pixelStructure = 1;
+				else if (rbBGR.Checked)
+					pixelStructure = 2;
+
+				int contrast = (int)Clamp((uint)nudContrast.Value, 1000, 2200);
+
+				// Local Machine
+				SetRegistryDWORDValue(Registry.LocalMachine, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "GammaLevel", contrast);
+				SetRegistryDWORDValue(Registry.LocalMachine, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "PixelStructure", pixelStructure);
+
+				// Current User
+				SetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "ClearTypeLevel", pixelStructure == 0 ? 0 : 100);
+				SetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "EnhancedContrastLevel", 50);
+				SetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "GammaLevel", contrast);
+				SetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "GrayscaleEnhancedContrastLevel", 100);
+				SetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "PixelStructure", pixelStructure);
+				SetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "TextContrastLevel", 1);
+			}
+		}
+
 		private void SetFontSmoothingIfNotAlready(FontSmoothingOrientation orientation)
 		{
 			if (FontSmoothing.GetFontSmoothingOrientation() != orientation)
@@ -66,6 +114,25 @@ namespace BetterClearTypeTuner
 				dirty = true;
 			}
 		}
+
+		bool registryFail = false;
+		private void SetRegistryDWORDValue(RegistryKey baseKey, string keyPath, string name, int value)
+		{
+			try
+			{
+				RegistryKey key = baseKey.CreateSubKey(keyPath);
+				key.SetValue(name, value, RegistryValueKind.DWord);
+			}
+			catch (UnauthorizedAccessException)
+			{
+				if (registryFail)
+					return;
+				lblNotAdmin.Visible = true;
+				registryFail = true;
+				MessageBox.Show("Unable to set all legacy registry values. While your change may have worked, for best results you should run this application as an administrator and try making changes again.");
+			}
+		}
+
 		private void SetFontSmoothingTypeIfNotAlready(FontSmoothingType type)
 		{
 			if (FontSmoothing.GetFontSmoothingType() != type)
@@ -85,6 +152,20 @@ namespace BetterClearTypeTuner
 		}
 
 		#region Helpers
+		private string[] GetDisplayNames()
+		{
+			return Screen.AllScreens
+				.Select(s =>
+				{
+					int idxStart = s.DeviceName.LastIndexOf('\\');
+					if (idxStart < 0)
+						idxStart = 0;
+					else
+						idxStart++;
+					return s.DeviceName.Substring(idxStart);
+				})
+				.ToArray();
+		}
 		private void UpdateStatus()
 		{
 			dirty = false;
