@@ -206,7 +206,7 @@
 			this.nudContrast.Size = new System.Drawing.Size(54, 22);
 			this.nudContrast.TabIndex = 5;
 			this.nudContrast.Value = new decimal(new int[] {
-            1000,
+            1200,
             0,
             0,
             0});
