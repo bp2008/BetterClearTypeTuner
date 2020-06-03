@@ -21,10 +21,14 @@ namespace BetterClearTypeTuner
 		bool initialized = false;
 		bool setDefaults = false;
 		Color defaultWindowTextColor;
+		List<Control> fontableControls = new List<Control>();
 
 		public MainForm()
 		{
 			InitializeComponent();
+
+			GatherFontableControls(this, this.Font.FontFamily.Name);
+
 			defaultWindowTextColor = nudContrast.ForeColor;
 			lblNotAdmin.Visible = false;
 			this.Text += " " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
@@ -41,6 +45,14 @@ namespace BetterClearTypeTuner
 				this.Text += " [NOT ADMIN]";
 				lblNotAdmin.Visible = true;
 			}
+		}
+
+		private void GatherFontableControls(Control control, string fontName)
+		{
+			if (control.Font.FontFamily.Name == fontName)
+				fontableControls.Add(control);
+			foreach (Control child in control.Controls)
+				GatherFontableControls(child, fontName);
 		}
 
 		private void MainForm_Load(object sender, EventArgs e)
@@ -363,5 +375,17 @@ namespace BetterClearTypeTuner
 			nudContrast.ValueChanged += ControlsChanged;
 		}
 		#endregion
+
+		private void btnChangeFont_Click(object sender, EventArgs e)
+		{
+			if (fontDialog1.ShowDialog() == DialogResult.OK)
+			{
+				foreach (Control c in fontableControls)
+				{
+					c.Font = new Font(fontDialog1.Font.Name, c.Font.Size, c.Font.Style, c.Font.Unit);
+				}
+				CopyZoomedSnapshot();
+			}
+		}
 	}
 }

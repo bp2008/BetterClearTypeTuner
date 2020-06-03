@@ -52,6 +52,8 @@
 			this.label9 = new System.Windows.Forms.Label();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.lblNotAdmin = new System.Windows.Forms.Label();
+			this.btnChangeFont = new System.Windows.Forms.Button();
+			this.fontDialog1 = new System.Windows.Forms.FontDialog();
 			this.panelSmall.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pbZoomed)).BeginInit();
 			this.statusStrip1.SuspendLayout();
@@ -295,7 +297,7 @@
 			// 
 			this.label9.AutoSize = true;
 			this.label9.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label9.Location = new System.Drawing.Point(426, 12);
+			this.label9.Location = new System.Drawing.Point(244, 12);
 			this.label9.Name = "label9";
 			this.label9.Size = new System.Drawing.Size(122, 13);
 			this.label9.TabIndex = 15;
@@ -314,11 +316,27 @@
 			this.lblNotAdmin.Text = "Please run as administrator";
 			this.lblNotAdmin.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
+			// btnChangeFont
+			// 
+			this.btnChangeFont.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.btnChangeFont.Location = new System.Drawing.Point(699, 2);
+			this.btnChangeFont.Name = "btnChangeFont";
+			this.btnChangeFont.Size = new System.Drawing.Size(119, 23);
+			this.btnChangeFont.TabIndex = 17;
+			this.btnChangeFont.Text = "Change Font";
+			this.btnChangeFont.UseVisualStyleBackColor = true;
+			this.btnChangeFont.Click += new System.EventHandler(this.btnChangeFont_Click);
+			// 
+			// fontDialog1
+			// 
+			this.fontDialog1.Font = new System.Drawing.Font("Segoe UI", 8.25F);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(822, 539);
+			this.Controls.Add(this.btnChangeFont);
 			this.Controls.Add(this.lblNotAdmin);
 			this.Controls.Add(this.label9);
 			this.Controls.Add(this.label8);
@@ -334,6 +352,7 @@
 			this.Controls.Add(this.statusStrip1);
 			this.Controls.Add(this.pbZoomed);
 			this.Controls.Add(this.panelSmall);
+			this.Font = new System.Drawing.Font("Segoe UI", 8.25F);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Name = "MainForm";
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
@@ -376,6 +395,8 @@
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.ToolTip toolTip1;
 		private System.Windows.Forms.Label lblNotAdmin;
+		private System.Windows.Forms.Button btnChangeFont;
+		private System.Windows.Forms.FontDialog fontDialog1;
 	}
 }
 
