@@ -20,7 +20,8 @@ namespace BetterClearTypeTuner
 		bool dirty = false;
 		bool initialized = false;
 		bool setDefaults = false;
-		Color defaultWindowTextColor;
+		Color TextColor = SystemColors.WindowText;
+		Color BackgroundColor = SystemColors.Control;
 		List<Control> fontableControls = new List<Control>();
 
 		public MainForm()
@@ -29,7 +30,6 @@ namespace BetterClearTypeTuner
 
 			GatherFontableControls(this, this.Font.FontFamily.Name);
 
-			defaultWindowTextColor = nudContrast.ForeColor;
 			lblNotAdmin.Visible = false;
 			this.Text += " " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
@@ -45,6 +45,11 @@ namespace BetterClearTypeTuner
 				this.Text += " [NOT ADMIN]";
 				lblNotAdmin.Visible = true;
 			}
+			bool startInDarkMode = PrefersDarkMode();
+			if (startInDarkMode)
+				cbDarkmode.Checked = true;
+			else
+				SetDarkMode(this, false);
 		}
 
 		private void GatherFontableControls(Control control, string fontName)
@@ -53,6 +58,79 @@ namespace BetterClearTypeTuner
 				fontableControls.Add(control);
 			foreach (Control child in control.Controls)
 				GatherFontableControls(child, fontName);
+		}
+		private void SetDarkMode(Control control, bool dark)
+		{
+			if (control == this)
+			{
+				// Main Form only
+				if (dark)
+				{
+					TextColor = Color.White;
+					BackgroundColor = ColorTranslator.FromHtml("#121212");
+				}
+				else
+				{
+					TextColor = SystemColors.WindowText;
+					BackgroundColor = SystemColors.Control;
+				}
+				control.BackColor = BackgroundColor;
+				control.ForeColor = TextColor;
+			}
+			else if (control.Name == "panelSmall" || control.Name == "lblNotAdmin")
+			{
+				if (dark)
+				{
+					control.BackColor = Color.Black;
+				}
+				else
+				{
+					control.BackColor = Color.White;
+				}
+			}
+			else if (control.Name.StartsWith("lblSample"))
+			{
+				control.BackColor = Color.Transparent;
+				if (dark)
+				{
+					control.ForeColor = Color.White;
+				}
+				else
+				{
+					control.ForeColor = Color.Black;
+				}
+			}
+			else if (control is Label || control is RadioButton || control is CheckBox)
+			{
+				control.BackColor = Color.Transparent;
+				if (dark)
+				{
+					control.ForeColor = ColorTranslator.FromHtml("#DEDEDE");
+				}
+				else
+				{
+					control.ForeColor = Color.Black;
+				}
+			}
+			else if (control is Button)
+			{
+				if (dark)
+				{
+					control.BackColor = Color.Black;
+					control.ForeColor = ColorTranslator.FromHtml("#DEDEDE");
+				}
+				else
+				{
+					control.BackColor = SystemColors.Control;
+					control.ForeColor = Color.Black;
+				}
+			}
+			foreach (Control child in control.Controls)
+			{
+				SetDarkMode(child, dark);
+			}
+			if (control == this)
+				CopyZoomedSnapshot();
 		}
 
 		private void MainForm_Load(object sender, EventArgs e)
@@ -161,6 +239,24 @@ namespace BetterClearTypeTuner
 			ControlsChanged(sender, e);
 		}
 
+		private void btnChangeFont_Click(object sender, EventArgs e)
+		{
+			if (fontDialog1.ShowDialog() == DialogResult.OK)
+			{
+				foreach (Control c in fontableControls)
+				{
+					c.Font = new Font(fontDialog1.Font.Name, c.Font.Size, c.Font.Style, c.Font.Unit);
+				}
+				CopyZoomedSnapshot();
+			}
+		}
+
+		private void cbDarkmode_CheckedChanged(object sender, EventArgs e)
+		{
+			SetDarkMode(this, cbDarkmode.Checked);
+
+		}
+
 		#region Registry
 		bool registryFail = false;
 		private void SetRegistryDWORDValue(RegistryKey baseKey, string keyPath, string name, int value)
@@ -244,24 +340,24 @@ namespace BetterClearTypeTuner
 				if (smoothingType == FontSmoothingType.Standard)
 				{
 					rbGrayscale.Checked = true;
-					btnSet.Enabled = nudContrast.Enabled = false;
+					nudContrast.Enabled = false;
 				}
 				else
 				{
 					if (orientation == FontSmoothingOrientation.RGB)
 					{
 						rbRGB.Checked = true;
-						btnSet.Enabled = nudContrast.Enabled = true;
+						nudContrast.Enabled = true;
 					}
 					else if (orientation == FontSmoothingOrientation.BGR)
 					{
 						rbBGR.Checked = true;
-						btnSet.Enabled = nudContrast.Enabled = true;
+						nudContrast.Enabled = true;
 					}
 					else if (orientation == FontSmoothingOrientation.Unknown)
 					{
 						rbGrayscale.Checked = rbRGB.Checked = rbBGR.Checked = false;
-						btnSet.Enabled = nudContrast.Enabled = false;
+						nudContrast.Enabled = false;
 					}
 				}
 
@@ -269,12 +365,12 @@ namespace BetterClearTypeTuner
 				if (contrast < 1000 || contrast > 2200)
 					nudContrast.ForeColor = Color.Red;
 				else
-					nudContrast.ForeColor = defaultWindowTextColor;
+					nudContrast.ForeColor = TextColor;
 
 				rbGrayscale.Enabled = rbRGB.Enabled = rbBGR.Enabled = aaEnabled;
 
 				if (!aaEnabled)
-					nudContrast.Enabled = btnSet.Enabled = false;
+					nudContrast.Enabled = false;
 
 				EnableEvents();
 
@@ -374,18 +470,24 @@ namespace BetterClearTypeTuner
 			rbBGR.CheckedChanged += ControlsChanged;
 			nudContrast.ValueChanged += ControlsChanged;
 		}
-		#endregion
-
-		private void btnChangeFont_Click(object sender, EventArgs e)
+		private static bool PrefersDarkMode()
 		{
-			if (fontDialog1.ShowDialog() == DialogResult.OK)
+			try
 			{
-				foreach (Control c in fontableControls)
-				{
-					c.Font = new Font(fontDialog1.Font.Name, c.Font.Size, c.Font.Style, c.Font.Unit);
-				}
-				CopyZoomedSnapshot();
+				RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+				if (key == null)
+					return false;
+				object value = key.GetValue("AppsUseLightTheme");
+				if (value == null)
+					return false;
+				if (int.TryParse(value.ToString(), out int v) && v == 0)
+					return true;
 			}
+			catch
+			{
+			}
+			return false;
 		}
+		#endregion
 	}
 }

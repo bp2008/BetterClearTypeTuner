@@ -29,10 +29,10 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			this.label1 = new System.Windows.Forms.Label();
+			this.lblSample1 = new System.Windows.Forms.Label();
 			this.panelSmall = new System.Windows.Forms.Panel();
-			this.label3 = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
+			this.lblSample3 = new System.Windows.Forms.Label();
+			this.lblSample2 = new System.Windows.Forms.Label();
 			this.pbZoomed = new System.Windows.Forms.PictureBox();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.status = new System.Windows.Forms.ToolStripStatusLabel();
@@ -54,6 +54,8 @@
 			this.lblNotAdmin = new System.Windows.Forms.Label();
 			this.btnChangeFont = new System.Windows.Forms.Button();
 			this.fontDialog1 = new System.Windows.Forms.FontDialog();
+			this.cbDarkmode = new System.Windows.Forms.CheckBox();
+			this.panelBottomBorder = new System.Windows.Forms.Panel();
 			this.panelSmall.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pbZoomed)).BeginInit();
 			this.statusStrip1.SuspendLayout();
@@ -61,47 +63,47 @@
 			((System.ComponentModel.ISupportInitialize)(this.nudContrast)).BeginInit();
 			this.SuspendLayout();
 			// 
-			// label1
+			// lblSample1
 			// 
-			this.label1.BackColor = System.Drawing.Color.Transparent;
-			this.label1.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label1.Location = new System.Drawing.Point(1, 3);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(155, 31);
-			this.label1.TabIndex = 0;
-			this.label1.Text = "The quick brown fox jumps over the lazy dog.";
+			this.lblSample1.BackColor = System.Drawing.Color.Transparent;
+			this.lblSample1.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblSample1.Location = new System.Drawing.Point(1, 3);
+			this.lblSample1.Name = "lblSample1";
+			this.lblSample1.Size = new System.Drawing.Size(155, 31);
+			this.lblSample1.TabIndex = 0;
+			this.lblSample1.Text = "The quick brown fox jumps over the lazy dog.";
 			// 
 			// panelSmall
 			// 
 			this.panelSmall.BackColor = System.Drawing.Color.White;
-			this.panelSmall.Controls.Add(this.label3);
-			this.panelSmall.Controls.Add(this.label2);
-			this.panelSmall.Controls.Add(this.label1);
+			this.panelSmall.Controls.Add(this.lblSample3);
+			this.panelSmall.Controls.Add(this.lblSample2);
+			this.panelSmall.Controls.Add(this.lblSample1);
 			this.panelSmall.ForeColor = System.Drawing.Color.Black;
 			this.panelSmall.Location = new System.Drawing.Point(12, 390);
 			this.panelSmall.Name = "panelSmall";
 			this.panelSmall.Size = new System.Drawing.Size(160, 120);
 			this.panelSmall.TabIndex = 1;
 			// 
-			// label3
+			// lblSample3
 			// 
-			this.label3.BackColor = System.Drawing.Color.Transparent;
-			this.label3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label3.Location = new System.Drawing.Point(1, 73);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(156, 45);
-			this.label3.TabIndex = 2;
-			this.label3.Text = "The quick brown fox jumps over the lazy";
+			this.lblSample3.BackColor = System.Drawing.Color.Transparent;
+			this.lblSample3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblSample3.Location = new System.Drawing.Point(1, 73);
+			this.lblSample3.Name = "lblSample3";
+			this.lblSample3.Size = new System.Drawing.Size(156, 45);
+			this.lblSample3.TabIndex = 2;
+			this.lblSample3.Text = "The quick brown fox jumps over the lazy";
 			// 
-			// label2
+			// lblSample2
 			// 
-			this.label2.BackColor = System.Drawing.Color.Transparent;
-			this.label2.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label2.Location = new System.Drawing.Point(1, 35);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(158, 39);
-			this.label2.TabIndex = 1;
-			this.label2.Text = "The quick brown fox jumps over the lazy dog.";
+			this.lblSample2.BackColor = System.Drawing.Color.Transparent;
+			this.lblSample2.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblSample2.Location = new System.Drawing.Point(1, 35);
+			this.lblSample2.Name = "lblSample2";
+			this.lblSample2.Size = new System.Drawing.Size(158, 39);
+			this.lblSample2.TabIndex = 1;
+			this.lblSample2.Text = "The quick brown fox jumps over the lazy dog.";
 			// 
 			// pbZoomed
 			// 
@@ -114,6 +116,7 @@
 			// 
 			// statusStrip1
 			// 
+			this.statusStrip1.BackColor = System.Drawing.Color.Transparent;
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.status});
 			this.statusStrip1.Location = new System.Drawing.Point(0, 517);
@@ -132,18 +135,20 @@
 			// cbFontAntialiasing
 			// 
 			this.cbFontAntialiasing.AutoSize = true;
+			this.cbFontAntialiasing.BackColor = System.Drawing.Color.Transparent;
 			this.cbFontAntialiasing.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.cbFontAntialiasing.Location = new System.Drawing.Point(12, 12);
 			this.cbFontAntialiasing.Name = "cbFontAntialiasing";
 			this.cbFontAntialiasing.Size = new System.Drawing.Size(152, 17);
 			this.cbFontAntialiasing.TabIndex = 1;
 			this.cbFontAntialiasing.Text = "Enable Font Antialiasing";
-			this.cbFontAntialiasing.UseVisualStyleBackColor = true;
+			this.cbFontAntialiasing.UseVisualStyleBackColor = false;
 			this.cbFontAntialiasing.CheckedChanged += new System.EventHandler(this.ControlsChanged);
 			// 
 			// rbGrayscale
 			// 
 			this.rbGrayscale.AutoSize = true;
+			this.rbGrayscale.BackColor = System.Drawing.Color.Transparent;
 			this.rbGrayscale.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.rbGrayscale.Location = new System.Drawing.Point(19, 3);
 			this.rbGrayscale.Name = "rbGrayscale";
@@ -151,7 +156,7 @@
 			this.rbGrayscale.TabIndex = 2;
 			this.rbGrayscale.TabStop = true;
 			this.rbGrayscale.Text = "Grayscale";
-			this.rbGrayscale.UseVisualStyleBackColor = true;
+			this.rbGrayscale.UseVisualStyleBackColor = false;
 			this.rbGrayscale.CheckedChanged += new System.EventHandler(this.ControlsChanged);
 			// 
 			// panel1
@@ -167,6 +172,7 @@
 			// rbBGR
 			// 
 			this.rbBGR.AutoSize = true;
+			this.rbBGR.BackColor = System.Drawing.Color.Transparent;
 			this.rbBGR.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.rbBGR.Location = new System.Drawing.Point(19, 49);
 			this.rbBGR.Name = "rbBGR";
@@ -174,12 +180,13 @@
 			this.rbBGR.TabIndex = 4;
 			this.rbBGR.TabStop = true;
 			this.rbBGR.Text = "BGR";
-			this.rbBGR.UseVisualStyleBackColor = true;
+			this.rbBGR.UseVisualStyleBackColor = false;
 			this.rbBGR.CheckedChanged += new System.EventHandler(this.ControlsChanged);
 			// 
 			// rbRGB
 			// 
 			this.rbRGB.AutoSize = true;
+			this.rbRGB.BackColor = System.Drawing.Color.Transparent;
 			this.rbRGB.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.rbRGB.Location = new System.Drawing.Point(19, 26);
 			this.rbRGB.Name = "rbRGB";
@@ -187,7 +194,7 @@
 			this.rbRGB.TabIndex = 3;
 			this.rbRGB.TabStop = true;
 			this.rbRGB.Text = "RGB";
-			this.rbRGB.UseVisualStyleBackColor = true;
+			this.rbRGB.UseVisualStyleBackColor = false;
 			this.rbRGB.CheckedChanged += new System.EventHandler(this.ControlsChanged);
 			// 
 			// nudContrast
@@ -217,7 +224,7 @@
 			// label4
 			// 
 			this.label4.AutoSize = true;
-			this.label4.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.label4.BackColor = System.Drawing.Color.Transparent;
 			this.label4.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label4.Location = new System.Drawing.Point(9, 108);
 			this.label4.Name = "label4";
@@ -228,6 +235,7 @@
 			// label5
 			// 
 			this.label5.AutoSize = true;
+			this.label5.BackColor = System.Drawing.Color.Transparent;
 			this.label5.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label5.Location = new System.Drawing.Point(64, 131);
 			this.label5.Name = "label5";
@@ -252,6 +260,7 @@
 			// label6
 			// 
 			this.label6.AutoSize = true;
+			this.label6.BackColor = System.Drawing.Color.Transparent;
 			this.label6.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label6.Location = new System.Drawing.Point(13, 374);
 			this.label6.Name = "label6";
@@ -262,6 +271,7 @@
 			// label7
 			// 
 			this.label7.AutoEllipsis = true;
+			this.label7.BackColor = System.Drawing.Color.Transparent;
 			this.label7.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label7.Location = new System.Drawing.Point(12, 220);
 			this.label7.Name = "label7";
@@ -284,6 +294,7 @@
 			// label8
 			// 
 			this.label8.AutoEllipsis = true;
+			this.label8.BackColor = System.Drawing.Color.Transparent;
 			this.label8.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label8.Location = new System.Drawing.Point(12, 277);
 			this.label8.Name = "label8";
@@ -296,6 +307,7 @@
 			// label9
 			// 
 			this.label9.AutoSize = true;
+			this.label9.BackColor = System.Drawing.Color.Transparent;
 			this.label9.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label9.Location = new System.Drawing.Point(244, 12);
 			this.label9.Name = "label9";
@@ -322,7 +334,7 @@
 			this.btnChangeFont.Location = new System.Drawing.Point(699, 2);
 			this.btnChangeFont.Name = "btnChangeFont";
 			this.btnChangeFont.Size = new System.Drawing.Size(119, 23);
-			this.btnChangeFont.TabIndex = 17;
+			this.btnChangeFont.TabIndex = 9;
 			this.btnChangeFont.Text = "Change Font";
 			this.btnChangeFont.UseVisualStyleBackColor = true;
 			this.btnChangeFont.Click += new System.EventHandler(this.btnChangeFont_Click);
@@ -331,11 +343,36 @@
 			// 
 			this.fontDialog1.Font = new System.Drawing.Font("Segoe UI", 8.25F);
 			// 
+			// cbDarkmode
+			// 
+			this.cbDarkmode.AutoSize = true;
+			this.cbDarkmode.BackColor = System.Drawing.Color.Transparent;
+			this.cbDarkmode.Location = new System.Drawing.Point(610, 6);
+			this.cbDarkmode.Name = "cbDarkmode";
+			this.cbDarkmode.Size = new System.Drawing.Size(83, 17);
+			this.cbDarkmode.TabIndex = 8;
+			this.cbDarkmode.Text = "Dark Mode";
+			this.cbDarkmode.UseVisualStyleBackColor = false;
+			this.cbDarkmode.CheckedChanged += new System.EventHandler(this.cbDarkmode_CheckedChanged);
+			// 
+			// panelBottomBorder
+			// 
+			this.panelBottomBorder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.panelBottomBorder.BackColor = System.Drawing.SystemColors.ControlDark;
+			this.panelBottomBorder.Location = new System.Drawing.Point(-3, 517);
+			this.panelBottomBorder.Name = "panelBottomBorder";
+			this.panelBottomBorder.Size = new System.Drawing.Size(838, 1);
+			this.panelBottomBorder.TabIndex = 17;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.BackColor = System.Drawing.SystemColors.Control;
 			this.ClientSize = new System.Drawing.Size(822, 539);
+			this.Controls.Add(this.panelBottomBorder);
+			this.Controls.Add(this.cbDarkmode);
 			this.Controls.Add(this.btnChangeFont);
 			this.Controls.Add(this.lblNotAdmin);
 			this.Controls.Add(this.label9);
@@ -372,10 +409,10 @@
 
 		#endregion
 
-		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Label lblSample1;
 		private System.Windows.Forms.Panel panelSmall;
-		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label lblSample3;
+		private System.Windows.Forms.Label lblSample2;
 		private System.Windows.Forms.PictureBox pbZoomed;
 		private System.Windows.Forms.StatusStrip statusStrip1;
 		private System.Windows.Forms.ToolStripStatusLabel status;
@@ -397,6 +434,8 @@
 		private System.Windows.Forms.Label lblNotAdmin;
 		private System.Windows.Forms.Button btnChangeFont;
 		private System.Windows.Forms.FontDialog fontDialog1;
+		private System.Windows.Forms.CheckBox cbDarkmode;
+		private System.Windows.Forms.Panel panelBottomBorder;
 	}
 }
 
