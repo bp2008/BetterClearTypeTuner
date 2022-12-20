@@ -127,6 +127,19 @@ namespace BetterClearTypeTuner
 					control.ForeColor = Color.Black;
 				}
 			}
+			else if (control is NumericUpDown)
+			{
+				if (dark)
+				{
+					control.BackColor = Color.Black;
+					control.ForeColor = ColorTranslator.FromHtml("#DEDEDE");
+				}
+				else
+				{
+					control.BackColor = Color.White;
+					control.ForeColor = Color.Black;
+				}
+			}
 			foreach (Control child in control.Controls)
 			{
 				SetDarkMode(child, dark);
