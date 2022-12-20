@@ -34,8 +34,6 @@
 			this.lblSample3 = new System.Windows.Forms.Label();
 			this.lblSample2 = new System.Windows.Forms.Label();
 			this.pbZoomed = new System.Windows.Forms.PictureBox();
-			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-			this.status = new System.Windows.Forms.ToolStripStatusLabel();
 			this.cbFontAntialiasing = new System.Windows.Forms.CheckBox();
 			this.rbGrayscale = new System.Windows.Forms.RadioButton();
 			this.panel1 = new System.Windows.Forms.Panel();
@@ -55,10 +53,10 @@
 			this.btnChangeFont = new System.Windows.Forms.Button();
 			this.fontDialog1 = new System.Windows.Forms.FontDialog();
 			this.cbDarkmode = new System.Windows.Forms.CheckBox();
+			this.status = new System.Windows.Forms.Label();
 			this.panelBottomBorder = new System.Windows.Forms.Panel();
 			this.panelSmall.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pbZoomed)).BeginInit();
-			this.statusStrip1.SuspendLayout();
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.nudContrast)).BeginInit();
 			this.SuspendLayout();
@@ -114,32 +112,13 @@
 			this.pbZoomed.TabIndex = 2;
 			this.pbZoomed.TabStop = false;
 			// 
-			// statusStrip1
-			// 
-			this.statusStrip1.BackColor = System.Drawing.Color.Transparent;
-			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.status});
-			this.statusStrip1.Location = new System.Drawing.Point(0, 517);
-			this.statusStrip1.Name = "statusStrip1";
-			this.statusStrip1.Size = new System.Drawing.Size(822, 22);
-			this.statusStrip1.SizingGrip = false;
-			this.statusStrip1.TabIndex = 3;
-			this.statusStrip1.Text = "statusStrip1";
-			// 
-			// status
-			// 
-			this.status.Name = "status";
-			this.status.Size = new System.Drawing.Size(16, 17);
-			this.status.Text = "…";
-			// 
 			// cbFontAntialiasing
 			// 
-			this.cbFontAntialiasing.AutoSize = true;
 			this.cbFontAntialiasing.BackColor = System.Drawing.Color.Transparent;
 			this.cbFontAntialiasing.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.cbFontAntialiasing.Location = new System.Drawing.Point(12, 12);
 			this.cbFontAntialiasing.Name = "cbFontAntialiasing";
-			this.cbFontAntialiasing.Size = new System.Drawing.Size(152, 17);
+			this.cbFontAntialiasing.Size = new System.Drawing.Size(177, 17);
 			this.cbFontAntialiasing.TabIndex = 1;
 			this.cbFontAntialiasing.Text = "Enable Font Antialiasing";
 			this.cbFontAntialiasing.UseVisualStyleBackColor = false;
@@ -147,7 +126,6 @@
 			// 
 			// rbGrayscale
 			// 
-			this.rbGrayscale.AutoSize = true;
 			this.rbGrayscale.BackColor = System.Drawing.Color.Transparent;
 			this.rbGrayscale.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.rbGrayscale.Location = new System.Drawing.Point(19, 3);
@@ -171,7 +149,6 @@
 			// 
 			// rbBGR
 			// 
-			this.rbBGR.AutoSize = true;
 			this.rbBGR.BackColor = System.Drawing.Color.Transparent;
 			this.rbBGR.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.rbBGR.Location = new System.Drawing.Point(19, 49);
@@ -185,7 +162,6 @@
 			// 
 			// rbRGB
 			// 
-			this.rbRGB.AutoSize = true;
 			this.rbRGB.BackColor = System.Drawing.Color.Transparent;
 			this.rbRGB.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.rbRGB.Location = new System.Drawing.Point(19, 26);
@@ -223,7 +199,6 @@
 			// 
 			// label4
 			// 
-			this.label4.AutoSize = true;
 			this.label4.BackColor = System.Drawing.Color.Transparent;
 			this.label4.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label4.Location = new System.Drawing.Point(9, 108);
@@ -234,7 +209,6 @@
 			// 
 			// label5
 			// 
-			this.label5.AutoSize = true;
 			this.label5.BackColor = System.Drawing.Color.Transparent;
 			this.label5.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label5.Location = new System.Drawing.Point(64, 131);
@@ -319,7 +293,7 @@
 			// 
 			this.lblNotAdmin.BackColor = System.Drawing.Color.White;
 			this.lblNotAdmin.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.lblNotAdmin.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblNotAdmin.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.lblNotAdmin.ForeColor = System.Drawing.Color.Red;
 			this.lblNotAdmin.Location = new System.Drawing.Point(3, 188);
 			this.lblNotAdmin.Name = "lblNotAdmin";
@@ -345,20 +319,30 @@
 			// 
 			// cbDarkmode
 			// 
-			this.cbDarkmode.AutoSize = true;
 			this.cbDarkmode.BackColor = System.Drawing.Color.Transparent;
-			this.cbDarkmode.Location = new System.Drawing.Point(610, 6);
+			this.cbDarkmode.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.cbDarkmode.Location = new System.Drawing.Point(604, 6);
 			this.cbDarkmode.Name = "cbDarkmode";
-			this.cbDarkmode.Size = new System.Drawing.Size(83, 17);
+			this.cbDarkmode.Size = new System.Drawing.Size(89, 17);
 			this.cbDarkmode.TabIndex = 8;
 			this.cbDarkmode.Text = "Dark Mode";
 			this.cbDarkmode.UseVisualStyleBackColor = false;
 			this.cbDarkmode.CheckedChanged += new System.EventHandler(this.cbDarkmode_CheckedChanged);
 			// 
+			// status
+			// 
+			this.status.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.status.BackColor = System.Drawing.Color.Transparent;
+			this.status.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.status.Location = new System.Drawing.Point(6, 521);
+			this.status.Name = "status";
+			this.status.Size = new System.Drawing.Size(804, 17);
+			this.status.TabIndex = 18;
+			this.status.Text = "...";
+			// 
 			// panelBottomBorder
 			// 
-			this.panelBottomBorder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
 			this.panelBottomBorder.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.panelBottomBorder.Location = new System.Drawing.Point(-3, 517);
 			this.panelBottomBorder.Name = "panelBottomBorder";
@@ -367,10 +351,11 @@
 			// 
 			// MainForm
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.BackColor = System.Drawing.SystemColors.Control;
 			this.ClientSize = new System.Drawing.Size(822, 539);
+			this.Controls.Add(this.status);
 			this.Controls.Add(this.panelBottomBorder);
 			this.Controls.Add(this.cbDarkmode);
 			this.Controls.Add(this.btnChangeFont);
@@ -386,7 +371,6 @@
 			this.Controls.Add(this.nudContrast);
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.cbFontAntialiasing);
-			this.Controls.Add(this.statusStrip1);
 			this.Controls.Add(this.pbZoomed);
 			this.Controls.Add(this.panelSmall);
 			this.Font = new System.Drawing.Font("Segoe UI", 8.25F);
@@ -395,12 +379,10 @@
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.Text = "Better ClearType Tuner";
 			this.Load += new System.EventHandler(this.MainForm_Load);
+			this.DpiChanged += new System.Windows.Forms.DpiChangedEventHandler(this.MainForm_DpiChanged);
 			this.panelSmall.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.pbZoomed)).EndInit();
-			this.statusStrip1.ResumeLayout(false);
-			this.statusStrip1.PerformLayout();
 			this.panel1.ResumeLayout(false);
-			this.panel1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.nudContrast)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -414,8 +396,6 @@
 		private System.Windows.Forms.Label lblSample3;
 		private System.Windows.Forms.Label lblSample2;
 		private System.Windows.Forms.PictureBox pbZoomed;
-		private System.Windows.Forms.StatusStrip statusStrip1;
-		private System.Windows.Forms.ToolStripStatusLabel status;
 		private System.Windows.Forms.CheckBox cbFontAntialiasing;
 		private System.Windows.Forms.RadioButton rbGrayscale;
 		private System.Windows.Forms.Panel panel1;
@@ -435,6 +415,7 @@
 		private System.Windows.Forms.Button btnChangeFont;
 		private System.Windows.Forms.FontDialog fontDialog1;
 		private System.Windows.Forms.CheckBox cbDarkmode;
+		private System.Windows.Forms.Label status;
 		private System.Windows.Forms.Panel panelBottomBorder;
 	}
 }

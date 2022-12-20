@@ -23,6 +23,7 @@ namespace BetterClearTypeTuner
 		Color TextColor = SystemColors.WindowText;
 		Color BackgroundColor = SystemColors.Control;
 		List<Control> fontableControls = new List<Control>();
+		SortedList<string, float> baselineFontSizes = new SortedList<string, float>();
 
 		public MainForm()
 		{
@@ -54,6 +55,7 @@ namespace BetterClearTypeTuner
 
 		private void GatherFontableControls(Control control, string fontName)
 		{
+			baselineFontSizes[control.Name] = control.Font.Size;
 			if (control.Font.FontFamily.Name == fontName)
 				fontableControls.Add(control);
 			foreach (Control child in control.Controls)
@@ -488,6 +490,32 @@ namespace BetterClearTypeTuner
 			}
 			return false;
 		}
+		/// <summary>
+		/// Gets the current DPI scale as a floating-point number, where 1.0 is 100% scale.
+		/// </summary>
+		private double DpiScale
+		{
+			get
+			{
+				return this.LogicalToDeviceUnits(10000) / 10000.0;
+			}
+		}
+		private void FixFontSizing()
+		{
+			double dpiScale = DpiScale;
+			foreach (Control c in fontableControls)
+			{
+				c.Font = new Font(c.Font.Name, (float)(baselineFontSizes[c.Name] * dpiScale), c.Font.Style, c.Font.Unit);
+			}
+		}
 		#endregion
+
+		private void MainForm_DpiChanged(object sender, DpiChangedEventArgs e)
+		{
+			FixFontSizing();
+			SetTimeout.OnGui(CopyZoomedSnapshot, 100, this, ex => MessageBox.Show(ex.ToString()));
+			SetTimeout.OnGui(CopyZoomedSnapshot, 500, this, ex => MessageBox.Show(ex.ToString()));
+			SetTimeout.OnGui(CopyZoomedSnapshot, 1000, this, ex => MessageBox.Show(ex.ToString()));
+		}
 	}
 }
