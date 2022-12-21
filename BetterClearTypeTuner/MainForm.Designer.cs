@@ -46,7 +46,6 @@
 			this.label6 = new System.Windows.Forms.Label();
 			this.label7 = new System.Windows.Forms.Label();
 			this.btnSet = new System.Windows.Forms.Button();
-			this.label8 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.lblNotAdmin = new System.Windows.Forms.Label();
@@ -55,6 +54,7 @@
 			this.cbDarkmode = new System.Windows.Forms.CheckBox();
 			this.status = new System.Windows.Forms.Label();
 			this.panelBottomBorder = new System.Windows.Forms.Panel();
+			this.label8 = new System.Windows.Forms.Label();
 			this.panelSmall.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pbZoomed)).BeginInit();
 			this.panel1.SuspendLayout();
@@ -116,9 +116,9 @@
 			// 
 			this.cbFontAntialiasing.BackColor = System.Drawing.Color.Transparent;
 			this.cbFontAntialiasing.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.cbFontAntialiasing.Location = new System.Drawing.Point(12, 12);
+			this.cbFontAntialiasing.Location = new System.Drawing.Point(12, 8);
 			this.cbFontAntialiasing.Name = "cbFontAntialiasing";
-			this.cbFontAntialiasing.Size = new System.Drawing.Size(177, 17);
+			this.cbFontAntialiasing.Size = new System.Drawing.Size(177, 20);
 			this.cbFontAntialiasing.TabIndex = 1;
 			this.cbFontAntialiasing.Text = "Enable Font Antialiasing";
 			this.cbFontAntialiasing.UseVisualStyleBackColor = false;
@@ -128,9 +128,9 @@
 			// 
 			this.rbGrayscale.BackColor = System.Drawing.Color.Transparent;
 			this.rbGrayscale.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.rbGrayscale.Location = new System.Drawing.Point(19, 3);
+			this.rbGrayscale.Location = new System.Drawing.Point(19, 2);
 			this.rbGrayscale.Name = "rbGrayscale";
-			this.rbGrayscale.Size = new System.Drawing.Size(73, 17);
+			this.rbGrayscale.Size = new System.Drawing.Size(138, 20);
 			this.rbGrayscale.TabIndex = 2;
 			this.rbGrayscale.TabStop = true;
 			this.rbGrayscale.Text = "Grayscale";
@@ -151,9 +151,9 @@
 			// 
 			this.rbBGR.BackColor = System.Drawing.Color.Transparent;
 			this.rbBGR.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.rbBGR.Location = new System.Drawing.Point(19, 49);
+			this.rbBGR.Location = new System.Drawing.Point(19, 48);
 			this.rbBGR.Name = "rbBGR";
-			this.rbBGR.Size = new System.Drawing.Size(46, 17);
+			this.rbBGR.Size = new System.Drawing.Size(138, 20);
 			this.rbBGR.TabIndex = 4;
 			this.rbBGR.TabStop = true;
 			this.rbBGR.Text = "BGR";
@@ -164,9 +164,9 @@
 			// 
 			this.rbRGB.BackColor = System.Drawing.Color.Transparent;
 			this.rbRGB.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.rbRGB.Location = new System.Drawing.Point(19, 26);
+			this.rbRGB.Location = new System.Drawing.Point(19, 25);
 			this.rbRGB.Name = "rbRGB";
-			this.rbRGB.Size = new System.Drawing.Size(46, 17);
+			this.rbRGB.Size = new System.Drawing.Size(138, 20);
 			this.rbRGB.TabIndex = 3;
 			this.rbRGB.TabStop = true;
 			this.rbRGB.Text = "RGB";
@@ -235,12 +235,11 @@
 			// 
 			// label6
 			// 
-			this.label6.AutoSize = true;
 			this.label6.BackColor = System.Drawing.Color.Transparent;
 			this.label6.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label6.Location = new System.Drawing.Point(13, 374);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(117, 13);
+			this.label6.Size = new System.Drawing.Size(117, 14);
 			this.label6.TabIndex = 11;
 			this.label6.Text = "Normal-Scale Sample:";
 			// 
@@ -267,29 +266,17 @@
 			this.btnSet.UseVisualStyleBackColor = true;
 			this.btnSet.Click += new System.EventHandler(this.ControlsChanged);
 			// 
-			// label8
-			// 
-			this.label8.AutoEllipsis = true;
-			this.label8.BackColor = System.Drawing.Color.Transparent;
-			this.label8.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label8.Location = new System.Drawing.Point(12, 277);
-			this.label8.Name = "label8";
-			this.label8.Size = new System.Drawing.Size(160, 94);
-			this.label8.TabIndex = 14;
-			this.label8.Text = "The font-smoothing settings chosen above affect all connected displays, because W" +
-    "indows 10 1903 currently does not offer a functional way to set these per-monito" +
-    "r.";
-			// 
 			// label9
 			// 
-			this.label9.AutoSize = true;
 			this.label9.BackColor = System.Drawing.Color.Transparent;
 			this.label9.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label9.Location = new System.Drawing.Point(244, 12);
+			this.label9.Location = new System.Drawing.Point(244, 8);
 			this.label9.Name = "label9";
-			this.label9.Size = new System.Drawing.Size(122, 13);
+			this.label9.Size = new System.Drawing.Size(174, 20);
 			this.label9.TabIndex = 15;
 			this.label9.Text = "400% Zoomed Sample:";
+			this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.label9.Click += new System.EventHandler(this.label9_Click);
 			// 
 			// lblNotAdmin
 			// 
@@ -323,9 +310,9 @@
 			// 
 			this.cbDarkmode.BackColor = System.Drawing.Color.Transparent;
 			this.cbDarkmode.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.cbDarkmode.Location = new System.Drawing.Point(604, 6);
+			this.cbDarkmode.Location = new System.Drawing.Point(599, 6);
 			this.cbDarkmode.Name = "cbDarkmode";
-			this.cbDarkmode.Size = new System.Drawing.Size(89, 17);
+			this.cbDarkmode.Size = new System.Drawing.Size(94, 20);
 			this.cbDarkmode.TabIndex = 8;
 			this.cbDarkmode.Text = "Dark Mode";
 			this.cbDarkmode.UseVisualStyleBackColor = false;
@@ -350,6 +337,19 @@
 			this.panelBottomBorder.Name = "panelBottomBorder";
 			this.panelBottomBorder.Size = new System.Drawing.Size(838, 1);
 			this.panelBottomBorder.TabIndex = 17;
+			// 
+			// label8
+			// 
+			this.label8.AutoEllipsis = true;
+			this.label8.BackColor = System.Drawing.Color.Transparent;
+			this.label8.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label8.Location = new System.Drawing.Point(12, 277);
+			this.label8.Name = "label8";
+			this.label8.Size = new System.Drawing.Size(160, 94);
+			this.label8.TabIndex = 14;
+			this.label8.Text = "The font-smoothing settings chosen above affect all connected displays, because W" +
+    "indows 10 1903 currently does not offer a functional way to set these per-monito" +
+    "r.";
 			// 
 			// MainForm
 			// 
@@ -387,7 +387,6 @@
 			this.panel1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.nudContrast)).EndInit();
 			this.ResumeLayout(false);
-			this.PerformLayout();
 
 		}
 
@@ -410,7 +409,6 @@
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.Button btnSet;
-		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.ToolTip toolTip1;
 		private System.Windows.Forms.Label lblNotAdmin;
@@ -419,6 +417,7 @@
 		private System.Windows.Forms.CheckBox cbDarkmode;
 		private System.Windows.Forms.Label status;
 		private System.Windows.Forms.Panel panelBottomBorder;
+		private System.Windows.Forms.Label label8;
 	}
 }
 

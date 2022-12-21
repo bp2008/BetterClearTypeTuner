@@ -86,7 +86,6 @@
     <Compile Include="Native\FontSmoothing.cs" />
     <Compile Include="Native\SPIF.cs" />
     <Compile Include="Native\User32.cs" />
-    <Compile Include="Native\UXTheme.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Native\SPI.cs" />

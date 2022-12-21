@@ -29,6 +29,7 @@ namespace BetterClearTypeTuner
 		{
 			InitializeComponent();
 
+			InitializeDpiScale();
 			GatherFontableControls(this, this.Font.FontFamily.Name);
 
 			lblNotAdmin.Visible = false;
@@ -51,6 +52,43 @@ namespace BetterClearTypeTuner
 				cbDarkmode.Checked = true;
 			else
 				SetDarkMode(this, false);
+		}
+
+		private void MainForm_Load(object sender, EventArgs e)
+		{
+			UpdateStatus();
+			cbFontAntialiasing.Focus();
+			FixFontSizing();
+			DpiScalingInitHack();
+			initialized = true;
+		}
+
+		private void DpiScalingInitHack()
+		{
+			// If the form is not currently on the primary monitor, move it to the primary monitor, then move it back to this monitor.
+			Screen[] allScreens = Screen.AllScreens;
+			Screen primary = allScreens.FirstOrDefault(s => s.Primary);
+			Screen parentScreen = null;
+			Point startPos = this.Location;
+			foreach (Screen screen in allScreens)
+			{
+				Point formCenter = new Point(startPos.X + (this.Size.Width / 2), startPos.Y + (this.Size.Height / 2));
+				if (screen.Bounds.Contains(formCenter))
+				{
+					parentScreen = screen;
+					break;
+				}
+			}
+			if (primary != null && parentScreen != primary)
+			{
+				this.StartPosition = FormStartPosition.Manual;
+				this.Location = new Point(primary.Bounds.X + ((primary.Bounds.Width - this.Size.Width) / 2),
+					primary.Bounds.Y + ((primary.Bounds.Height - this.Size.Height) / 2));
+				if (parentScreen != null)
+				{
+					this.Location = startPos;
+				}
+			}
 		}
 
 		private void GatherFontableControls(Control control, string fontName)
@@ -146,13 +184,6 @@ namespace BetterClearTypeTuner
 			}
 			if (control == this)
 				CopyZoomedSnapshot();
-		}
-
-		private void MainForm_Load(object sender, EventArgs e)
-		{
-			UpdateStatus();
-			cbFontAntialiasing.Focus();
-			initialized = true;
 		}
 
 		private void ControlsChanged(object sender, EventArgs e)
@@ -269,7 +300,14 @@ namespace BetterClearTypeTuner
 		private void cbDarkmode_CheckedChanged(object sender, EventArgs e)
 		{
 			SetDarkMode(this, cbDarkmode.Checked);
+		}
 
+		private void MainForm_DpiChanged(object sender, DpiChangedEventArgs e)
+		{
+			FixFontSizing();
+			SetTimeout.OnGui(CopyZoomedSnapshot, 100, this, ex => MessageBox.Show(ex.ToString()));
+			SetTimeout.OnGui(CopyZoomedSnapshot, 500, this, ex => MessageBox.Show(ex.ToString()));
+			SetTimeout.OnGui(CopyZoomedSnapshot, 1000, this, ex => MessageBox.Show(ex.ToString()));
 		}
 
 		#region Registry
@@ -504,31 +542,46 @@ namespace BetterClearTypeTuner
 			return false;
 		}
 		/// <summary>
-		/// Gets the current DPI scale as a floating-point number, where 1.0 is 100% scale.
+		/// Gets the Dpi Scale as reported by the operating system.  For font scaling purposes, this must be divided by the DPI scale at the time of application launch.
 		/// </summary>
-		private double DpiScale
+		private double OSReportedDpiScale
 		{
 			get
 			{
 				return this.LogicalToDeviceUnits(10000) / 10000.0;
 			}
 		}
+		/// <summary>
+		/// Gets the current DPI scale as a floating-point number, where 1.0 is 100% scale.
+		/// </summary>
+		private double CurrentFontScale
+		{
+			get
+			{
+				return OSReportedDpiScale / InitialDpiScale;
+			}
+		}
+		private double InitialDpiScale = 1;
+		private void InitializeDpiScale()
+		{
+			InitialDpiScale = OSReportedDpiScale;
+			if (InitialDpiScale <= 0)
+				InitialDpiScale = 1;
+		}
 		private void FixFontSizing()
 		{
-			double dpiScale = DpiScale;
+			double fontScale = CurrentFontScale;
 			foreach (Control c in fontableControls)
 			{
-				c.Font = new Font(c.Font.Name, (float)(baselineFontSizes[c.Name] * dpiScale), c.Font.Style, c.Font.Unit);
+				c.Font = new Font(c.Font.Name, (float)(baselineFontSizes[c.Name] * fontScale), c.Font.Style, c.Font.Unit);
 			}
+			//label9.Text = "DPI Scale: " + OSReportedDpiScale.ToString("0.##") + ", Font Scale: " + fontScale.ToString("0.##");
 		}
 		#endregion
 
-		private void MainForm_DpiChanged(object sender, DpiChangedEventArgs e)
+		private void label9_Click(object sender, EventArgs e)
 		{
-			FixFontSizing();
-			SetTimeout.OnGui(CopyZoomedSnapshot, 100, this, ex => MessageBox.Show(ex.ToString()));
-			SetTimeout.OnGui(CopyZoomedSnapshot, 500, this, ex => MessageBox.Show(ex.ToString()));
-			SetTimeout.OnGui(CopyZoomedSnapshot, 1000, this, ex => MessageBox.Show(ex.ToString()));
+			//FixFontSizing();
 		}
 	}
 }
