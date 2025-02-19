@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BetterClearTypeTuner
@@ -99,7 +95,7 @@ namespace BetterClearTypeTuner
 		/// </summary>
 		public class TimeoutHandle
 		{
-			private EventWaitHandle ewh = new EventWaitHandle(false, EventResetMode.ManualReset);
+			private readonly EventWaitHandle ewh = new EventWaitHandle(false, EventResetMode.ManualReset);
 			/// <summary>
 			/// Cancels this timeout, if it is still waiting.
 			/// </summary>
