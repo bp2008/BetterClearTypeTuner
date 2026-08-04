@@ -12,7 +12,17 @@ Quickly set font-smoothing settings in Windows 10 and know what you are getting,
 
 ![Main Application Screenshot](https://i.imgur.com/1dMqenI.png)
 
-## Usage
+## Install
+
+### winget (once published)
+
+```powershell
+winget install bp2008.BetterClearTypeTuner
+```
+
+After the first package lands in the [Windows Package Manager community repository](https://github.com/microsoft/winget-pkgs), each new GitHub Release can open an update PR automatically via [`.github/workflows/winget.yml`](.github/workflows/winget.yml) (requires a `WINGET_TOKEN` repository secret). Setup guide: [Winget registration](https://github.com/dev-centr/general-knowledge/blob/main/docs/modules/ROOT/pages/how-to/winget-registration.adoc) (also published at [docs.devcentr.org](https://docs.devcentr.org/general-knowledge/how-to/winget-registration.html) when the docs site is current).
+
+### Manual download
 
 Download from the [Releases Section](https://github.com/bp2008/BetterClearTypeTuner/releases), extract, and run.
 
