@@ -26,6 +26,25 @@ After the first package lands in the [Windows Package Manager community reposito
 
 Download from the [Releases Section](https://github.com/bp2008/BetterClearTypeTuner/releases), extract, and run.
 
+## Releasing (maintainers)
+
+Builds and release zips are produced by GitHub Actions — you do **not** need to upload binaries by hand.
+
+1. Merge your changes to `master`.
+2. Create and push a **version tag** matching the release number (same style as existing tags: `1.4.0.2`, optional `v` prefix also works):
+
+```powershell
+git checkout master
+git pull
+git tag 1.4.0.3
+git push origin 1.4.0.3
+```
+
+3. The [Release](.github/workflows/release.yml) workflow builds a Release binary, stamps `AssemblyVersion` / `AssemblyFileVersion` from the tag, zips `BetterClearTypeTuner.exe` as `BetterClearTypeTuner.<version>.zip`, and publishes a GitHub Release with that asset attached.
+4. If `WINGET_TOKEN` is configured, [Publish to WinGet](.github/workflows/winget.yml) then opens an update PR to `winget-pkgs` for that release.
+
+Continuous integration: every push/PR to `master` runs [Build](.github/workflows/build.yml) so the solution stays green without cutting a release.
+
 ## Caveats
 
 As of Windows 10 1903, pages 3-5 of Windows' built-in ClearType tuner have no effect on text rendering.  Therefore, these settings were omitted from this program.  This program assigns sane default values to the affected registry keys so that if they begin working again in the future, ... they will at least have sane values.
