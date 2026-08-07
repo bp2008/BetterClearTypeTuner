@@ -1,0 +1,29 @@
+name: Build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build (Release)
+        run: msbuild BetterClearTypeTuner.sln -p:Configuration=Release -p:Platform="Any CPU" -m -v:m
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BetterClearTypeTuner-Release
+          path: BetterClearTypeTuner/bin/Release/BetterClearTypeTuner.exe
+          if-no-files-found: error

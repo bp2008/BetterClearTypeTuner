@@ -1,0 +1,47 @@
+name: Publish to WinGet
+
+# Submits each stable GitHub Release to microsoft/winget-pkgs so users can
+# `winget install bp2008.BetterClearTypeTuner`.
+#
+# Prerequisites (one-time — see PR / docs link in README):
+# 1. Repository secret WINGET_TOKEN — classic PAT with public_repo scope.
+# 2. First package submission via `wingetcreate new` (or a hand PR). This
+#    workflow only updates an existing package after that bootstrap merges.
+
+on:
+  release:
+    types: [released]
+  workflow_dispatch:
+    inputs:
+      release-tag:
+        description: "Existing release tag to publish (e.g. 1.4.0.2)"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for WINGET_TOKEN
+        id: gate
+        env:
+          WINGET_TOKEN: ${{ secrets.WINGET_TOKEN }}
+        run: |
+          if [ -n "$WINGET_TOKEN" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::WINGET_TOKEN not set — skipping winget submission"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Submit to winget-pkgs
+        if: steps.gate.outputs.ok == 'true'
+        uses: vedantmgoyal9/winget-releaser@v2
+        with:
+          identifier: bp2008.BetterClearTypeTuner
+          # Releases ship a portable zip (BetterClearTypeTuner.<version>.zip).
+          installers-regex: 'BetterClearTypeTuner\..+\.zip$'
+          release-tag: ${{ inputs.release-tag || github.event.release.tag_name }}
+          token: ${{ secrets.WINGET_TOKEN }}
