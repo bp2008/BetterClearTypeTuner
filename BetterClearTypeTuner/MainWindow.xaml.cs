@@ -94,7 +94,7 @@ namespace BetterClearTypeTuner
 			setDefaults = true;
 			cbEnableFontAntialiasing.IsChecked = true;
 			rbRGB.IsChecked = true;
-			txtContrast.Text = "0";
+			txtContrast.Text = FontSmoothing.ContrastDefault.ToString();
 			EnableEvents();
 			ControlsChanged();
 		}

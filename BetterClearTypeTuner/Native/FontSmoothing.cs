@@ -76,11 +76,24 @@ namespace BetterClearTypeTuner.Native
 			return contrast;
 		}
 		/// <summary>
+		/// Microsoft-documented valid range for ClearType contrast (SPI_SETFONTSMOOTHINGCONTRAST).
+		/// Values outside this range break Java AWT/Swing (IllegalArgumentException on KEY_TEXT_LCD_CONTRAST).
+		/// </summary>
+		public const uint ContrastMin = 1000;
+		public const uint ContrastMax = 2200;
+		public const uint ContrastDefault = 1400;
+
+		/// <summary>
 		/// Sets the font smoothing contrast.
+		/// Values are clamped to the documented 1000–2200 range.
 		/// </summary>
 		/// <returns></returns>
 		public static void SetContrast(uint contrast)
 		{
+			if (contrast < ContrastMin)
+				contrast = ContrastMin;
+			else if (contrast > ContrastMax)
+				contrast = ContrastMax;
 			User32.SystemParametersInfoW(SPI.SPI_SETFONTSMOOTHINGCONTRAST, 0, contrast, SPIF.SPIF_UPDATEINIFILE | SPIF.SPIF_SENDCHANGE);
 		}
 	}

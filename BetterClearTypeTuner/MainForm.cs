@@ -280,7 +280,7 @@ namespace BetterClearTypeTuner
 			setDefaults = true;
 			cbFontAntialiasing.Checked = true;
 			rbRGB.Checked = true;
-			nudContrast.Value = 0;
+			nudContrast.Value = FontSmoothing.ContrastDefault;
 			EnableEvents();
 			ControlsChanged(sender, e);
 		}
