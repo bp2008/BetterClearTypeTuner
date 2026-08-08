@@ -42,6 +42,9 @@
 			this.nudContrast = new System.Windows.Forms.NumericUpDown();
 			this.label4 = new System.Windows.Forms.Label();
 			this.label5 = new System.Windows.Forms.Label();
+			this.nudClearTypeLevel = new System.Windows.Forms.NumericUpDown();
+			this.labelClearTypeLevel = new System.Windows.Forms.Label();
+			this.labelClearTypeLevelRange = new System.Windows.Forms.Label();
 			this.btnRestoreDefaults = new System.Windows.Forms.Button();
 			this.label6 = new System.Windows.Forms.Label();
 			this.label7 = new System.Windows.Forms.Label();
@@ -59,6 +62,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.pbZoomed)).BeginInit();
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.nudContrast)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudClearTypeLevel)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// lblSample1
@@ -219,17 +223,67 @@
 			this.label5.TabIndex = 9;
 			this.label5.Text = "[1000-2200]";
 			// 
+			// nudClearTypeLevel
+			// 
+			this.nudClearTypeLevel.BackColor = System.Drawing.Color.White;
+			this.nudClearTypeLevel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.nudClearTypeLevel.ForeColor = System.Drawing.Color.Black;
+			this.nudClearTypeLevel.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+			this.nudClearTypeLevel.Location = new System.Drawing.Point(69, 152);
+			this.nudClearTypeLevel.Maximum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+			this.nudClearTypeLevel.Name = "nudClearTypeLevel";
+			this.nudClearTypeLevel.Size = new System.Drawing.Size(54, 22);
+			this.nudClearTypeLevel.TabIndex = 10;
+			this.toolTip1.SetToolTip(this.nudClearTypeLevel, "ClearType amount for DirectWrite/WPF (0 = grayscale, 100 = full).\r\nAffects apps l" +
+        "ike Firefox and WPF; GDI and Chrome often ignore it.\r\nThe zoomed GDI sample abov" +
+        "e will not change.");
+			this.nudClearTypeLevel.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+			this.nudClearTypeLevel.ValueChanged += new System.EventHandler(this.ControlsChanged);
+			// 
+			// labelClearTypeLevel
+			// 
+			this.labelClearTypeLevel.BackColor = System.Drawing.Color.Transparent;
+			this.labelClearTypeLevel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelClearTypeLevel.Location = new System.Drawing.Point(9, 141);
+			this.labelClearTypeLevel.Name = "labelClearTypeLevel";
+			this.labelClearTypeLevel.Size = new System.Drawing.Size(60, 44);
+			this.labelClearTypeLevel.TabIndex = 19;
+			this.labelClearTypeLevel.Text = "ClearType\r\nLevel:";
+			this.toolTip1.SetToolTip(this.labelClearTypeLevel, "Registry: HKCU\\Software\\Microsoft\\Avalon.Graphics\\<display>\\ClearTypeLevel\r\nSame" +
+        " setting as Windows ClearType Tuner step for color intensity.");
+			// 
+			// labelClearTypeLevelRange
+			// 
+			this.labelClearTypeLevelRange.BackColor = System.Drawing.Color.Transparent;
+			this.labelClearTypeLevelRange.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelClearTypeLevelRange.Location = new System.Drawing.Point(64, 178);
+			this.labelClearTypeLevelRange.Name = "labelClearTypeLevelRange";
+			this.labelClearTypeLevelRange.Size = new System.Drawing.Size(65, 13);
+			this.labelClearTypeLevelRange.TabIndex = 20;
+			this.labelClearTypeLevelRange.Text = "[0-100]";
+			// 
 			// btnRestoreDefaults
 			// 
 			this.btnRestoreDefaults.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnRestoreDefaults.Location = new System.Drawing.Point(9, 157);
+			this.btnRestoreDefaults.Location = new System.Drawing.Point(9, 200);
 			this.btnRestoreDefaults.Name = "btnRestoreDefaults";
 			this.btnRestoreDefaults.Size = new System.Drawing.Size(159, 23);
 			this.btnRestoreDefaults.TabIndex = 7;
 			this.btnRestoreDefaults.Text = "Restore Defaults";
 			this.toolTip1.SetToolTip(this.btnRestoreDefaults, "Deletes legacy registry keys and \r\nrestores common default settings:\r\n* RGB subpi" +
-        "xel antialiasing\r\n* contrast 0 (which is out of range, \r\n    but it is nonethele" +
-        "ss the default)");
+        "xel antialiasing\r\n* contrast 1400\r\n* ClearType Level 100");
 			this.btnRestoreDefaults.UseVisualStyleBackColor = true;
 			this.btnRestoreDefaults.Click += new System.EventHandler(this.BtnRestoreDefaults_Click);
 			// 
@@ -248,9 +302,9 @@
 			this.label7.AutoEllipsis = true;
 			this.label7.BackColor = System.Drawing.Color.Transparent;
 			this.label7.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label7.Location = new System.Drawing.Point(12, 220);
+			this.label7.Location = new System.Drawing.Point(12, 263);
 			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(160, 50);
+			this.label7.Size = new System.Drawing.Size(160, 45);
 			this.label7.TabIndex = 12;
 			this.label7.Text = "You may need to reboot your computer for changes to take effect everywhere.\r\n";
 			// 
@@ -284,7 +338,7 @@
 			this.lblNotAdmin.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.lblNotAdmin.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.lblNotAdmin.ForeColor = System.Drawing.Color.Red;
-			this.lblNotAdmin.Location = new System.Drawing.Point(3, 188);
+			this.lblNotAdmin.Location = new System.Drawing.Point(3, 231);
 			this.lblNotAdmin.Name = "lblNotAdmin";
 			this.lblNotAdmin.Size = new System.Drawing.Size(172, 27);
 			this.lblNotAdmin.TabIndex = 16;
@@ -343,9 +397,9 @@
 			this.label8.AutoEllipsis = true;
 			this.label8.BackColor = System.Drawing.Color.Transparent;
 			this.label8.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label8.Location = new System.Drawing.Point(12, 277);
+			this.label8.Location = new System.Drawing.Point(12, 312);
 			this.label8.Name = "label8";
-			this.label8.Size = new System.Drawing.Size(160, 94);
+			this.label8.Size = new System.Drawing.Size(160, 58);
 			this.label8.TabIndex = 14;
 			this.label8.Text = "The font-smoothing settings chosen above affect all connected displays, because W" +
     "indows 10 1903 currently does not offer a functional way to set these per-monito" +
@@ -368,6 +422,9 @@
 			this.Controls.Add(this.label7);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.btnRestoreDefaults);
+			this.Controls.Add(this.labelClearTypeLevelRange);
+			this.Controls.Add(this.labelClearTypeLevel);
+			this.Controls.Add(this.nudClearTypeLevel);
 			this.Controls.Add(this.label5);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.nudContrast);
@@ -386,6 +443,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.pbZoomed)).EndInit();
 			this.panel1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.nudContrast)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudClearTypeLevel)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -405,6 +463,9 @@
 		private System.Windows.Forms.NumericUpDown nudContrast;
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.Label label5;
+		private System.Windows.Forms.NumericUpDown nudClearTypeLevel;
+		private System.Windows.Forms.Label labelClearTypeLevel;
+		private System.Windows.Forms.Label labelClearTypeLevelRange;
 		private System.Windows.Forms.Button btnRestoreDefaults;
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.Label label7;

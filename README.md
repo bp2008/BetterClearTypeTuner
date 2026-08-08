@@ -8,6 +8,7 @@ Quickly set font-smoothing settings in Windows 10 and know what you are getting,
 * Enable or disable font antialiasing.
 * Choose between Grayscale antialiasing or subpixel antialiasing using RGB or BGR subpixel layouts.
 * Edit the contrast of font rendering (when using RGB or BGR subpixel antialiasing).
+* Edit **ClearType Level** (0–100): the DirectWrite/WPF “amount of ClearType” registry setting (`ClearTypeLevel`). 0 is grayscale for those engines; 100 is full ClearType. Useful for apps that honor it (for example Firefox and WPF); many GDI apps and Chromium-based browsers ignore it.
 * Preview the results at several font sizes and see a zoomed-in view to better-understand what is going on internally!
 
 ![Main Application Screenshot](https://i.imgur.com/1dMqenI.png)
@@ -18,7 +19,7 @@ Download from the [Releases Section](https://github.com/bp2008/BetterClearTypeTu
 
 ## Caveats
 
-As of Windows 10 1903, pages 3-5 of Windows' built-in ClearType tuner have no effect on text rendering.  Therefore, these settings were omitted from this program.  This program assigns sane default values to the affected registry keys so that if they begin working again in the future, ... they will at least have sane values.
+As of Windows 10 1903, several pages of Windows' built-in ClearType tuner have little or no effect on **GDI** text rendering.  This program originally omitted those Avalon.Graphics-only knobs and wrote sane defaults instead.  **ClearType Level** is now exposed because it still affects DirectWrite/WPF (and some browsers); the in-app GDI zoom preview will not change when you adjust it.  Other Avalon keys (`EnhancedContrastLevel`, `TextContrastLevel`, `GrayscaleEnhancedContrastLevel`) remain at sane defaults.
 
 There appears to be some level of support for setting different ClearType settings on different monitors.  However, this appears to be entirely non-functional in modern Windows, so this program sets all monitors the same.
 

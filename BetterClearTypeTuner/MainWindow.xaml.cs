@@ -95,6 +95,7 @@ namespace BetterClearTypeTuner
 			cbEnableFontAntialiasing.IsChecked = true;
 			rbRGB.IsChecked = true;
 			txtContrast.Text = FontSmoothing.ContrastDefault.ToString();
+			txtClearTypeLevel.Text = ClearTypeLevelDefault.ToString();
 			EnableEvents();
 			ControlsChanged();
 		}
@@ -108,6 +109,10 @@ namespace BetterClearTypeTuner
 		{
 			if (initialized)
 			{
+				int desiredClearTypeLevel = rbGrayscale.IsChecked.Value ? 0 : (int)Clamp((uint)ParseInt(txtClearTypeLevel.Text, (int)ClearTypeLevelDefault), ClearTypeLevelMin, ClearTypeLevelMax);
+				if (GetClearTypeLevel() != desiredClearTypeLevel)
+					dirty = true;
+
 				SetLegacyKeys();
 				if (rbGrayscale.IsChecked.Value)
 				{
@@ -159,13 +164,16 @@ namespace BetterClearTypeTuner
 						pixelStructure = 2;
 
 					int contrast = (int)Clamp((uint)ParseInt(txtContrast.Text, 0), 1000, 2200);
+					int clearTypeLevel = pixelStructure == 0
+						? 0
+						: (int)Clamp((uint)ParseInt(txtClearTypeLevel.Text, (int)ClearTypeLevelDefault), ClearTypeLevelMin, ClearTypeLevelMax);
 
 					// Local Machine
 					SetRegistryDWORDValue(Registry.LocalMachine, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "GammaLevel", contrast);
 					SetRegistryDWORDValue(Registry.LocalMachine, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "PixelStructure", pixelStructure);
 
 					// Current User
-					SetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "ClearTypeLevel", pixelStructure == 0 ? 0 : 100);
+					SetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "ClearTypeLevel", clearTypeLevel);
 					SetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "EnhancedContrastLevel", 50);
 					SetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "GammaLevel", contrast);
 					SetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "GrayscaleEnhancedContrastLevel", 100);
@@ -212,12 +220,14 @@ namespace BetterClearTypeTuner
 				FontSmoothingOrientation orientation = FontSmoothing.GetFontSmoothingOrientation();
 				FontSmoothingType smoothingType = FontSmoothing.GetFontSmoothingType();
 				uint contrast = FontSmoothing.GetContrast();
+				int clearTypeLevel = GetClearTypeLevel();
 
 				// Update UI controls
 				DisableEvents();
 
 				cbEnableFontAntialiasing.IsChecked = aaEnabled;
 
+				bool clearTypeLevelEnabled = false;
 				if (smoothingType == FontSmoothingType.Standard)
 				{
 					rbGrayscale.IsChecked = true;
@@ -229,11 +239,13 @@ namespace BetterClearTypeTuner
 					{
 						rbRGB.IsChecked = true;
 						btnSetContrast.IsEnabled = txtContrast.IsEnabled = true;
+						clearTypeLevelEnabled = true;
 					}
 					else if (orientation == FontSmoothingOrientation.BGR)
 					{
 						rbBGR.IsChecked = true;
 						btnSetContrast.IsEnabled = txtContrast.IsEnabled = true;
+						clearTypeLevelEnabled = true;
 					}
 					else if (orientation == FontSmoothingOrientation.Unknown)
 					{
@@ -251,7 +263,14 @@ namespace BetterClearTypeTuner
 				rbGrayscale.IsEnabled = rbRGB.IsEnabled = rbBGR.IsEnabled = aaEnabled;
 
 				if (!aaEnabled)
+				{
 					txtContrast.IsEnabled = btnSetContrast.IsEnabled = false;
+					clearTypeLevelEnabled = false;
+				}
+
+				txtClearTypeLevel.IsEnabled = clearTypeLevelEnabled;
+				if (clearTypeLevelEnabled)
+					txtClearTypeLevel.Text = Clamp((uint)clearTypeLevel, ClearTypeLevelMin, ClearTypeLevelMax).ToString();
 
 				EnableEvents();
 
@@ -260,7 +279,7 @@ namespace BetterClearTypeTuner
 				if (aaEnabled)
 				{
 					if (smoothingType == FontSmoothingType.ClearType)
-						lblStatus.Content = quick + orientation + " (Contrast " + contrast + ")";
+						lblStatus.Content = quick + orientation + " (Contrast " + contrast + ", ClearType Level " + clearTypeLevel + ")";
 					else
 						lblStatus.Content = quick + "Grayscale (Contrast " + contrast + ")";
 				}
@@ -277,6 +296,13 @@ namespace BetterClearTypeTuner
 			}
 		}
 		#region Registry
+		/// <summary>
+		/// DirectWrite/WPF ClearType amount (0 = grayscale … 100 = full). Same key as cttune.
+		/// </summary>
+		public const uint ClearTypeLevelMin = 0;
+		public const uint ClearTypeLevelMax = 100;
+		public const uint ClearTypeLevelDefault = 100;
+
 		bool registryFail = false;
 		private void SetRegistryDWORDValue(RegistryKey baseKey, string keyPath, string name, int value)
 		{
@@ -293,6 +319,33 @@ namespace BetterClearTypeTuner
 			{
 				HandleRegistryException(ex);
 			}
+		}
+		private int GetRegistryDWORDValue(RegistryKey baseKey, string keyPath, string name, int defaultValue)
+		{
+			try
+			{
+				RegistryKey key = baseKey.OpenSubKey(keyPath, false);
+				if (key == null)
+					return defaultValue;
+				object value = key.GetValue(name);
+				if (value == null)
+					return defaultValue;
+				if (value is int i)
+					return i;
+				if (int.TryParse(value.ToString(), out int parsed))
+					return parsed;
+			}
+			catch
+			{
+			}
+			return defaultValue;
+		}
+		private int GetClearTypeLevel()
+		{
+			string[] displayNames = GetDisplayNames();
+			if (displayNames.Length == 0)
+				return (int)ClearTypeLevelDefault;
+			return GetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayNames[0], "ClearTypeLevel", (int)ClearTypeLevelDefault);
 		}
 		private void DeleteRegistrySubkeys(RegistryKey baseKey, string keyPath)
 		{
@@ -363,6 +416,7 @@ namespace BetterClearTypeTuner
 			rbBGR.Checked -= ControlsChanged;
 			rbBGR.Unchecked -= ControlsChanged;
 			txtContrast.TextChanged -= ControlsChanged;
+			txtClearTypeLevel.TextChanged -= ControlsChanged;
 		}
 		public void EnableEvents()
 		{
@@ -375,6 +429,7 @@ namespace BetterClearTypeTuner
 			rbBGR.Checked += ControlsChanged;
 			rbBGR.Unchecked += ControlsChanged;
 			txtContrast.TextChanged += ControlsChanged;
+			txtClearTypeLevel.TextChanged += ControlsChanged;
 		}
 		#endregion
 		#region Screen Capture
