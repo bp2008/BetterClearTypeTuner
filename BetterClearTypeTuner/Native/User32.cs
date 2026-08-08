@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace BetterClearTypeTuner.Native
 {
@@ -11,7 +7,7 @@ namespace BetterClearTypeTuner.Native
 	{
 		[DllImport("user32.dll", SetLastError = true)]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		public static extern bool SystemParametersInfoW(SPI uiAction, uint uiParam, ref uint pvParam, SPIF fWinIni); // Overloads can be made where pvParam can be any type
+		public static extern bool SystemParametersInfoW(SPI uiAction, uint uiParam, ref uint pvParam, SPIF fWinIni);
 
 		[DllImport("user32.dll", SetLastError = true)]
 		[return: MarshalAs(UnmanagedType.Bool)]
@@ -23,27 +19,32 @@ namespace BetterClearTypeTuner.Native
 
 		[DllImport("user32.dll", SetLastError = true)]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		public static extern bool SystemParametersInfoW(SPI uiAction, uint uiParam, bool pvParam, SPIF fWinIni);
-		[DllImport("user32.dll", SetLastError = true)]
-		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool SystemParametersInfoW(SPI uiAction, bool uiParam, IntPtr pvParam, SPIF fWinIni);
 
-		[DllImport("user32.dll", SetLastError = true)]
+		[DllImport("user32.dll", CharSet = CharSet.Unicode)]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		public static extern bool SystemParametersInfoW(SPI uiAction, uint uiParam, IntPtr pvParam, SPIF fWinIni);
+		public static extern bool EnumDisplayDevices(string? lpDevice, uint iDevNum, ref DISPLAY_DEVICE lpDisplayDevice, uint dwFlags);
+	}
 
-		// For setting a string parameter
-		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		public static extern bool SystemParametersInfoW(uint uiAction, uint uiParam, String pvParam, SPIF fWinIni);
+	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+	public struct DISPLAY_DEVICE
+	{
+		public int cb;
+		[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+		public string DeviceName;
+		[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+		public string DeviceString;
+		public uint StateFlags;
+		[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+		public string DeviceID;
+		[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+		public string DeviceKey;
+	}
 
-		// For reading a string parameter
-		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		public static extern bool SystemParametersInfoW(uint uiAction, uint uiParam, StringBuilder pvParam, SPIF fWinIni);
-
-		//[DllImport("user32.dll", SetLastError = true)]
-		//[return: MarshalAs(UnmanagedType.Bool)]
-		//public static extern bool SystemParametersInfoW(SPI uiAction, uint uiParam, ref ANIMATIONINFO pvParam, SPIF fWinIni);
+	[Flags]
+	public enum DisplayDeviceStateFlags : uint
+	{
+		AttachedToDesktop = 0x1,
+		PrimaryDevice = 0x4,
 	}
 }
