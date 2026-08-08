@@ -1,0 +1,60 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="BetterClearTypeTuner.MainWindow"
+        Title="Better ClearType Tuner"
+        Width="840" Height="560"
+        MinWidth="720" MinHeight="480"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Segoe UI">
+  <DockPanel Margin="12">
+    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+      <CheckBox x:Name="DarkModeCheck" Content="Dark Mode" DockPanel.Dock="Right" Margin="12,0,0,0" />
+      <Button x:Name="ChangeFontButton" Content="Change Font" DockPanel.Dock="Right" Padding="12,4" />
+      <CheckBox x:Name="AntialiasingCheck" Content="Enable Font Antialiasing" VerticalAlignment="Center" />
+    </DockPanel>
+
+    <TextBlock x:Name="StatusText" DockPanel.Dock="Bottom" Margin="0,8,0,0" Text="..." TextWrapping="Wrap" />
+
+    <Grid ColumnDefinitions="200,*" ColumnSpacing="16">
+      <StackPanel Grid.Column="0" Spacing="6">
+        <RadioButton x:Name="GrayscaleRadio" Content="Grayscale" GroupName="Smoothing" />
+        <RadioButton x:Name="RgbRadio" Content="RGB" GroupName="Smoothing" Margin="0,0,0,0" />
+        <RadioButton x:Name="BgrRadio" Content="BGR" GroupName="Smoothing" />
+
+        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+          <TextBlock Text="Contrast:" VerticalAlignment="Center" Width="64" />
+          <NumericUpDown x:Name="ContrastUpDown" Minimum="1000" Maximum="2200" Increment="100"
+                         Width="90" FormatString="0" />
+        </StackPanel>
+        <TextBlock Text="[1000-2200]" Opacity="0.7" Margin="72,0,0,0" FontSize="11" />
+
+        <Button x:Name="RestoreDefaultsButton" Content="Restore Defaults" Margin="0,8,0,0" HorizontalAlignment="Stretch" />
+        <Border x:Name="AdminBanner" IsVisible="False" BorderBrush="Red" BorderThickness="1" Padding="6" Margin="0,4,0,0">
+          <TextBlock Text="Please run as administrator" Foreground="Red" FontWeight="Bold" HorizontalAlignment="Center" TextWrapping="Wrap" />
+        </Border>
+
+        <TextBlock TextWrapping="Wrap" Opacity="0.85" Margin="0,12,0,0" FontSize="12"
+                   Text="You may need to reboot for changes to take effect everywhere." />
+        <TextBlock TextWrapping="Wrap" Opacity="0.85" Margin="0,8,0,0" FontSize="12"
+                   Text="Settings apply to all displays; per-monitor ClearType is not functional in modern Windows." />
+
+        <TextBlock Text="Normal-scale sample (GDI):" Margin="0,16,0,4" FontSize="12" />
+        <Border BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}" BorderThickness="1" Width="160" Height="120" HorizontalAlignment="Left">
+          <Image x:Name="NormalSampleImage" Stretch="None" RenderOptions.BitmapInterpolationMode="None" />
+        </Border>
+      </StackPanel>
+
+      <DockPanel Grid.Column="1">
+        <TextBlock DockPanel.Dock="Top" Text="400% zoomed sample (GDI):" Margin="0,0,0,6" />
+        <Border BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}" BorderThickness="1" Background="#202020">
+          <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <Image x:Name="ZoomedSampleImage" Stretch="None" RenderOptions.BitmapInterpolationMode="None" Margin="4" />
+          </ScrollViewer>
+        </Border>
+      </DockPanel>
+    </Grid>
+  </DockPanel>
+</Window>
