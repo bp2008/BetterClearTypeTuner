@@ -8,6 +8,10 @@ internal static class LegacyRegistry
 {
 	public const string AvalonGraphics = @"Software\Microsoft\Avalon.Graphics";
 
+	public const int ClearTypeLevelMin = 0;
+	public const int ClearTypeLevelMax = 100;
+	public const int ClearTypeLevelDefault = 100;
+
 	public static string[] GetDisplayNames()
 	{
 		var names = new List<string>();
@@ -40,9 +44,17 @@ internal static class LegacyRegistry
 		DeleteSubkeys(Registry.CurrentUser, AvalonGraphics);
 	}
 
-	public static void WriteSettings(int pixelStructure, int contrast)
+	public static int GetClearTypeLevel()
 	{
-		int clearTypeLevel = pixelStructure == 0 ? 0 : 100;
+		string[] names = GetDisplayNames();
+		return GetDword(Registry.CurrentUser, AvalonGraphics + "\\" + names[0], "ClearTypeLevel", ClearTypeLevelDefault);
+	}
+
+	public static void WriteSettings(int pixelStructure, int contrast, int clearTypeLevel)
+	{
+		clearTypeLevel = pixelStructure == 0
+			? 0
+			: (int)Clamp((uint)clearTypeLevel, ClearTypeLevelMin, ClearTypeLevelMax);
 		contrast = (int)Clamp((uint)contrast, 1000, 2200);
 
 		foreach (string displayName in GetDisplayNames())
@@ -79,6 +91,23 @@ internal static class LegacyRegistry
 		using RegistryKey key = baseKey.CreateSubKey(keyPath)
 			?? throw new InvalidOperationException("Unable to open registry key: " + keyPath);
 		key.SetValue(name, value, RegistryValueKind.DWord);
+	}
+
+	private static int GetDword(RegistryKey baseKey, string keyPath, string name, int defaultValue)
+	{
+		try
+		{
+			using RegistryKey? key = baseKey.OpenSubKey(keyPath, writable: false);
+			object? value = key?.GetValue(name);
+			if (value is int i)
+				return i;
+			if (value is not null && int.TryParse(value.ToString(), out int parsed))
+				return parsed;
+		}
+		catch
+		{
+		}
+		return defaultValue;
 	}
 
 	private static void DeleteSubkeys(RegistryKey baseKey, string keyPath)

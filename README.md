@@ -8,8 +8,10 @@ Quickly set font-smoothing settings on modern Windows and know what you are gett
 * Enable or disable font antialiasing.
 * Choose between Grayscale antialiasing or subpixel antialiasing using RGB or BGR subpixel layouts.
 * Edit the contrast of font rendering (when using RGB or BGR subpixel antialiasing).
+* Edit **ClearType Level** (0–100): DirectWrite/WPF “amount of ClearType” (`ClearTypeLevel`). Useful for apps that honor it (Firefox, WPF); many GDI apps and Chromium ignore it — the GDI zoom preview will not change.
 * Preview results at several font sizes with a 400% zoomed GDI sample (so you see Windows font smoothing, not the UI toolkit’s renderer).
 * Crisp UI on high-DPI / multi-monitor setups (Avalonia + PerMonitorV2 — fixes the blurry WinForms client area from [#14](https://github.com/bp2008/BetterClearTypeTuner/issues/14)).
+* Runs on Windows on ARM via .NET 8 (native RID; no MacType-style hook driver to port).
 
 ## Usage
 
@@ -30,7 +32,7 @@ Self-contained / framework-dependent `net8.0-windows` builds run natively on Win
 
 ## Caveats
 
-As of Windows 10 1903, pages 3–5 of Windows' built-in ClearType tuner have little or no effect on **GDI** text rendering. This program assigns sane default values to the affected Avalon.Graphics registry keys.
+As of Windows 10 1903, several pages of Windows' built-in ClearType tuner have little or no effect on **GDI** text rendering. **ClearType Level** is exposed because it still affects DirectWrite/WPF (and some browsers); other Avalon keys stay at sane defaults.
 
 There appears to be some level of support for setting different ClearType settings on different monitors. However, this appears to be entirely non-functional in modern Windows, so this program sets all monitors the same.
 

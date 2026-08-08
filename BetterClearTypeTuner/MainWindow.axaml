@@ -31,6 +31,15 @@
         </StackPanel>
         <TextBlock Text="[1000-2200]" Opacity="0.7" Margin="72,0,0,0" FontSize="11" />
 
+        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+          <TextBlock Text="ClearType&#x0a;Level:" VerticalAlignment="Center" Width="64" FontSize="12"
+                     ToolTip.Tip="DirectWrite/WPF ClearType amount (0=grayscale, 100=full). Firefox/WPF honor this; GDI/Chrome often ignore it. GDI zoom preview will not change." />
+          <NumericUpDown x:Name="ClearTypeLevelUpDown" Minimum="0" Maximum="100" Increment="10"
+                         Width="90" FormatString="0" Value="100"
+                         ToolTip.Tip="Registry: HKCU\Software\Microsoft\Avalon.Graphics\&lt;display&gt;\ClearTypeLevel" />
+        </StackPanel>
+        <TextBlock Text="[0-100]" Opacity="0.7" Margin="72,0,0,0" FontSize="11" />
+
         <Button x:Name="RestoreDefaultsButton" Content="Restore Defaults" Margin="0,8,0,0" HorizontalAlignment="Stretch" />
         <Border x:Name="AdminBanner" IsVisible="False" BorderBrush="Red" BorderThickness="1" Padding="6" Margin="0,4,0,0">
           <TextBlock Text="Please run as administrator" Foreground="Red" FontWeight="Bold" HorizontalAlignment="Center" TextWrapping="Wrap" />

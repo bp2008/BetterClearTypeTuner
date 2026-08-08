@@ -41,6 +41,7 @@ public partial class MainWindow : Window
 		RgbRadio.IsCheckedChanged += OnControlsChanged;
 		BgrRadio.IsCheckedChanged += OnControlsChanged;
 		ContrastUpDown.ValueChanged += OnControlsChanged;
+		ClearTypeLevelUpDown.ValueChanged += OnControlsChanged;
 		RestoreDefaultsButton.Click += OnRestoreDefaults;
 		DarkModeCheck.IsCheckedChanged += OnDarkModeChanged;
 		ChangeFontButton.Click += OnChangeFont;
@@ -115,6 +116,7 @@ public partial class MainWindow : Window
 		AntialiasingCheck.IsChecked = true;
 		RgbRadio.IsChecked = true;
 		ContrastUpDown.Value = FontSmoothing.ContrastDefault;
+		ClearTypeLevelUpDown.Value = LegacyRegistry.ClearTypeLevelDefault;
 		_suppressEvents = false;
 		ApplyFromUi();
 	}
@@ -140,7 +142,8 @@ public partial class MainWindow : Window
 				if (RgbRadio.IsChecked == true) pixelStructure = 1;
 				else if (BgrRadio.IsChecked == true) pixelStructure = 2;
 				int contrast = (int)(ContrastUpDown.Value ?? FontSmoothing.ContrastDefault);
-				LegacyRegistry.WriteSettings(pixelStructure, contrast);
+				int clearTypeLevel = (int)(ClearTypeLevelUpDown.Value ?? LegacyRegistry.ClearTypeLevelDefault);
+				LegacyRegistry.WriteSettings(pixelStructure, contrast, clearTypeLevel);
 			}
 		}
 		catch (Exception ex) when (ex is UnauthorizedAccessException or System.Security.SecurityException)
@@ -204,10 +207,11 @@ public partial class MainWindow : Window
 			FontSmoothingOrientation orientation = FontSmoothing.GetFontSmoothingOrientation();
 			FontSmoothingType smoothingType = FontSmoothing.GetFontSmoothingType();
 			uint contrast = FontSmoothing.GetContrast();
+			int clearTypeLevel = LegacyRegistry.GetClearTypeLevel();
 
 			AntialiasingCheck.IsChecked = aaEnabled;
 
-			bool contrastEnabled = false;
+			bool clearTypeControlsEnabled = false;
 			if (smoothingType == FontSmoothingType.Standard)
 			{
 				GrayscaleRadio.IsChecked = true;
@@ -215,25 +219,33 @@ public partial class MainWindow : Window
 			else if (orientation == FontSmoothingOrientation.RGB)
 			{
 				RgbRadio.IsChecked = true;
-				contrastEnabled = true;
+				clearTypeControlsEnabled = true;
 			}
 			else if (orientation == FontSmoothingOrientation.BGR)
 			{
 				BgrRadio.IsChecked = true;
-				contrastEnabled = true;
+				clearTypeControlsEnabled = true;
 			}
 
 			decimal min = ContrastUpDown.Minimum;
 			decimal max = ContrastUpDown.Maximum;
 			ContrastUpDown.Value = Math.Clamp(contrast, (uint)min, (uint)max);
 			GrayscaleRadio.IsEnabled = RgbRadio.IsEnabled = BgrRadio.IsEnabled = aaEnabled;
-			ContrastUpDown.IsEnabled = aaEnabled && contrastEnabled;
+			ContrastUpDown.IsEnabled = aaEnabled && clearTypeControlsEnabled;
+			ClearTypeLevelUpDown.IsEnabled = aaEnabled && clearTypeControlsEnabled;
+			if (aaEnabled && clearTypeControlsEnabled)
+			{
+				ClearTypeLevelUpDown.Value = Math.Clamp(
+					clearTypeLevel,
+					LegacyRegistry.ClearTypeLevelMin,
+					LegacyRegistry.ClearTypeLevelMax);
+			}
 
 			string quick = GdiSampleRenderer.DefaultSample + " ";
 			if (!aaEnabled)
 				StatusText.Text = quick + "Font Antialiasing is disabled.";
 			else if (smoothingType == FontSmoothingType.ClearType)
-				StatusText.Text = quick + orientation + " (Contrast " + contrast + ")";
+				StatusText.Text = quick + orientation + " (Contrast " + contrast + ", ClearType Level " + clearTypeLevel + ")";
 			else
 				StatusText.Text = quick + "Grayscale (Contrast " + contrast + ")";
 		}
