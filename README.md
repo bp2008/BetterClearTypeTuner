@@ -16,6 +16,17 @@ Quickly set font-smoothing settings in Windows 10 and know what you are getting,
 
 Download from the [Releases Section](https://github.com/bp2008/BetterClearTypeTuner/releases), extract, and run.
 
+Requires **.NET Framework 4.8.1** (included with recent Windows 10/11; install the [4.8.1 offline installer](https://dotnet.microsoft.com/download/dotnet-framework/net481) if needed).
+
+### Windows on ARM
+
+This app is managed code with only `SystemParametersInfo` P/Invokes (no native x86/x64 DLLs), so it runs on Windows on ARM:
+
+* **Native ARM64** on Windows 11 24H2+ with .NET Framework 4.8.1 (AnyCPU build with `PreferNativeArm64` / `supportedArchitectures` including `arm64`).
+* **x64 emulation** on older Windows on ARM builds — still usable; slightly higher CPU/battery cost than native.
+
+Unlike MacType, there is no architecture-specific driver/hook layer to port.
+
 ## Caveats
 
 As of Windows 10 1903, pages 3-5 of Windows' built-in ClearType tuner have no effect on text rendering.  Therefore, these settings were omitted from this program.  This program assigns sane default values to the affected registry keys so that if they begin working again in the future, ... they will at least have sane values.
