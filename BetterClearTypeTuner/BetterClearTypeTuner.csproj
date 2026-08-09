@@ -14,11 +14,30 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <!-- Avalonia handles DPI natively; still declare PerMonitorV2 in the manifest. -->
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <!-- Windows-only app: build for one Windows RID so only its native assets are
+         copied. Defaults to win-x64; override with -r win-arm64 when publishing. -->
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <!-- Publish settings live here, not in a .pubxml: *.pubxml is gitignored, and the
+       VS publish GUI cannot express trimming/compression/native-bundling. Applies to
+       `dotnet publish` and the VS Publish button alike; ordinary builds are unaffected. -->
+  <PropertyGroup Condition="'$(_IsPublishing)' == 'true'">
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <PublishTrimmed>true</PublishTrimmed>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <DebugType>none</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.6" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.3.6" />
+    <PackageReference Include="Avalonia.Win32" Version="11.3.6" />
+    <PackageReference Include="Avalonia.Skia" Version="11.3.6" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.6" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.11" />
   </ItemGroup>
