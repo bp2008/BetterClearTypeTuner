@@ -87,6 +87,8 @@
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Native\DirectWrite.cs" />
+    <Compile Include="Native\DirectWriteSampleRenderer.cs" />
     <Compile Include="Native\FontSmoothing.cs" />
     <Compile Include="Native\SPIF.cs" />
     <Compile Include="Native\User32.cs" />

@@ -120,9 +120,12 @@
   <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>133, 17</value>
   </metadata>
-  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>133, 17</value>
-  </metadata>
+  <data name="nudClearTypeLevel.ToolTip" xml:space="preserve">
+    <value>ClearType amount for DirectWrite/WPF (0 = grayscale, 100 = full).
+The DirectWrite preview updates immediately. Apps like Firefox,
+Edge and WPF need to be restarted before they pick it up.
+GDI (the top preview) ignores this setting entirely.</value>
+  </data>
   <metadata name="fontDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>230, 17</value>
   </metadata>

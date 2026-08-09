@@ -24,10 +24,21 @@ namespace BetterClearTypeTuner
 		Color BackgroundColor = SystemColors.Control;
 		List<Control> fontableControls = new List<Control>();
 		SortedList<string, float> baselineFontSizes = new SortedList<string, float>();
+		/// <summary>
+		/// Renders the DirectWrite preview. Null only if the interop could not be initialized.
+		/// </summary>
+		DirectWriteSampleRenderer dwRenderer;
+		/// <summary>
+		/// Caption for the DirectWrite preview, restored after an error has been displayed there.
+		/// </summary>
+		string dwZoomHeaderText;
 
 		public MainForm()
 		{
 			InitializeComponent();
+
+			dwZoomHeaderText = lblDwZoomHeader.Text;
+			dwRenderer = new DirectWriteSampleRenderer();
 
 			InitializeDpiScale();
 			GatherFontableControls(this, this.Font.FontFamily.Name);
@@ -60,7 +71,28 @@ namespace BetterClearTypeTuner
 			cbFontAntialiasing.Focus();
 			FixFontSizing();
 			DpiScalingInitHack();
+			ShrinkToFitScreen();
 			initialized = true;
+		}
+
+		/// <summary>
+		/// The default window size fits a 1280x720 screen at 100% scaling, but not once DPI
+		/// scaling is applied, so shrink it to whatever the screen actually has room for.
+		/// The content panel scrolls to compensate.
+		/// </summary>
+		private void ShrinkToFitScreen()
+		{
+			Rectangle workingArea = Screen.FromControl(this).WorkingArea;
+			int width = Math.Min(this.Width, workingArea.Width);
+			int height = Math.Min(this.Height, workingArea.Height);
+			if (width == this.Width && height == this.Height)
+				return;
+
+			this.Size = new Size(width, height);
+			this.StartPosition = FormStartPosition.Manual;
+			this.Location = new Point(
+				workingArea.X + ((workingArea.Width - width) / 2),
+				workingArea.Y + ((workingArea.Height - height) / 2));
 		}
 
 		private void DpiScalingInitHack()
@@ -117,7 +149,7 @@ namespace BetterClearTypeTuner
 				control.BackColor = BackgroundColor;
 				control.ForeColor = TextColor;
 			}
-			else if (control.Name == "panelSmall" || control.Name == "lblNotAdmin")
+			else if (control.Name == "panelSmall" || control.Name == "lblNotAdmin" || control is PictureBox)
 			{
 				if (dark)
 				{
@@ -483,7 +515,7 @@ namespace BetterClearTypeTuner
 
 				EnableEvents();
 
-				string quick = "The quick brown fox jumps over the lazy dog. ";
+				string quick = "The Wizard's lily box. ";
 				// Update status text
 				if (aaEnabled)
 				{
@@ -524,6 +556,76 @@ namespace BetterClearTypeTuner
 				pbZoomed.Image = ScaleFast(src, 4);
 				old?.Dispose();
 			}
+			RenderDirectWritePreview();
+		}
+
+		/// <summary>
+		/// Draws the same sample text through DirectWrite. Unlike the GDI preview above it,
+		/// this reflects the ClearType Level, and it reads the settings straight from the
+		/// controls rather than from the registry, so it updates without restarting anything.
+		/// </summary>
+		private void RenderDirectWritePreview()
+		{
+			if (dwRenderer == null)
+				return;
+			if (!dwRenderer.Available)
+			{
+				ShowDirectWriteError(dwRenderer.LastError);
+				return;
+			}
+
+			Font[] fonts = new Font[] { lblSample1.Font, lblSample2.Font, lblSample3.Font };
+			string[] texts = new string[] { lblSample1.Text, lblSample2.Text, lblSample3.Text };
+
+			DirectWriteSampleRenderer.Settings settings = new DirectWriteSampleRenderer.Settings
+			{
+				AntialiasingEnabled = cbFontAntialiasing.Checked,
+				SmoothingType = rbGrayscale.Checked ? FontSmoothingType.Standard : FontSmoothingType.ClearType,
+				Orientation = rbBGR.Checked ? FontSmoothingOrientation.BGR : FontSmoothingOrientation.RGB,
+				Contrast = (uint)nudContrast.Value,
+				ClearTypeLevel = rbGrayscale.Checked ? 0 : (int)nudClearTypeLevel.Value
+			};
+
+			Bitmap rendered = dwRenderer.Render(pbDwSmall.Width, pbDwSmall.Height, fonts, texts,
+				this.DeviceDpi, TextColorForSamples(), BackColorForSamples(), settings);
+			if (rendered == null)
+			{
+				ShowDirectWriteError(dwRenderer.LastError);
+				return;
+			}
+
+			Image oldZoomed = pbDwZoomed.Image;
+			pbDwZoomed.Image = ScaleFast(rendered, 4);
+			oldZoomed?.Dispose();
+
+			Image oldSmall = pbDwSmall.Image;
+			pbDwSmall.Image = rendered;
+			oldSmall?.Dispose();
+
+			lblDwZoomHeader.Text = dwZoomHeaderText;
+		}
+
+		private void ShowDirectWriteError(string message)
+		{
+			Image oldZoomed = pbDwZoomed.Image;
+			pbDwZoomed.Image = null;
+			oldZoomed?.Dispose();
+
+			Image oldSmall = pbDwSmall.Image;
+			pbDwSmall.Image = null;
+			oldSmall?.Dispose();
+
+			lblDwZoomHeader.Text = "DirectWrite preview unavailable: " + (message ?? "unknown error");
+		}
+
+		private Color TextColorForSamples()
+		{
+			return cbDarkmode.Checked ? Color.White : Color.Black;
+		}
+
+		private Color BackColorForSamples()
+		{
+			return cbDarkmode.Checked ? Color.Black : Color.White;
 		}
 		private Bitmap ScaleFast(Bitmap src, double scale)
 		{
