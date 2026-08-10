@@ -44,6 +44,14 @@
 		<Version>1.4.0.2</Version>
 		<AssemblyTitle>BetterClearTypeTuner</AssemblyTitle>
 		<Product>BetterClearTypeTuner</Product>
+		<!-- Nothing here is packed into a NuGet package, but PackageId still has to be set explicitly,
+		     because it defaults to $(AssemblyName) and this project gives each target framework a
+		     different AssemblyName.  Visual Studio's in-IDE restore requires PackageId to have one
+		     value across all target frameworks and fails the whole restore with NU1105 otherwise
+		     ("The property PackageId was expected to have a single value across all target
+		     frameworks").  Command line restore does not perform that check, so leaving this unset
+		     breaks builds in the IDE only. -->
+		<PackageId>BetterClearTypeTuner</PackageId>
 		<Copyright>Copyright © 2026 by bp2008. Licensed under GNU GPLv3.</Copyright>
 		<!-- AssemblyInfo.cs left the company blank.  Leaving the property unset is not the same thing:
 		     the SDK would fall back to $(AssemblyName) and stamp "BetterClearTypeTuner-ARM64" as the
