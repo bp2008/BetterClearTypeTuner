@@ -739,6 +739,16 @@ namespace BetterClearTypeTuner
 		}
 		#endregion
 
+		private void linkAboutClearTypeLevel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			linkAboutClearTypeLevel.LinkVisited = true;
+			MessageBox.Show(this
+				, toolTip1.GetToolTip(nudClearTypeLevel)
+				, "About ClearType Level"
+				, MessageBoxButtons.OK
+				, MessageBoxIcon.Information);
+		}
+
 		private void label9_Click(object sender, EventArgs e)
 		{
 			//FixFontSizing();

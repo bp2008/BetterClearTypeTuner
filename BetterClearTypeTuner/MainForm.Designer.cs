@@ -528,7 +528,8 @@
 			this.linkAboutClearTypeLevel.TabIndex = 23;
 			this.linkAboutClearTypeLevel.TabStop = true;
 			this.linkAboutClearTypeLevel.Text = "[?]";
-			// 
+			this.linkAboutClearTypeLevel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkAboutClearTypeLevel_LinkClicked);
+			//
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
