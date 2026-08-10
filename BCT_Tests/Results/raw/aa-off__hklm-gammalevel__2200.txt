@@ -1,5 +1,5 @@
 config=aa-off__hklm-gammalevel__2200
-time=2026-08-10 15:45:37.027
+time=2026-08-10 16:51:41.090
 spi.antialiasing=False
 spi.smoothingType=Standard
 spi.orientation=RGB

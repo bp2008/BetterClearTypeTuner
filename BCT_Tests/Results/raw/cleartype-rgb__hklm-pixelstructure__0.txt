@@ -1,5 +1,5 @@
 config=cleartype-rgb__hklm-pixelstructure__0
-time=2026-08-10 15:46:39.601
+time=2026-08-10 16:52:43.678
 spi.antialiasing=True
 spi.smoothingType=ClearType
 spi.orientation=RGB

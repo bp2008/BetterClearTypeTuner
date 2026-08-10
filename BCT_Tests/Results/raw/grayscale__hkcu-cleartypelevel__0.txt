@@ -1,5 +1,5 @@
 config=grayscale__hkcu-cleartypelevel__0
-time=2026-08-10 15:46:06.346
+time=2026-08-10 16:52:10.284
 spi.antialiasing=True
 spi.smoothingType=Standard
 spi.orientation=RGB

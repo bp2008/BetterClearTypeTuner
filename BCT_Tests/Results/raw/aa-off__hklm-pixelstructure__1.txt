@@ -1,5 +1,5 @@
 config=aa-off__hklm-pixelstructure__1
-time=2026-08-10 15:45:37.215
+time=2026-08-10 16:51:41.292
 spi.antialiasing=False
 spi.smoothingType=Standard
 spi.orientation=RGB

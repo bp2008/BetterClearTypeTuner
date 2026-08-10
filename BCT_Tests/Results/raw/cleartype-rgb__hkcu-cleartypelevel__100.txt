@@ -1,5 +1,5 @@
 config=cleartype-rgb__hkcu-cleartypelevel__100
-time=2026-08-10 15:46:37.440
+time=2026-08-10 16:52:41.497
 spi.antialiasing=True
 spi.smoothingType=ClearType
 spi.orientation=RGB

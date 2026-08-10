@@ -1,5 +1,5 @@
 config=cleartype-bgr__spi-fontsmoothingorientation__bgr
-time=2026-08-10 15:47:33.281
+time=2026-08-10 16:53:37.986
 spi.antialiasing=True
 spi.smoothingType=ClearType
 spi.orientation=BGR

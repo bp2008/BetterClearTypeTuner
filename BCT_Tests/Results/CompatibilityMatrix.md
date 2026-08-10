@@ -1,6 +1,6 @@
 # Windows text rendering: which settings affect which renderer
 
-Measured on 2026-08-10 15:45 by the `BCT_Tests` harness in this repository.
+Measured on 2026-08-10 16:51 by the `BCT_Tests` harness in this repository.
 
 Windows 11 Pro 25H2 (build 26200.8875) · 64-bit test process · displays: DISPLAY1, DISPLAY2, DISPLAY3 · CLR 4.0.30319.42000
 
@@ -21,7 +21,7 @@ Windows 11 Pro 25H2 (build 26200.8875) · 64-bit test process · displays: DISPL
 
 Legend: ✅ the setting changes the rendered pixels (with the largest share of pixels it changed) · — byte-identical output · n/t not tested.
 
-| Where | Setting | GDI<br>No antialiasing | GDI<br>Grayscale antialiasing | GDI<br>ClearType (RGB) | GDI<br>ClearType (BGR) | DirectWrite (as applications use it)<br>No antialiasing | DirectWrite (as applications use it)<br>Grayscale antialiasing | DirectWrite (as applications use it)<br>ClearType (RGB) | DirectWrite (as applications use it)<br>ClearType (BGR) | DirectWrite (raw defaults)<br>No antialiasing | DirectWrite (raw defaults)<br>Grayscale antialiasing | DirectWrite (raw defaults)<br>ClearType (RGB) | DirectWrite (raw defaults)<br>ClearType (BGR) |
+| Where | Setting | GDI<br>No AA | GDI<br>Grayscale | GDI<br>ClearType<br>(RGB) | GDI<br>ClearType<br>(BGR) | DirectWrite (as applications use it)<br>No AA | DirectWrite (as applications use it)<br>Grayscale | DirectWrite (as applications use it)<br>ClearType<br>(RGB) | DirectWrite (as applications use it)<br>ClearType<br>(BGR) | DirectWrite (raw defaults)<br>No AA | DirectWrite (raw defaults)<br>Grayscale | DirectWrite (raw defaults)<br>ClearType<br>(RGB) | DirectWrite (raw defaults)<br>ClearType<br>(BGR) |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | `HKCU\...\Avalon.Graphics\<display>` | `ClearTypeLevel` | — | — | — | — | — | — | ✅ 9.1% | ✅ 9.1% | ✅ 8.5% | ✅ 8.5% | ✅ 8.5% | ✅ 8.5% |
 | `HKCU\...\Avalon.Graphics\<display>` | `GammaLevel` | — | — | — | — | — | ✅ 6.8% | ✅ 9.4% | ✅ 9.4% | ✅ 8.7% | ✅ 8.7% | ✅ 8.7% | ✅ 8.7% |

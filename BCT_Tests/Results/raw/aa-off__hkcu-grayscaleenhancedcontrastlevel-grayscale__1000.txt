@@ -1,5 +1,5 @@
 config=aa-off__hkcu-grayscaleenhancedcontrastlevel-grayscale__1000
-time=2026-08-10 15:45:38.817
+time=2026-08-10 16:51:42.716
 spi.antialiasing=False
 spi.smoothingType=Standard
 spi.orientation=RGB

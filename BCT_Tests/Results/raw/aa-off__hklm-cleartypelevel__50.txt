@@ -1,5 +1,5 @@
 config=aa-off__hklm-cleartypelevel__50
-time=2026-08-10 15:45:36.646
+time=2026-08-10 16:51:40.675
 spi.antialiasing=False
 spi.smoothingType=Standard
 spi.orientation=RGB

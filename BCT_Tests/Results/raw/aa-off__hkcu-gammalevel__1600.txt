@@ -1,5 +1,5 @@
 config=aa-off__hkcu-gammalevel__1600
-time=2026-08-10 15:45:35.183
+time=2026-08-10 16:51:39.240
 spi.antialiasing=False
 spi.smoothingType=Standard
 spi.orientation=RGB

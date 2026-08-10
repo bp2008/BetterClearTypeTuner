@@ -1,5 +1,5 @@
 config=aa-off__spi-fontsmoothingorientation__bgr
-time=2026-08-10 15:45:59.415
+time=2026-08-10 16:52:03.236
 spi.antialiasing=False
 spi.smoothingType=Standard
 spi.orientation=BGR

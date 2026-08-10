@@ -1,5 +1,5 @@
 config=cleartype-bgr__hklm-gammalevel__1000
-time=2026-08-10 15:47:10.739
+time=2026-08-10 16:53:15.014
 spi.antialiasing=True
 spi.smoothingType=ClearType
 spi.orientation=BGR

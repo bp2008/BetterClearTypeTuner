@@ -1,5 +1,5 @@
 config=cleartype-bgr__hklm-textcontrastlevel__3
-time=2026-08-10 15:47:11.476
+time=2026-08-10 16:53:15.703
 spi.antialiasing=True
 spi.smoothingType=ClearType
 spi.orientation=BGR

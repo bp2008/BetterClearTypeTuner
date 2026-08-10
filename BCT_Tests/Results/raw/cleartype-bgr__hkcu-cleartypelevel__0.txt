@@ -1,5 +1,5 @@
 config=cleartype-bgr__hkcu-cleartypelevel__0
-time=2026-08-10 15:47:08.687
+time=2026-08-10 16:53:12.814
 spi.antialiasing=True
 spi.smoothingType=ClearType
 spi.orientation=BGR

@@ -1,5 +1,5 @@
 config=grayscale__hklm-cleartypelevel__0
-time=2026-08-10 15:46:08.082
+time=2026-08-10 16:52:12.142
 spi.antialiasing=True
 spi.smoothingType=Standard
 spi.orientation=RGB

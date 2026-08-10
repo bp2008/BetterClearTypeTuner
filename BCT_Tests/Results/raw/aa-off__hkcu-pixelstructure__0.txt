@@ -1,5 +1,5 @@
 config=aa-off__hkcu-pixelstructure__0
-time=2026-08-10 15:45:35.377
+time=2026-08-10 16:51:39.428
 spi.antialiasing=False
 spi.smoothingType=Standard
 spi.orientation=RGB

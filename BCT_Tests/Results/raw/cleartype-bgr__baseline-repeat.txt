@@ -1,5 +1,5 @@
 config=cleartype-bgr__baseline-repeat
-time=2026-08-10 15:47:08.576
+time=2026-08-10 16:53:12.697
 spi.antialiasing=True
 spi.smoothingType=ClearType
 spi.orientation=BGR

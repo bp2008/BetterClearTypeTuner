@@ -1,5 +1,5 @@
 config=grayscale__hkcu-gammalevel__1600
-time=2026-08-10 15:46:06.727
+time=2026-08-10 16:52:10.700
 spi.antialiasing=True
 spi.smoothingType=Standard
 spi.orientation=RGB

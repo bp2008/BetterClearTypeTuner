@@ -1,4 +1,4 @@
-﻿# BCT_Tests settings backup, captured 2026-08-10 15:45:31
+﻿# BCT_Tests settings backup, captured 2026-08-10 16:51:35
 # Restore with: BCT_Tests.exe --restore "C:\Users\brpea\Source\Repos\BetterClearTypeTuner\BCT_Tests\Results\settings-backup.txt"
 SPI	FontSmoothing	1
 SPI	FontSmoothingType	2

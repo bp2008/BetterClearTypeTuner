@@ -1,5 +1,5 @@
 config=cleartype-rgb__spi-fontsmoothingorientation__rgb
-time=2026-08-10 15:46:57.282
+time=2026-08-10 16:53:01.136
 spi.antialiasing=True
 spi.smoothingType=ClearType
 spi.orientation=RGB

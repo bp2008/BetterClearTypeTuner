@@ -3,12 +3,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Windows text rendering: which settings affect which renderer</title>
 <style>
-:root { color-scheme: light dark; }
+/* The heading heights are declared rather than measured, because each sticky level parks
+   directly below the one above it and has to know how tall that one is. */
+:root { color-scheme: light dark; --page-bg: #fff; --h2-height: 44px; --h3-height: 34px; }
 body { font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.5; margin: 0 auto; padding: 24px; max-width: 1200px;
-       background: #fff; color: #16181d; }
+       background: var(--page-bg); color: #16181d; }
 h1 { font-size: 1.7rem; margin-bottom: 4px; }
-h2 { margin-top: 2.2rem; border-bottom: 1px solid #d8dce3; padding-bottom: 4px; }
-h3 { margin-top: 1.6rem; }
+h2 { position: sticky; top: 0; z-index: 30; background: var(--page-bg);
+     font-size: 1.3rem; line-height: 1.4; margin: 2.2rem 0 0.6rem; padding: 8px 0 5px;
+     border-bottom: 1px solid #d8dce3; }
+h3 { position: sticky; top: var(--h2-height); z-index: 20; background: var(--page-bg);
+     font-size: 1.05rem; line-height: 1.4; margin: 1.6rem 0 0.5rem; padding: 5px 0; }
 code { font-family: Consolas, 'Cascadia Mono', monospace; font-size: 0.92em; background: #f2f4f7; padding: 1px 4px; border-radius: 3px; }
 p.meta { color: #5b6270; margin-top: 0; }
 /* Wide tables scroll inside their own box; the page itself must never scroll sideways. */
@@ -19,6 +24,13 @@ td code { white-space: normal; overflow-wrap: anywhere; }
 th, td { border: 1px solid #d8dce3; padding: 5px 9px; text-align: left; vertical-align: top; font-size: 0.94rem; }
 thead th { background: #f2f4f7; text-align: center; }
 table.matrix td:nth-child(n+3) { text-align: center; white-space: nowrap; }
+/* The matrix is the widest table on the page and the browser squeezes its first two columns
+   hardest to make room, so it gets tighter cells than the rest and a setting name is allowed to
+   wrap between words but never inside one: a column reading ClearT / ypeLev / el saves nothing
+   worth having.  The column headings carry their own line breaks and never need more. */
+table.matrix thead th { white-space: nowrap; }
+table.matrix td code { overflow-wrap: normal; }
+table.matrix th, table.matrix td { padding: 5px 6px; }
 td.where, span.where { color: #5b6270; font-size: 0.86rem; font-family: Consolas, monospace; }
 td.doc { color: #43485a; font-size: 0.86rem; }
 .yes { color: #0a7d33; font-weight: 600; }
@@ -31,11 +43,15 @@ td.nt  { background: #fdf6e5; }
 .ok { color: #0a7d33; }
 .legend, .params { color: #5b6270; font-size: 0.9rem; }
 details { border: 1px solid #e3e6eb; border-radius: 4px; padding: 6px 12px; margin: 8px 0; }
-summary { cursor: pointer; }
+/* The negative margins pull the sticky summary out over the box's own padding, so nothing
+   scrolls through the gap between it and the border. */
+summary { cursor: pointer; position: sticky; top: calc(var(--h2-height) + var(--h3-height)); z-index: 10;
+          background: var(--page-bg); margin: -6px -12px 6px; padding: 6px 12px; border-radius: 3px 3px 0 0; }
 summary code { font-weight: 600; }
 .samples { display: flex; flex-wrap: wrap; gap: 18px; }
 .sample { border: 1px solid #e3e6eb; border-radius: 4px; padding: 8px 12px; background: #fbfcfd; }
-.sample h3, .sample h4 { margin: 0 0 6px; font-size: 0.95rem; }
+/* A sample's own caption is part of the card, not a section heading, so it never sticks. */
+.sample h3, .sample h4 { position: static; margin: 0 0 6px; padding: 0; font-size: 0.95rem; }
 figure { margin: 6px 0; }
 figcaption { font-size: 0.8rem; color: #5b6270; }
 /* The samples are pixel data: never let the browser smooth them, and magnify by whole pixels. */
@@ -43,7 +59,8 @@ figcaption { font-size: 0.8rem; color: #5b6270; }
 body.zoomed .samples img { width: 1140px; max-width: 100%; }
 pre { background: #f2f4f7; padding: 10px 12px; border-radius: 4px; overflow-x: auto; font-size: 0.86rem; }
 @media (prefers-color-scheme: dark) {
-  body { background: #14161a; color: #e6e8ec; }
+  :root { --page-bg: #14161a; }
+  body { color: #e6e8ec; }
   h2 { border-bottom-color: #2c3038; }
   code, pre, thead th { background: #1e2128; }
   th, td, details, .sample, .samples img { border-color: #2c3038; }
@@ -57,9 +74,11 @@ pre { background: #f2f4f7; padding: 10px 12px; border-radius: 4px; overflow-x: a
 }
 </style>
 </head><body>
+<section>
 <h1>Windows text rendering: which settings affect which renderer</h1>
-<p class="meta">Measured on 2026-08-10 15:45 by the <code>BCT_Tests</code> harness.<br>Windows 11 Pro 25H2 (build 26200.8875) · 64-bit test process · displays: DISPLAY1, DISPLAY2, DISPLAY3 · CLR 4.0.30319.42000</p>
-<h2>How this was measured</h2><ul>
+<p class="meta">Measured on 2026-08-10 16:51 by the <code>BCT_Tests</code> harness.<br>Windows 11 Pro 25H2 (build 26200.8875) · 64-bit test process · displays: DISPLAY1, DISPLAY2, DISPLAY3 · CLR 4.0.30319.42000</p>
+</section>
+<section><h2>How this was measured</h2><ul>
 <li>Each row is measured by clearing <strong>every</strong> Avalon.Graphics value under both hives on every display, setting <strong>one</strong> value, rendering, and comparing the result pixel for pixel against the same render taken with no Avalon.Graphics values present at all.</li>
 <li>Every render happens in a freshly launched process. DirectWrite resolves its default rendering parameters when a factory is created, and real applications pick these settings up at startup, so a new process per configuration is both the safe way to avoid a stale cache and a faithful model of what an application sees.</li>
 <li>The GDI sample is drawn with <code>CreateFontIndirect</code> + <code>TextOut</code> on a 32-bit DIB, with <code>DEFAULT_QUALITY</code> so that GDI consults the system font-smoothing settings rather than being told what to do.</li>
@@ -71,11 +90,12 @@ pre { background: #f2f4f7; padding: 10px 12px; border-radius: 4px; overflow-x: a
 <li>A repeat of each baseline render is compared against the original to confirm the renders are reproducible; every repeat came back byte-identical, so any difference reported below is real.</li>
 <li>184 renders were taken in 2.2 minutes.</li>
 </ul>
-<h2>The matrix</h2>
+</section>
+<section><h2>The matrix</h2>
 <p class="legend"><span class="yes">✅</span> changes the rendered pixels (with the largest share of pixels it changed) &middot; <span class="no">—</span> byte-identical output &middot; <span class="nt">n/t</span> not tested.</p>
 <div class="tablewrap"><table class="matrix"><thead><tr><th rowspan="2">Where</th><th rowspan="2">Setting</th>
 <th colspan="4">GDI</th><th colspan="4">DirectWrite (as applications use it)</th><th colspan="4">DirectWrite (raw defaults)</th></tr><tr>
-<th>No antialiasing</th><th>Grayscale antialiasing</th><th>ClearType (RGB)</th><th>ClearType (BGR)</th><th>No antialiasing</th><th>Grayscale antialiasing</th><th>ClearType (RGB)</th><th>ClearType (BGR)</th><th>No antialiasing</th><th>Grayscale antialiasing</th><th>ClearType (RGB)</th><th>ClearType (BGR)</th></tr></thead><tbody>
+<th>No AA</th><th>Grayscale</th><th>ClearType<br>(RGB)</th><th>ClearType<br>(BGR)</th><th>No AA</th><th>Grayscale</th><th>ClearType<br>(RGB)</th><th>ClearType<br>(BGR)</th><th>No AA</th><th>Grayscale</th><th>ClearType<br>(RGB)</th><th>ClearType<br>(BGR)</th></tr></thead><tbody>
 <tr><td class="where">HKCU\...\Avalon.Graphics\&lt;display&gt;</td><td><code>ClearTypeLevel</code></td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="yes">✅ 9.1%</td><td class="yes">✅ 9.1%</td><td class="yes">✅ 8.5%</td><td class="yes">✅ 8.5%</td><td class="yes">✅ 8.5%</td><td class="yes">✅ 8.5%</td></tr>
 <tr><td class="where">HKCU\...\Avalon.Graphics\&lt;display&gt;</td><td><code>GammaLevel</code></td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="yes">✅ 6.8%</td><td class="yes">✅ 9.4%</td><td class="yes">✅ 9.4%</td><td class="yes">✅ 8.7%</td><td class="yes">✅ 8.7%</td><td class="yes">✅ 8.7%</td><td class="yes">✅ 8.7%</td></tr>
 <tr><td class="where">HKCU\...\Avalon.Graphics\&lt;display&gt;</td><td><code>PixelStructure</code></td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="yes">✅ 9.1%</td><td class="yes">✅ 9.1%</td><td class="yes">✅ 8.5%</td><td class="yes">✅ 8.5%</td><td class="yes">✅ 8.5%</td><td class="yes">✅ 8.5%</td></tr>
@@ -92,14 +112,16 @@ pre { background: #f2f4f7; padding: 10px 12px; border-radius: 4px; overflow-x: a
 <tr><td class="where">SystemParametersInfo</td><td><code>FontSmoothingContrast</code></td><td class="no">—</td><td class="no">—</td><td class="yes">✅ 7.6%</td><td class="yes">✅ 7.6%</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td></tr>
 <tr><td class="where">SystemParametersInfo</td><td><code>FontSmoothingOrientation</code></td><td class="no">—</td><td class="no">—</td><td class="yes">✅ 7.3%</td><td class="yes">✅ 7.3%</td><td class="no">—</td><td class="no">—</td><td class="yes">✅ 9%</td><td class="yes">✅ 9%</td><td class="yes">✅ 8.4%</td><td class="yes">✅ 8.4%</td><td class="yes">✅ 8.4%</td><td class="yes">✅ 8.4%</td></tr>
 </tbody></table></div>
-<h2>Does the system font-smoothing mode reach each renderer?</h2>
+</section>
+<section><h2>Does the system font-smoothing mode reach each renderer?</h2>
 <p>The sweep above only ever compares renders taken <em>within</em> one column. This table compares the columns against each other, using the baseline render of each base state with no Avalon.Graphics values present at all.</p>
 <div class="tablewrap"><table><thead><tr><th>System font smoothing</th><th>GDI</th><th>DirectWrite (as applications use it)</th><th>DirectWrite (raw defaults)</th></tr></thead><tbody>
 <tr><td>Grayscale antialiasing</td><td class="yes">✅ 4.5%</td><td class="yes">✅ 7.2%</td><td class="no">— identical</td></tr>
 <tr><td>ClearType (RGB)</td><td class="yes">✅ 7.7%</td><td class="yes">✅ 9.5%</td><td class="no">— identical</td></tr>
 <tr><td>ClearType (BGR)</td><td class="yes">✅ 7.7%</td><td class="yes">✅ 9.5%</td><td class="yes">✅ 8.4%</td></tr>
 </tbody></table></div>
-<h2>What each setting actually feeds</h2>
+</section>
+<section><h2>What each setting actually feeds</h2>
 <p>The DirectWrite column is read back from <code>IDWriteRenderingParams</code> after the value was written, so it names the parameter the value lands in rather than inferring it from the picture.</p>
 <div class="tablewrap"><table><thead><tr><th>Where</th><th>Setting</th><th>Documented as</th><th>DirectWrite parameters it moved</th><th>Any effect</th></tr></thead><tbody>
 <tr><td class="where">HKCU\...\Avalon.Graphics\&lt;display&gt;</td><td><code>ClearTypeLevel</code></td><td class="doc">0-100, default 100. Documented (WPF ClearType Registry Settings).</td><td><code>clearTypeLevel</code></td><td><span class="yes">yes</span></td></tr>
@@ -118,7 +140,8 @@ pre { background: #f2f4f7; padding: 10px 12px; border-radius: 4px; overflow-x: a
 <tr><td class="where">SystemParametersInfo</td><td><code>FontSmoothingContrast</code></td><td class="doc">1000-2200. Documented (SystemParametersInfo).</td><td><span class="no">none</span></td><td><span class="yes">yes</span></td></tr>
 <tr><td class="where">SystemParametersInfo</td><td><code>FontSmoothingOrientation</code></td><td class="doc">0 = BGR, 1 = RGB. Documented (SystemParametersInfo).</td><td><code>pixelGeometry</code></td><td><span class="yes">yes</span></td></tr>
 </tbody></table></div>
-<h2>Baseline renders</h2>
+</section>
+<section><h2>Baseline renders</h2>
 <p>With no Avalon.Graphics values present at all, so only the system font-smoothing settings apply.</p>
 <p class="zoomtoggle"><label><input type="checkbox" id="zoom"> Magnify samples 3&times; (nearest neighbour)</label></p>
 <div class="samples">
@@ -147,8 +170,9 @@ pre { background: #f2f4f7; padding: 10px 12px; border-radius: 4px; overflow-x: a
 <figure><figcaption>DirectWrite (raw defaults)</figcaption><img src="images/cleartype-bgr__baseline.dw.png" alt="sample"></figure>
 </div>
 </div>
-<h2>Per-setting detail</h2>
-<h3>Base state: No antialiasing</h3>
+</section>
+<section><h2>Per-setting detail</h2>
+<section class="basestate"><h3>Base state: No antialiasing</h3>
 <details open><summary><code>ClearTypeLevel</code> <span class="where">HKCU\...\Avalon.Graphics\&lt;display&gt;</span> <span class="no">GDI unchanged</span> <span class="no">DW app unchanged</span> <span class="yes">DW raw affected</span></summary>
 <p>Compared against: value not present.</p>
 <div class="tablewrap"><table><thead><tr><th>Value</th><th>GDI vs baseline</th><th>DirectWrite (as applications use it) vs baseline</th><th>DirectWrite (raw defaults) vs baseline</th><th>DirectWrite parameters</th></tr></thead><tbody>
@@ -497,7 +521,8 @@ pre { background: #f2f4f7; padding: 10px 12px; border-radius: 4px; overflow-x: a
 <figure><figcaption>DirectWrite (raw defaults)</figcaption><img loading="lazy" src="images/aa-off__spi-fontsmoothingorientation__bgr.dw.png" alt="sample"></figure>
 </div>
 </div></details>
-<h3>Base state: Grayscale antialiasing</h3>
+</section>
+<section class="basestate"><h3>Base state: Grayscale antialiasing</h3>
 <details open><summary><code>ClearTypeLevel</code> <span class="where">HKCU\...\Avalon.Graphics\&lt;display&gt;</span> <span class="no">GDI unchanged</span> <span class="no">DW app unchanged</span> <span class="yes">DW raw affected</span></summary>
 <p>Compared against: value not present.</p>
 <div class="tablewrap"><table><thead><tr><th>Value</th><th>GDI vs baseline</th><th>DirectWrite (as applications use it) vs baseline</th><th>DirectWrite (raw defaults) vs baseline</th><th>DirectWrite parameters</th></tr></thead><tbody>
@@ -846,7 +871,8 @@ pre { background: #f2f4f7; padding: 10px 12px; border-radius: 4px; overflow-x: a
 <figure><figcaption>DirectWrite (raw defaults)</figcaption><img loading="lazy" src="images/grayscale__spi-fontsmoothingorientation__bgr.dw.png" alt="sample"></figure>
 </div>
 </div></details>
-<h3>Base state: ClearType (RGB)</h3>
+</section>
+<section class="basestate"><h3>Base state: ClearType (RGB)</h3>
 <details open><summary><code>ClearTypeLevel</code> <span class="where">HKCU\...\Avalon.Graphics\&lt;display&gt;</span> <span class="no">GDI unchanged</span> <span class="yes">DW app affected</span> <span class="yes">DW raw affected</span></summary>
 <p>Compared against: value not present.</p>
 <div class="tablewrap"><table><thead><tr><th>Value</th><th>GDI vs baseline</th><th>DirectWrite (as applications use it) vs baseline</th><th>DirectWrite (raw defaults) vs baseline</th><th>DirectWrite parameters</th></tr></thead><tbody>
@@ -1195,7 +1221,8 @@ pre { background: #f2f4f7; padding: 10px 12px; border-radius: 4px; overflow-x: a
 <figure><figcaption>DirectWrite (raw defaults)</figcaption><img loading="lazy" src="images/cleartype-rgb__spi-fontsmoothingorientation__bgr.dw.png" alt="sample"></figure>
 </div>
 </div></details>
-<h3>Base state: ClearType (BGR)</h3>
+</section>
+<section class="basestate"><h3>Base state: ClearType (BGR)</h3>
 <details open><summary><code>ClearTypeLevel</code> <span class="where">HKCU\...\Avalon.Graphics\&lt;display&gt;</span> <span class="no">GDI unchanged</span> <span class="yes">DW app affected</span> <span class="yes">DW raw affected</span></summary>
 <p>Compared against: value not present.</p>
 <div class="tablewrap"><table><thead><tr><th>Value</th><th>GDI vs baseline</th><th>DirectWrite (as applications use it) vs baseline</th><th>DirectWrite (raw defaults) vs baseline</th><th>DirectWrite parameters</th></tr></thead><tbody>
@@ -1544,7 +1571,9 @@ pre { background: #f2f4f7; padding: 10px 12px; border-radius: 4px; overflow-x: a
 <figure><figcaption>DirectWrite (raw defaults)</figcaption><img loading="lazy" src="images/cleartype-bgr__spi-fontsmoothingorientation__bgr.dw.png" alt="sample"></figure>
 </div>
 </div></details>
-<h2>Restoring the machine</h2>
+</section>
+</section>
+<section><h2>Restoring the machine</h2>
 <p>The harness snapshots every value it is about to touch, including whether the key or value existed at all, and puts it all back when the run finishes.</p>
 <pre>System font smoothing: on, type ClearType, orientation RGB, contrast 1200
   HKCU\Software\Microsoft\Avalon.Graphics\DISPLAY1: ClearTypeLevel=100, EnhancedContrastLevel=50, GammaLevel=1200, GrayscaleEnhancedContrastLevel=100, PixelStructure=1, TextContrastLevel=1
@@ -1556,6 +1585,7 @@ pre { background: #f2f4f7; padding: 10px 12px; border-radius: 4px; overflow-x: a
   HKLM\Software\Microsoft\Avalon.Graphics\DISPLAY3: GammaLevel=1200, PixelStructure=1
   HKLM\Software\Microsoft\Avalon.Graphics: (no values)</pre>
 <p class="ok">After the run, every captured value was verified to be back at its original state.</p>
+</section>
 <script>
 document.getElementById('zoom').addEventListener('change', function () {
   document.body.classList.toggle('zoomed', this.checked);
