@@ -41,7 +41,7 @@
 	  "BetterClearTypeTuner-ARM64" in the ARM64 build's Explorer file properties.
 	-->
 	<PropertyGroup>
-		<Version>1.4.0.2</Version>
+		<Version>1.5.0</Version>
 		<AssemblyTitle>BetterClearTypeTuner</AssemblyTitle>
 		<Product>BetterClearTypeTuner</Product>
 		<!-- Nothing here is packed into a NuGet package, but PackageId still has to be set explicitly,

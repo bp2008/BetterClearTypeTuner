@@ -81,7 +81,10 @@ namespace BetterClearTypeTuner.Native
 		/// </summary>
 		public const uint ContrastMin = 1000;
 		public const uint ContrastMax = 2200;
-		public const uint ContrastDefault = 1400;
+		/// <summary>
+		/// The default contrast value for ClearType (SPI_SETFONTSMOOTHINGCONTRAST) is a matter of some debate.  Windows API docs say 1400.  Experimental evidence shows that 1200 is what Windows actually ships with.  So we use 1200 as the default contrast value here.
+		/// </summary>
+		public const uint ContrastDefault = 1200;
 
 		/// <summary>
 		/// Sets the font smoothing contrast.

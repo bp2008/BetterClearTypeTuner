@@ -249,7 +249,7 @@
 			this.btnRestoreDefaults.TabIndex = 7;
 			this.btnRestoreDefaults.Text = "Restore Defaults";
 			this.toolTip1.SetToolTip(this.btnRestoreDefaults, "Deletes legacy registry keys and \r\nrestores common default settings:\r\n* RGB subpi" +
-        "xel antialiasing\r\n* contrast 1400\r\n* ClearType Level 100");
+        "xel antialiasing\r\n* contrast 1200\r\n* ClearType Level 100");
 			this.btnRestoreDefaults.UseVisualStyleBackColor = true;
 			this.btnRestoreDefaults.Click += new System.EventHandler(this.BtnRestoreDefaults_Click);
 			// 
