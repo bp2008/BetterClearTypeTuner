@@ -428,7 +428,7 @@ namespace BetterClearTypeTuner
 				return;
 			lblNotAdmin.Visible = true;
 			registryFail = true;
-			MessageBox.Show("Unable to set all legacy registry values. While your change may have worked, for best results you should run this application as an administrator and try making changes again.");
+			MessageBox.Show("Unable to set all registry values. While your change may have worked, for best results you should run this application as an administrator and try making changes again.");
 		}
 		#endregion
 		#region Helpers
