@@ -45,11 +45,16 @@
 		</application>
 	</compatibility>
 
-	<!-- Indicates that the application is DPI-aware and will not be automatically scaled by Windows at higher
-	   DPIs. Windows Presentation Foundation (WPF) applications are automatically DPI-aware and do not need 
-	   to opt in. Windows Forms applications targeting .NET Framework 4.6 that opt into this setting, should 
-	   also set the 'EnableWindowsFormsHighDpiAutoResizing' setting to 'true' in their app.config. 
-	   
+	<!-- DPI awareness is deliberately NOT declared here.  App.config asks Windows Forms for PerMonitorV2
+	   (see the DpiAwareness key), and that only works if the manifest stays silent on the subject:
+	   Windows applies the manifest at process creation, before any managed code runs, and process DPI
+	   awareness can only be set once.  A <dpiAware>true</dpiAware> element here would lock the process to
+	   System DPI Aware, WinForms' later SetProcessDpiAwarenessContext call would fail with
+	   ERROR_ACCESS_DENIED, and the App.config setting would be silently ignored.  The symptoms are subtle
+	   because they only show up on multi-monitor setups with mixed scaling: DpiChanged never fires, and the
+	   DirectWrite sample gets rendered at the wrong DPI and then bitmap-stretched, which is exactly the kind
+	   of blurring that makes a ClearType preview useless.
+
 	   Makes the application long-path aware. See https://docs.microsoft.com/windows/win32/fileio/maximum-file-path-limitation
 
 	   This manifest is shared by both executables, so it deliberately does NOT declare
@@ -57,7 +62,6 @@
 	   the .NET Framework 4.8.1 build, which is the only one whose CLR can actually run natively on ARM64. -->
 	<application xmlns="urn:schemas-microsoft-com:asm.v3">
 		<windowsSettings>
-			<dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware>
 			<longPathAware xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">true</longPathAware>
 		</windowsSettings>
 	</application>
