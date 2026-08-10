@@ -1,0 +1,5 @@
+started=2026-08-10T15:45:30.6747223-06:00
+durationSeconds=129.431
+renderCount=184
+localMachineWritable=True
+backupDescription=System font smoothing: on, type ClearType, orientation RGB, contrast 1200\n  HKCU\Software\Microsoft\Avalon.Graphics\DISPLAY1: ClearTypeLevel=100, EnhancedContrastLevel=50, GammaLevel=1200, GrayscaleEnhancedContrastLevel=100, PixelStructure=1, TextContrastLevel=1\n  HKCU\Software\Microsoft\Avalon.Graphics\DISPLAY2: ClearTypeLevel=100, EnhancedContrastLevel=50, GammaLevel=1200, GrayscaleEnhancedContrastLevel=100, PixelStructure=1, TextContrastLevel=1\n  HKCU\Software\Microsoft\Avalon.Graphics\DISPLAY3: ClearTypeLevel=100, EnhancedContrastLevel=50, GammaLevel=1200, GrayscaleEnhancedContrastLevel=100, PixelStructure=1, TextContrastLevel=1\n  HKCU\Software\Microsoft\Avalon.Graphics: (no values)\n  HKLM\Software\Microsoft\Avalon.Graphics\DISPLAY1: GammaLevel=1200, PixelStructure=1\n  HKLM\Software\Microsoft\Avalon.Graphics\DISPLAY2: GammaLevel=1200, PixelStructure=1\n  HKLM\Software\Microsoft\Avalon.Graphics\DISPLAY3: GammaLevel=1200, PixelStructure=1\n  HKLM\Software\Microsoft\Avalon.Graphics: (no values)\n

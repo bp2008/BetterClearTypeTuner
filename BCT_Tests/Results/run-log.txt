@@ -1,0 +1,116 @@
+Output directory: C:\Users\brpea\Source\Repos\BetterClearTypeTuner\BCT_Tests\Results
+Running elevated
+
+Capturing current settings...
+System font smoothing: on, type ClearType, orientation RGB, contrast 1200
+  HKCU\Software\Microsoft\Avalon.Graphics\DISPLAY1: ClearTypeLevel=100, EnhancedContrastLevel=50, GammaLevel=1200, GrayscaleEnhancedContrastLevel=100, PixelStructure=1, TextContrastLevel=1
+  HKCU\Software\Microsoft\Avalon.Graphics\DISPLAY2: ClearTypeLevel=100, EnhancedContrastLevel=50, GammaLevel=1200, GrayscaleEnhancedContrastLevel=100, PixelStructure=1, TextContrastLevel=1
+  HKCU\Software\Microsoft\Avalon.Graphics\DISPLAY3: ClearTypeLevel=100, EnhancedContrastLevel=50, GammaLevel=1200, GrayscaleEnhancedContrastLevel=100, PixelStructure=1, TextContrastLevel=1
+  HKCU\Software\Microsoft\Avalon.Graphics: (no values)
+  HKLM\Software\Microsoft\Avalon.Graphics\DISPLAY1: GammaLevel=1200, PixelStructure=1
+  HKLM\Software\Microsoft\Avalon.Graphics\DISPLAY2: GammaLevel=1200, PixelStructure=1
+  HKLM\Software\Microsoft\Avalon.Graphics\DISPLAY3: GammaLevel=1200, PixelStructure=1
+  HKLM\Software\Microsoft\Avalon.Graphics: (no values)
+
+Backup written to C:\Users\brpea\Source\Repos\BetterClearTypeTuner\BCT_Tests\Results\settings-backup.txt
+
+=== Base state: No antialiasing ===
+  baseline: DirectWrite gamma=1.8 clearTypeLevel=1 geometry=RGB mode=DEFAULT
+  ClearTypeLevel (HKCU): GDI no change, DirectWrite AFFECTED  [clearTypeLevel]
+  GammaLevel (HKCU): GDI no change, DirectWrite AFFECTED  [gamma]
+  PixelStructure (HKCU): GDI no change, DirectWrite AFFECTED  [pixelGeometry]
+  TextContrastLevel (HKCU): GDI no change, DirectWrite no change
+  EnhancedContrastLevel (HKCU): GDI no change, DirectWrite AFFECTED  [enhancedContrast]
+  GrayscaleEnhancedContrastLevel (HKCU): GDI no change, DirectWrite no change  [grayscaleEnhancedContrast]
+  ClearTypeLevel (HKLM): GDI no change, DirectWrite no change
+  GammaLevel (HKLM): GDI no change, DirectWrite AFFECTED  [gamma]
+  PixelStructure (HKLM): GDI no change, DirectWrite AFFECTED  [pixelGeometry]
+  TextContrastLevel (HKLM): GDI no change, DirectWrite no change
+  EnhancedContrastLevel (HKLM): GDI no change, DirectWrite no change
+  GrayscaleEnhancedContrastLevel (HKLM): GDI no change, DirectWrite no change
+  GrayscaleEnhancedContrastLevel (with ClearTypeLevel = 0) (HKCU): GDI no change, DirectWrite no change  [grayscaleEnhancedContrast]
+  FontSmoothingContrast (system): GDI no change, DirectWrite no change
+  FontSmoothingOrientation (system): GDI no change, DirectWrite AFFECTED  [pixelGeometry]
+
+=== Base state: Grayscale antialiasing ===
+  baseline: DirectWrite gamma=1.8 clearTypeLevel=1 geometry=RGB mode=DEFAULT
+  ClearTypeLevel (HKCU): GDI no change, DirectWrite AFFECTED  [clearTypeLevel]
+  GammaLevel (HKCU): GDI no change, DirectWrite AFFECTED  [gamma]
+  PixelStructure (HKCU): GDI no change, DirectWrite AFFECTED  [pixelGeometry]
+  TextContrastLevel (HKCU): GDI no change, DirectWrite no change
+  EnhancedContrastLevel (HKCU): GDI no change, DirectWrite AFFECTED  [enhancedContrast]
+  GrayscaleEnhancedContrastLevel (HKCU): GDI no change, DirectWrite no change  [grayscaleEnhancedContrast]
+  ClearTypeLevel (HKLM): GDI no change, DirectWrite no change
+  GammaLevel (HKLM): GDI no change, DirectWrite AFFECTED  [gamma]
+  PixelStructure (HKLM): GDI no change, DirectWrite AFFECTED  [pixelGeometry]
+  TextContrastLevel (HKLM): GDI no change, DirectWrite no change
+  EnhancedContrastLevel (HKLM): GDI no change, DirectWrite no change
+  GrayscaleEnhancedContrastLevel (HKLM): GDI no change, DirectWrite no change
+  GrayscaleEnhancedContrastLevel (with ClearTypeLevel = 0) (HKCU): GDI no change, DirectWrite no change  [grayscaleEnhancedContrast]
+  FontSmoothingContrast (system): GDI no change, DirectWrite no change
+  FontSmoothingOrientation (system): GDI no change, DirectWrite AFFECTED  [pixelGeometry]
+
+=== Base state: ClearType (RGB) ===
+  baseline: DirectWrite gamma=1.8 clearTypeLevel=1 geometry=RGB mode=DEFAULT
+  ClearTypeLevel (HKCU): GDI no change, DirectWrite AFFECTED  [clearTypeLevel]
+  GammaLevel (HKCU): GDI no change, DirectWrite AFFECTED  [gamma]
+  PixelStructure (HKCU): GDI no change, DirectWrite AFFECTED  [pixelGeometry]
+  TextContrastLevel (HKCU): GDI no change, DirectWrite no change
+  EnhancedContrastLevel (HKCU): GDI no change, DirectWrite AFFECTED  [enhancedContrast]
+  GrayscaleEnhancedContrastLevel (HKCU): GDI no change, DirectWrite no change  [grayscaleEnhancedContrast]
+  ClearTypeLevel (HKLM): GDI no change, DirectWrite no change
+  GammaLevel (HKLM): GDI no change, DirectWrite AFFECTED  [gamma]
+  PixelStructure (HKLM): GDI no change, DirectWrite AFFECTED  [pixelGeometry]
+  TextContrastLevel (HKLM): GDI no change, DirectWrite no change
+  EnhancedContrastLevel (HKLM): GDI no change, DirectWrite no change
+  GrayscaleEnhancedContrastLevel (HKLM): GDI no change, DirectWrite no change
+  GrayscaleEnhancedContrastLevel (with ClearTypeLevel = 0) (HKCU): GDI no change, DirectWrite no change  [grayscaleEnhancedContrast]
+  FontSmoothingContrast (system): GDI AFFECTED, DirectWrite no change
+  FontSmoothingOrientation (system): GDI AFFECTED, DirectWrite AFFECTED  [pixelGeometry]
+
+=== Base state: ClearType (BGR) ===
+  baseline: DirectWrite gamma=1.8 clearTypeLevel=1 geometry=BGR mode=DEFAULT
+  ClearTypeLevel (HKCU): GDI no change, DirectWrite AFFECTED  [clearTypeLevel]
+  GammaLevel (HKCU): GDI no change, DirectWrite AFFECTED  [gamma]
+  PixelStructure (HKCU): GDI no change, DirectWrite AFFECTED  [pixelGeometry]
+  TextContrastLevel (HKCU): GDI no change, DirectWrite no change
+  EnhancedContrastLevel (HKCU): GDI no change, DirectWrite AFFECTED  [enhancedContrast]
+  GrayscaleEnhancedContrastLevel (HKCU): GDI no change, DirectWrite no change  [grayscaleEnhancedContrast]
+  ClearTypeLevel (HKLM): GDI no change, DirectWrite no change
+  GammaLevel (HKLM): GDI no change, DirectWrite AFFECTED  [gamma]
+  PixelStructure (HKLM): GDI no change, DirectWrite AFFECTED  [pixelGeometry]
+  TextContrastLevel (HKLM): GDI no change, DirectWrite no change
+  EnhancedContrastLevel (HKLM): GDI no change, DirectWrite no change
+  GrayscaleEnhancedContrastLevel (HKLM): GDI no change, DirectWrite no change
+  GrayscaleEnhancedContrastLevel (with ClearTypeLevel = 0) (HKCU): GDI no change, DirectWrite no change  [grayscaleEnhancedContrast]
+  FontSmoothingContrast (system): GDI AFFECTED, DirectWrite no change
+  FontSmoothingOrientation (system): GDI AFFECTED, DirectWrite AFFECTED  [pixelGeometry]
+
+System font-smoothing mode, compared with "No antialiasing":
+  Grayscale antialiasing     GDI AFFECTED, DirectWrite defaults no change, DirectWrite app-configured AFFECTED
+  ClearType (RGB)            GDI AFFECTED, DirectWrite defaults no change, DirectWrite app-configured AFFECTED
+  ClearType (BGR)            GDI AFFECTED, DirectWrite defaults AFFECTED, DirectWrite app-configured AFFECTED
+
+Restoring original settings...
+  all settings verified back at their original values.
+  now: ClearType RGB, contrast 1200
+
+Wrote C:\Users\brpea\Source\Repos\BetterClearTypeTuner\BCT_Tests\Results\CompatibilityMatrix.md
+Wrote C:\Users\brpea\Source\Repos\BetterClearTypeTuner\BCT_Tests\Results\CompatibilityMatrix.html
+
+Summary (settings that changed the rendered pixels):
+  HKCU ClearTypeLevel                      DWraw/No antialiasing, DWraw/Grayscale antialiasing, DWapp/ClearType (RGB), DWraw/ClearType (RGB), DWapp/ClearType (BGR), DWraw/ClearType (BGR)
+  HKCU GammaLevel                          DWraw/No antialiasing, DWapp/Grayscale antialiasing, DWraw/Grayscale antialiasing, DWapp/ClearType (RGB), DWraw/ClearType (RGB), DWapp/ClearType (BGR), DWraw/ClearType (BGR)
+  HKCU PixelStructure                      DWraw/No antialiasing, DWraw/Grayscale antialiasing, DWapp/ClearType (RGB), DWraw/ClearType (RGB), DWapp/ClearType (BGR), DWraw/ClearType (BGR)
+  HKCU TextContrastLevel                   no effect anywhere
+  HKCU EnhancedContrastLevel               DWraw/No antialiasing, DWapp/Grayscale antialiasing, DWraw/Grayscale antialiasing, DWapp/ClearType (RGB), DWraw/ClearType (RGB), DWapp/ClearType (BGR), DWraw/ClearType (BGR)
+  HKCU GrayscaleEnhancedContrastLevel      no effect anywhere
+  HKLM ClearTypeLevel                      no effect anywhere
+  HKLM GammaLevel                          DWraw/No antialiasing, DWapp/Grayscale antialiasing, DWraw/Grayscale antialiasing, DWapp/ClearType (RGB), DWraw/ClearType (RGB), DWapp/ClearType (BGR), DWraw/ClearType (BGR)
+  HKLM PixelStructure                      DWraw/No antialiasing, DWraw/Grayscale antialiasing, DWapp/ClearType (RGB), DWraw/ClearType (RGB), DWapp/ClearType (BGR), DWraw/ClearType (BGR)
+  HKLM TextContrastLevel                   no effect anywhere
+  HKLM EnhancedContrastLevel               no effect anywhere
+  HKLM GrayscaleEnhancedContrastLevel      no effect anywhere
+  HKCU GrayscaleEnhancedContrastLevel (with ClearTypeLevel = 0) no effect anywhere
+  SPI  FontSmoothingContrast               GDI/ClearType (RGB), GDI/ClearType (BGR)
+  SPI  FontSmoothingOrientation            DWraw/No antialiasing, DWraw/Grayscale antialiasing, GDI/ClearType (RGB), DWapp/ClearType (RGB), DWraw/ClearType (RGB), GDI/ClearType (BGR), DWapp/ClearType (BGR), DWraw/ClearType (BGR)

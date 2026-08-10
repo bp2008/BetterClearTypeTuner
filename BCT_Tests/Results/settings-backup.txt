@@ -1,0 +1,38 @@
+﻿# BCT_Tests settings backup, captured 2026-08-10 15:45:31
+# Restore with: BCT_Tests.exe --restore "C:\Users\brpea\Source\Repos\BetterClearTypeTuner\BCT_Tests\Results\settings-backup.txt"
+SPI	FontSmoothing	1
+SPI	FontSmoothingType	2
+SPI	FontSmoothingOrientation	1
+SPI	FontSmoothingContrast	1200
+KEY	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY1	EXISTS
+VAL	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY1	ClearTypeLevel	DWord	100
+VAL	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY1	EnhancedContrastLevel	DWord	50
+VAL	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY1	GammaLevel	DWord	1200
+VAL	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY1	GrayscaleEnhancedContrastLevel	DWord	100
+VAL	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY1	PixelStructure	DWord	1
+VAL	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY1	TextContrastLevel	DWord	1
+KEY	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY2	EXISTS
+VAL	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY2	ClearTypeLevel	DWord	100
+VAL	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY2	EnhancedContrastLevel	DWord	50
+VAL	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY2	GammaLevel	DWord	1200
+VAL	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY2	GrayscaleEnhancedContrastLevel	DWord	100
+VAL	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY2	PixelStructure	DWord	1
+VAL	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY2	TextContrastLevel	DWord	1
+KEY	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY3	EXISTS
+VAL	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY3	ClearTypeLevel	DWord	100
+VAL	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY3	EnhancedContrastLevel	DWord	50
+VAL	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY3	GammaLevel	DWord	1200
+VAL	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY3	GrayscaleEnhancedContrastLevel	DWord	100
+VAL	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY3	PixelStructure	DWord	1
+VAL	HKCU	Software\Microsoft\Avalon.Graphics\DISPLAY3	TextContrastLevel	DWord	1
+KEY	HKCU	Software\Microsoft\Avalon.Graphics	EXISTS
+KEY	HKLM	Software\Microsoft\Avalon.Graphics\DISPLAY1	EXISTS
+VAL	HKLM	Software\Microsoft\Avalon.Graphics\DISPLAY1	GammaLevel	DWord	1200
+VAL	HKLM	Software\Microsoft\Avalon.Graphics\DISPLAY1	PixelStructure	DWord	1
+KEY	HKLM	Software\Microsoft\Avalon.Graphics\DISPLAY2	EXISTS
+VAL	HKLM	Software\Microsoft\Avalon.Graphics\DISPLAY2	GammaLevel	DWord	1200
+VAL	HKLM	Software\Microsoft\Avalon.Graphics\DISPLAY2	PixelStructure	DWord	1
+KEY	HKLM	Software\Microsoft\Avalon.Graphics\DISPLAY3	EXISTS
+VAL	HKLM	Software\Microsoft\Avalon.Graphics\DISPLAY3	GammaLevel	DWord	1200
+VAL	HKLM	Software\Microsoft\Avalon.Graphics\DISPLAY3	PixelStructure	DWord	1
+KEY	HKLM	Software\Microsoft\Avalon.Graphics	EXISTS

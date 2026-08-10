@@ -5,13 +5,19 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2A47D26E-6FB8-41AA-B400-94EF37D23E80}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <!-- Console subsystem, not WinExe: the sweep is normally driven from a command line, it prints
+         its progress there, and the shell has to be able to wait for it to finish.  The runner
+         window is still available by starting it with no arguments. -->
+    <OutputType>Exe</OutputType>
     <RootNamespace>BCT_Tests</RootNamespace>
     <AssemblyName>BCT_Tests</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <!-- The harness reads and writes HKLM\SOFTWARE\Microsoft\Avalon.Graphics.  Running 32-bit would
+         put it behind WOW64 registry redirection and it would be measuring the wrong keys. -->
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -46,13 +52,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChildRenderProcess.cs" />
     <Compile Include="MainTestingForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MainTestingForm.Designer.cs">
       <DependentUpon>MainTestingForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Native\DWriteInterop.cs" />
+    <Compile Include="Native\NativeMethods.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Rendering\DirectWriteRenderer.cs" />
+    <Compile Include="Rendering\GdiRenderer.cs" />
+    <Compile Include="Rendering\ImageCompare.cs" />
+    <Compile Include="Rendering\SampleText.cs" />
+    <Compile Include="ReportWriter.cs" />
+    <Compile Include="Settings\AvalonRegistry.cs" />
+    <Compile Include="Settings\SettingsBackup.cs" />
+    <Compile Include="Settings\SystemFontSmoothing.cs" />
+    <Compile Include="TestPlan.cs" />
+    <Compile Include="TestRunner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MainTestingForm.resx">
       <DependentUpon>MainTestingForm.cs</DependentUpon>
@@ -78,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
