@@ -17,7 +17,12 @@ Quickly set font-smoothing settings in Windows 10 and know what you are getting,
 
 Download from the [Releases Section](https://github.com/bp2008/BetterClearTypeTuner/releases), extract, and run.
 
-Requires **.NET Framework 4.8.1** (included with recent Windows 10/11; install the [4.8.1 offline installer](https://dotnet.microsoft.com/download/dotnet-framework/net481) if needed).
+The zip contains two builds of the same program.  Run whichever one suits your machine, and keep its `.config` file next to it:
+
+| Executable | Requires | Notes |
+| --- | --- | --- |
+| `BetterClearTypeTuner.exe` | **.NET Framework 4.7.2** ([offline installer](https://dotnet.microsoft.com/download/dotnet-framework/net472)) | Works on Windows 7 SP1 and later.  Runs as x86/x64 (under emulation on ARM).  Use this one unless you have a reason not to. |
+| `BetterClearTypeTuner-ARM64.exe` | **.NET Framework 4.8.1** ([offline installer](https://dotnet.microsoft.com/download/dotnet-framework/net481)) | Needs Windows 10 or later, but runs natively on Windows on ARM (24H2+) instead of under x64 emulation.  Despite the name it is an AnyCPU build and runs on x86/x64 too. |
 
 ## Caveats
 
