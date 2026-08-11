@@ -63,7 +63,6 @@ namespace BetterClearTypeTuner
 			this.lblEnhancedContrastRange = new System.Windows.Forms.Label();
 			this.btnApply = new System.Windows.Forms.Button();
 			this.btnRestoreDefaults = new System.Windows.Forms.Button();
-			this.lblNotAdmin = new System.Windows.Forms.Label();
 			this.lblNotes = new System.Windows.Forms.Label();
 			this.lblGdiSmallHeader = new System.Windows.Forms.Label();
 			this.panelSmall = new System.Windows.Forms.Panel();
@@ -121,7 +120,6 @@ namespace BetterClearTypeTuner
 			this.panelContent.Controls.Add(this.lblEnhancedContrastRange);
 			this.panelContent.Controls.Add(this.btnApply);
 			this.panelContent.Controls.Add(this.btnRestoreDefaults);
-			this.panelContent.Controls.Add(this.lblNotAdmin);
 			this.panelContent.Controls.Add(this.lblNotes);
 			this.panelContent.Controls.Add(this.lblGdiSmallHeader);
 			this.panelContent.Controls.Add(this.panelSmall);
@@ -540,20 +538,6 @@ namespace BetterClearTypeTuner
 			this.btnRestoreDefaults.UseVisualStyleBackColor = true;
 			this.btnRestoreDefaults.Click += new System.EventHandler(this.BtnRestoreDefaults_Click);
 			// 
-			// lblNotAdmin
-			// 
-			this.lblNotAdmin.BackColor = System.Drawing.Color.White;
-			this.lblNotAdmin.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.lblNotAdmin.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblNotAdmin.ForeColor = System.Drawing.Color.Red;
-			this.lblNotAdmin.Location = new System.Drawing.Point(15, 352);
-			this.lblNotAdmin.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-			this.lblNotAdmin.Name = "lblNotAdmin";
-			this.lblNotAdmin.Size = new System.Drawing.Size(250, 28);
-			this.lblNotAdmin.TabIndex = 25;
-			this.lblNotAdmin.Text = "Please run as administrator";
-			this.lblNotAdmin.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
 			// lblNotes
 			// 
 			this.lblNotes.AutoEllipsis = true;
@@ -805,7 +789,6 @@ namespace BetterClearTypeTuner
 		private System.Windows.Forms.Label lblEnhancedContrastRange;
 		private System.Windows.Forms.Button btnApply;
 		private System.Windows.Forms.Button btnRestoreDefaults;
-		private System.Windows.Forms.Label lblNotAdmin;
 		private System.Windows.Forms.Label lblNotes;
 		private System.Windows.Forms.Label lblGdiSmallHeader;
 		private System.Windows.Forms.Panel panelSmall;

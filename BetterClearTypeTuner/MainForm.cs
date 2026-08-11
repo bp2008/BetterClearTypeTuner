@@ -32,9 +32,24 @@ namespace BetterClearTypeTuner
 		/// Caption for the DirectWrite preview, restored after an error has been displayed there.
 		/// </summary>
 		string dwZoomHeaderText;
+		/// <summary>
+		/// What the instance that restarted itself with administrator rights was in the middle of
+		/// doing, or null on an ordinary launch.
+		/// </summary>
+		readonly StartupState startupState;
 
-		public MainForm()
+		/// <summary>
+		/// Parameterless constructor for the Windows Forms designer, which cannot instantiate a
+		/// form that only offers a constructor with arguments.
+		/// </summary>
+		public MainForm() : this(null)
 		{
+		}
+
+		public MainForm(StartupState startupState)
+		{
+			this.startupState = startupState;
+
 			InitializeComponent();
 
 			dwZoomHeaderText = lblDwZoomHeader.Text;
@@ -44,22 +59,11 @@ namespace BetterClearTypeTuner
 			InitializeHelpText();
 			GatherFontableControls(this, this.Font.FontFamily.Name);
 
-			lblNotAdmin.Visible = false;
 			this.Text += " " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
-			try
-			{
-				foreach (string displayName in GetDisplayNames())
-				{
-					RegistryKey key = Registry.LocalMachine.CreateSubKey(AvalonKeyPath + "\\" + displayName);
-				}
-			}
-			catch (UnauthorizedAccessException)
-			{
-				this.Text += " [NOT ADMIN]";
-				lblNotAdmin.Visible = true;
-			}
-			bool startInDarkMode = PrefersDarkMode();
+			bool startInDarkMode = (startupState != null && startupState.DarkMode.HasValue)
+				? startupState.DarkMode.Value
+				: PrefersDarkMode();
 			if (startInDarkMode)
 				cbDarkmode.Checked = true;
 			else
@@ -72,8 +76,55 @@ namespace BetterClearTypeTuner
 			cbFontAntialiasing.Focus();
 			FixFontSizing();
 			DpiScalingInitHack();
-			ShrinkToFitScreen();
+			// The placement is restored last because the hack above moves the window about, and the
+			// bounds handed over by the previous instance are the ones that must win.
+			if (!RestoreWindowPlacement())
+				ShrinkToFitScreen();
+			else if (startupState.Maximized)
+				this.WindowState = FormWindowState.Maximized;
 			initialized = true;
+
+			if (startupState != null && startupState.HasSettings)
+				ApplyStartupSettings();
+		}
+
+		/// <summary>
+		/// Puts this window exactly where the instance that asked for elevation had it, so that the
+		/// restart looks like the same window rather than a new one.  Returns false if there is no
+		/// placement to restore, or if the monitor it names is no longer part of the desktop.
+		/// </summary>
+		private bool RestoreWindowPlacement()
+		{
+			if (startupState == null || !startupState.HasWindowBounds)
+				return false;
+			if (!SystemInformation.VirtualScreen.IntersectsWith(startupState.WindowBounds))
+				return false;
+
+			this.StartPosition = FormStartPosition.Manual;
+			this.Bounds = startupState.WindowBounds;
+			return true;
+		}
+
+		/// <summary>
+		/// Replays the change that the previous, non-elevated instance was making when it restarted
+		/// itself.  Now that the process has the rights to finish the job, the change is applied
+		/// exactly as if the user had just made it in this window.
+		/// </summary>
+		private void ApplyStartupSettings()
+		{
+			DisableEvents();
+			cbFontAntialiasing.Checked = startupState.AntialiasingEnabled;
+			rbGrayscale.Checked = startupState.PixelStructure == 0;
+			rbRGB.Checked = startupState.PixelStructure == 1;
+			rbBGR.Checked = startupState.PixelStructure == 2;
+			ShowValue(nudGdiContrast, startupState.GdiContrast, FontSmoothing.ContrastMin, FontSmoothing.ContrastMax);
+			ShowValue(nudDwContrast, startupState.GammaLevel, GammaLevelMin, GammaLevelMax);
+			ShowValue(nudClearTypeLevel, startupState.ClearTypeLevel, ClearTypeLevelMin, ClearTypeLevelMax);
+			ShowValue(nudEnhancedContrast, startupState.EnhancedContrastLevel, EnhancedContrastLevelMin, EnhancedContrastLevelMax);
+			EnableEvents();
+
+			setDefaults = startupState.RestoreDefaults;
+			ControlsChanged(this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -150,7 +201,7 @@ namespace BetterClearTypeTuner
 				control.BackColor = BackgroundColor;
 				control.ForeColor = TextColor;
 			}
-			else if (control.Name == "panelSmall" || control.Name == "lblNotAdmin" || control is PictureBox)
+			else if (control.Name == "panelSmall" || control is PictureBox)
 			{
 				if (dark)
 				{
@@ -244,12 +295,15 @@ namespace BetterClearTypeTuner
 
 		private void ControlsChanged(object sender, EventArgs e)
 		{
-			if (initialized)
+			bool restoringDefaults = setDefaults;
+			setDefaults = false;
+			if (initialized && !restartingElevated)
 			{
-				if (setDefaults || AvalonValuesDiffer())
+				registryAccessDenied = false;
+				if (restoringDefaults || AvalonValuesDiffer())
 					dirty = true;
 
-				SetAvalonKeys();
+				SetAvalonKeys(restoringDefaults);
 				if (rbGrayscale.Checked)
 				{
 					SetFontSmoothingTypeIfNotAlready(FontSmoothingType.Standard);
@@ -274,10 +328,19 @@ namespace BetterClearTypeTuner
 					FontSmoothing.SetAntialiasingEnabled(cbFontAntialiasing.Checked);
 					dirty = true;
 				}
+				if (registryAccessDenied && RestartAsAdministrator(restoringDefaults))
+				{
+					// The elevated instance is about to redo all of this properly, so there is
+					// nothing left for this one to display.  Closing from inside a control's event
+					// handler would dispose the form out from under the code that raised the event,
+					// so let the current event finish first.
+					restartingElevated = true;
+					BeginInvoke((Action)Close);
+					return;
+				}
 				if (dirty)
 					UpdateStatus();
 			}
-			setDefaults = false;
 		}
 
 		#region Values to write
@@ -289,17 +352,33 @@ namespace BetterClearTypeTuner
 			get { return Clamp((uint)nudGdiContrast.Value, FontSmoothing.ContrastMin, FontSmoothing.ContrastMax); }
 		}
 		/// <summary>
-		/// Subpixel structure: 0 = flat (grayscale), 1 = RGB, 2 = BGR.
+		/// Which of the three antialiasing mode buttons is selected: 0 = grayscale, 1 = RGB,
+		/// 2 = BGR, or -1 when none of them is, which happens when Windows reports a subpixel
+		/// orientation this application does not offer.
+		/// </summary>
+		private int SelectedPixelStructure
+		{
+			get
+			{
+				if (rbGrayscale.Checked)
+					return 0;
+				if (rbRGB.Checked)
+					return 1;
+				if (rbBGR.Checked)
+					return 2;
+				return -1;
+			}
+		}
+		/// <summary>
+		/// Subpixel structure: 0 = flat (grayscale), 1 = RGB, 2 = BGR.  The registry has no way to
+		/// say "none of the above", so a selection of none is written as grayscale.
 		/// </summary>
 		private int DesiredPixelStructure
 		{
 			get
 			{
-				if (rbRGB.Checked)
-					return 1;
-				if (rbBGR.Checked)
-					return 2;
-				return 0;
+				int selected = SelectedPixelStructure;
+				return selected < 0 ? 0 : selected;
 			}
 		}
 		/// <summary>
@@ -342,7 +421,7 @@ namespace BetterClearTypeTuner
 		}
 		#endregion
 
-		private void SetAvalonKeys()
+		private void SetAvalonKeys(bool setDefaults)
 		{
 			if (setDefaults)
 			{
@@ -466,21 +545,59 @@ namespace BetterClearTypeTuner
 		public const uint EnhancedContrastLevelMax = 400;
 		public const uint EnhancedContrastLevelDefault = 50;
 
-		bool registryFail = false;
+		/// <summary>
+		/// Set while a write pass is refused for lack of permission.  Cleared at the start of each
+		/// pass, and answered at the end of it by <see cref="RestartAsAdministrator"/>.
+		/// </summary>
+		bool registryAccessDenied = false;
+		/// <summary>
+		/// True once the user has dismissed a UAC prompt, so that every further tweak in this
+		/// session does not raise another one.
+		/// </summary>
+		bool elevationRefused = false;
+		/// <summary>
+		/// True once an elevated instance has been started and this one is on its way out.  One
+		/// user action can raise several change events - picking an antialiasing mode unchecks the
+		/// previous radio button, and both raise CheckedChanged - and they all arrive before the
+		/// posted Close runs, so without this the later ones would each start another instance.
+		/// </summary>
+		bool restartingElevated = false;
+		/// <summary>
+		/// True once a registry failure that administrator rights cannot fix has been reported.
+		/// </summary>
+		bool registryFailReported = false;
+
 		private void SetRegistryDWORDValue(RegistryKey baseKey, string keyPath, string name, int value)
 		{
+			// Reading first costs nothing and matters a great deal: opening a key for writing is
+			// refused under HKEY_LOCAL_MACHINE without administrator rights whether or not the
+			// value would actually change, and that refusal is what raises the UAC prompt.
+			if (RegistryDWORDValueEquals(baseKey, keyPath, name, value))
+				return;
 			try
 			{
 				RegistryKey key = baseKey.CreateSubKey(keyPath);
 				key.SetValue(name, value, RegistryValueKind.DWord);
 			}
-			catch (SecurityException ex)
+			catch (SecurityException)
 			{
-				HandleRegistryException(ex);
+				registryAccessDenied = true;
 			}
-			catch (UnauthorizedAccessException ex)
+			catch (UnauthorizedAccessException)
 			{
-				HandleRegistryException(ex);
+				registryAccessDenied = true;
+			}
+		}
+		private bool RegistryDWORDValueEquals(RegistryKey baseKey, string keyPath, string name, int value)
+		{
+			try
+			{
+				using (RegistryKey key = baseKey.OpenSubKey(keyPath, false))
+					return key != null && key.GetValue(name) is int existing && existing == value;
+			}
+			catch
+			{
+				return false;
 			}
 		}
 		private int GetRegistryDWORDValue(RegistryKey baseKey, string keyPath, string name, int defaultValue)
@@ -525,22 +642,72 @@ namespace BetterClearTypeTuner
 				//RegistryKey key = baseKey.DeleteSubKeyTree();
 				//key.SetValue(name, value, RegistryValueKind.DWord);
 			}
-			catch (SecurityException ex)
+			catch (SecurityException)
 			{
-				HandleRegistryException(ex);
+				registryAccessDenied = true;
 			}
-			catch (UnauthorizedAccessException ex)
+			catch (UnauthorizedAccessException)
 			{
-				HandleRegistryException(ex);
+				registryAccessDenied = true;
 			}
 		}
-		private void HandleRegistryException(Exception ex)
+		#endregion
+		#region Elevation
+		/// <summary>
+		/// Called at the end of a write pass that Windows refused.  Restarts this application with
+		/// administrator rights, handing the new instance the change being made and this window's
+		/// placement so that it can carry on where this one left off.  Returns true if the elevated
+		/// instance started, in which case this one has nothing left to do.
+		/// </summary>
+		private bool RestartAsAdministrator(bool restoringDefaults)
 		{
-			if (registryFail)
+			if (Elevation.IsElevated || (startupState != null && startupState.ElevationAttempted))
+			{
+				// Administrator rights are not what is missing, so restarting again would only earn
+				// the same refusal.  Something else owns the key, such as a group policy.
+				ReportRegistryFailure("Unable to set all registry values.  While your change may have "
+					+ "worked, some values could not be written even with administrator permission.");
+				return false;
+			}
+			if (elevationRefused)
+				return false;
+
+			StartupState state = new StartupState();
+			state.RestoreDefaults = restoringDefaults;
+			state.AntialiasingEnabled = cbFontAntialiasing.Checked;
+			state.PixelStructure = SelectedPixelStructure;
+			state.GdiContrast = (int)nudGdiContrast.Value;
+			state.GammaLevel = (int)nudDwContrast.Value;
+			state.ClearTypeLevel = (int)nudClearTypeLevel.Value;
+			state.EnhancedContrastLevel = (int)nudEnhancedContrast.Value;
+			state.DarkMode = cbDarkmode.Checked;
+			state.Maximized = this.WindowState == FormWindowState.Maximized;
+			// RestoreBounds is the size the window would go back to, which is the one worth carrying
+			// over while it is maximized or minimized.
+			state.WindowBounds = this.WindowState == FormWindowState.Normal ? this.Bounds : this.RestoreBounds;
+
+			string error;
+			ElevationResult result = Elevation.RestartElevated(state.ToArguments(), out error);
+			if (result == ElevationResult.Started)
+				return true;
+
+			elevationRefused = true;
+			MessageBox.Show(this,
+				(result == ElevationResult.Refused
+					? "Administrator permission is needed to change this setting for every application on this computer, and it was not granted."
+					: "This application was unable to restart itself as an administrator: " + error)
+				+ "\r\n\r\nYour change has been applied everywhere it could be.  To apply it everywhere, "
+				+ "run Better ClearType Tuner as an administrator.",
+				"Administrator permission required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			return false;
+		}
+
+		private void ReportRegistryFailure(string message)
+		{
+			if (registryFailReported)
 				return;
-			lblNotAdmin.Visible = true;
-			registryFail = true;
-			MessageBox.Show("Unable to set all registry values. While your change may have worked, for best results you should run this application as an administrator and try making changes again.");
+			registryFailReported = true;
+			MessageBox.Show(this, message, "Better ClearType Tuner", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 		}
 		#endregion
 		#region Helpers

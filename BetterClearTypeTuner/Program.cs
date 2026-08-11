@@ -12,11 +12,13 @@ namespace BetterClearTypeTuner
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
-		static void Main()
+		static void Main(string[] args)
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new MainForm());
+			// The only arguments this application accepts are the ones it passes to itself when it
+			// restarts with administrator rights.  See StartupState.
+			Application.Run(new MainForm(StartupState.FromCommandLine(args)));
 		}
 	}
 }
