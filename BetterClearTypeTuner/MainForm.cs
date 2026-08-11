@@ -41,6 +41,7 @@ namespace BetterClearTypeTuner
 			dwRenderer = new DirectWriteSampleRenderer();
 
 			InitializeDpiScale();
+			InitializeHelpText();
 			GatherFontableControls(this, this.Font.FontFamily.Name);
 
 			lblNotAdmin.Visible = false;
@@ -50,7 +51,7 @@ namespace BetterClearTypeTuner
 			{
 				foreach (string displayName in GetDisplayNames())
 				{
-					RegistryKey key = Registry.LocalMachine.CreateSubKey("Software\\Microsoft\\Avalon.Graphics\\" + displayName);
+					RegistryKey key = Registry.LocalMachine.CreateSubKey(AvalonKeyPath + "\\" + displayName);
 				}
 			}
 			catch (UnauthorizedAccessException)
@@ -160,6 +161,14 @@ namespace BetterClearTypeTuner
 					control.BackColor = Color.White;
 				}
 			}
+			else if (control.Name.StartsWith("panelRule"))
+			{
+				// The thin horizontal rules that separate the setting groups.
+				if (dark)
+					control.BackColor = ColorTranslator.FromHtml("#3D3D3D");
+				else
+					control.BackColor = SystemColors.ControlDark;
+			}
 			else if (control.Name.StartsWith("lblSample"))
 			{
 				control.BackColor = Color.Transparent;
@@ -171,6 +180,16 @@ namespace BetterClearTypeTuner
 				{
 					control.ForeColor = Color.Black;
 				}
+			}
+			else if (control is LinkLabel linkLabel)
+			{
+				// LinkLabel is a Label, but its link colors are separate from ForeColor and the
+				// default dark blue is unreadable against the dark background.
+				linkLabel.BackColor = Color.Transparent;
+				linkLabel.ForeColor = dark ? ColorTranslator.FromHtml("#DEDEDE") : Color.Black;
+				linkLabel.LinkColor = dark ? ColorTranslator.FromHtml("#69B4FF") : Color.FromArgb(0, 0, 192);
+				linkLabel.ActiveLinkColor = linkLabel.LinkColor;
+				linkLabel.VisitedLinkColor = dark ? ColorTranslator.FromHtml("#BB9CFF") : Color.FromArgb(128, 0, 128);
 			}
 			else if (control is Label || control is RadioButton || control is CheckBox)
 			{
@@ -215,18 +234,22 @@ namespace BetterClearTypeTuner
 				SetDarkMode(child, dark);
 			}
 			if (control == this)
+			{
+				// The loop above repainted every label in the theme's text color, which undoes
+				// the graying out of the settings that do not apply in the current mode.
+				ApplyEnabledStates();
 				CopyZoomedSnapshot();
+			}
 		}
 
 		private void ControlsChanged(object sender, EventArgs e)
 		{
 			if (initialized)
 			{
-				int desiredClearTypeLevel = rbGrayscale.Checked ? 0 : (int)Clamp((uint)nudClearTypeLevel.Value, ClearTypeLevelMin, ClearTypeLevelMax);
-				if (GetClearTypeLevel() != desiredClearTypeLevel)
+				if (setDefaults || AvalonValuesDiffer())
 					dirty = true;
 
-				SetLegacyKeys();
+				SetAvalonKeys();
 				if (rbGrayscale.Checked)
 				{
 					SetFontSmoothingTypeIfNotAlready(FontSmoothingType.Standard);
@@ -241,9 +264,9 @@ namespace BetterClearTypeTuner
 					SetFontSmoothingTypeIfNotAlready(FontSmoothingType.ClearType);
 					SetFontSmoothingIfNotAlready(FontSmoothingOrientation.BGR);
 				}
-				if (FontSmoothing.GetContrast() != (uint)nudContrast.Value)
+				if (FontSmoothing.GetContrast() != DesiredGdiContrast)
 				{
-					FontSmoothing.SetContrast((uint)nudContrast.Value);
+					FontSmoothing.SetContrast(DesiredGdiContrast);
 					dirty = true;
 				}
 				if (FontSmoothing.GetAntialiasingEnabled() != cbFontAntialiasing.Checked)
@@ -257,42 +280,96 @@ namespace BetterClearTypeTuner
 			setDefaults = false;
 		}
 
-		private void SetLegacyKeys()
+		#region Values to write
+		/// <summary>
+		/// GDI contrast (SPI_SETFONTSMOOTHINGCONTRAST).  Only GDI ClearType uses it.
+		/// </summary>
+		private uint DesiredGdiContrast
 		{
+			get { return Clamp((uint)nudGdiContrast.Value, FontSmoothing.ContrastMin, FontSmoothing.ContrastMax); }
+		}
+		/// <summary>
+		/// Subpixel structure: 0 = flat (grayscale), 1 = RGB, 2 = BGR.
+		/// </summary>
+		private int DesiredPixelStructure
+		{
+			get
+			{
+				if (rbRGB.Checked)
+					return 1;
+				if (rbBGR.Checked)
+					return 2;
+				return 0;
+			}
+		}
+		/// <summary>
+		/// ClearType Level.  Grayscale mode stores 0, because that is the value which stops
+		/// DirectWrite from blending across subpixels for clients that read this key directly.
+		/// </summary>
+		private int DesiredClearTypeLevel
+		{
+			get
+			{
+				if (DesiredPixelStructure == 0)
+					return 0;
+				return (int)Clamp((uint)nudClearTypeLevel.Value, ClearTypeLevelMin, ClearTypeLevelMax);
+			}
+		}
+		/// <summary>
+		/// DirectWrite contrast (GammaLevel).
+		/// </summary>
+		private int DesiredGammaLevel
+		{
+			get { return (int)Clamp((uint)nudDwContrast.Value, GammaLevelMin, GammaLevelMax); }
+		}
+		/// <summary>
+		/// DirectWrite enhanced contrast (EnhancedContrastLevel).
+		/// </summary>
+		private int DesiredEnhancedContrastLevel
+		{
+			get { return (int)Clamp((uint)nudEnhancedContrast.Value, EnhancedContrastLevelMin, EnhancedContrastLevelMax); }
+		}
+		/// <summary>
+		/// Returns true if any Avalon.Graphics value that this application manages is not
+		/// already what the controls ask for.
+		/// </summary>
+		private bool AvalonValuesDiffer()
+		{
+			return GetAvalonValue("PixelStructure", -1) != DesiredPixelStructure
+				|| GetAvalonValue("ClearTypeLevel", (int)ClearTypeLevelDefault) != DesiredClearTypeLevel
+				|| GetAvalonValue("GammaLevel", (int)GammaLevelDefault) != DesiredGammaLevel
+				|| GetAvalonValue("EnhancedContrastLevel", (int)EnhancedContrastLevelDefault) != DesiredEnhancedContrastLevel;
+		}
+		#endregion
+
+		private void SetAvalonKeys()
+		{
+			if (setDefaults)
+			{
+				DeleteRegistrySubkeys(Registry.LocalMachine, AvalonKeyPath);
+				DeleteRegistrySubkeys(Registry.CurrentUser, AvalonKeyPath);
+				return;
+			}
+
 			foreach (string displayName in GetDisplayNames())
 			{
-				if (setDefaults)
-				{
-					DeleteRegistrySubkeys(Registry.LocalMachine, "Software\\Microsoft\\Avalon.Graphics");
-					DeleteRegistrySubkeys(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics");
-				}
-				else
-				{
-					int pixelStructure = 0;
-					if (rbGrayscale.Checked)
-						pixelStructure = 0;
-					else if (rbRGB.Checked)
-						pixelStructure = 1;
-					else if (rbBGR.Checked)
-						pixelStructure = 2;
+				string keyPath = AvalonKeyPath + "\\" + displayName;
 
-					int contrast = (int)Clamp((uint)nudContrast.Value, 1000, 2200);
-					int clearTypeLevel = pixelStructure == 0
-						? 0
-						: (int)Clamp((uint)nudClearTypeLevel.Value, ClearTypeLevelMin, ClearTypeLevelMax);
+				// Local Machine.  GammaLevel and PixelStructure are the only two values
+				// DirectWrite reads from this hive; anything else written here is ignored.
+				SetRegistryDWORDValue(Registry.LocalMachine, keyPath, "GammaLevel", DesiredGammaLevel);
+				SetRegistryDWORDValue(Registry.LocalMachine, keyPath, "PixelStructure", DesiredPixelStructure);
 
-					// Local Machine
-					SetRegistryDWORDValue(Registry.LocalMachine, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "GammaLevel", contrast);
-					SetRegistryDWORDValue(Registry.LocalMachine, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "PixelStructure", pixelStructure);
-
-					// Current User
-					SetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "ClearTypeLevel", clearTypeLevel);
-					SetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "EnhancedContrastLevel", 50);
-					SetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "GammaLevel", contrast);
-					SetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "GrayscaleEnhancedContrastLevel", 100);
-					SetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "PixelStructure", pixelStructure);
-					SetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayName, "TextContrastLevel", 1);
-				}
+				// Current User.  These take precedence over the Local Machine values above, and
+				// this is the only hive in which ClearTypeLevel and EnhancedContrastLevel work.
+				SetRegistryDWORDValue(Registry.CurrentUser, keyPath, "ClearTypeLevel", DesiredClearTypeLevel);
+				SetRegistryDWORDValue(Registry.CurrentUser, keyPath, "EnhancedContrastLevel", DesiredEnhancedContrastLevel);
+				SetRegistryDWORDValue(Registry.CurrentUser, keyPath, "GammaLevel", DesiredGammaLevel);
+				SetRegistryDWORDValue(Registry.CurrentUser, keyPath, "PixelStructure", DesiredPixelStructure);
+				// Measurably inert, but written anyway so that a value left behind by another
+				// tuner is put back to its documented default rather than left in place.
+				SetRegistryDWORDValue(Registry.CurrentUser, keyPath, "GrayscaleEnhancedContrastLevel", 100);
+				SetRegistryDWORDValue(Registry.CurrentUser, keyPath, "TextContrastLevel", 1);
 			}
 		}
 
@@ -319,10 +396,20 @@ namespace BetterClearTypeTuner
 			setDefaults = true;
 			cbFontAntialiasing.Checked = true;
 			rbRGB.Checked = true;
-			nudContrast.Value = FontSmoothing.ContrastDefault;
+			nudGdiContrast.Value = FontSmoothing.ContrastDefault;
+			nudDwContrast.Value = GammaLevelDefault;
 			nudClearTypeLevel.Value = ClearTypeLevelDefault;
+			nudEnhancedContrast.Value = EnhancedContrastLevelDefault;
 			EnableEvents();
 			ControlsChanged(sender, e);
+		}
+
+		private void btnApply_Click(object sender, EventArgs e)
+		{
+			// Nothing may have changed, in which case ControlsChanged writes nothing and leaves
+			// the previews alone, so refresh them here to show that the click was noticed.
+			ControlsChanged(sender, e);
+			UpdateStatus();
 		}
 
 		private void btnChangeFont_Click(object sender, EventArgs e)
@@ -352,11 +439,32 @@ namespace BetterClearTypeTuner
 
 		#region Registry
 		/// <summary>
+		/// Where DirectWrite's per-display tuning values live, under both HKLM and HKCU.
+		/// </summary>
+		public const string AvalonKeyPath = "Software\\Microsoft\\Avalon.Graphics";
+		/// <summary>
 		/// DirectWrite/WPF ClearType amount (0 = grayscale … 100 = full). Same key as cttune.
+		/// Only meaningful in the ClearType modes, and only under HKCU.
 		/// </summary>
 		public const uint ClearTypeLevelMin = 0;
 		public const uint ClearTypeLevelMax = 100;
 		public const uint ClearTypeLevelDefault = 100;
+		/// <summary>
+		/// DirectWrite contrast (GammaLevel).  Higher numbers give lighter text.  Unlike the GDI
+		/// contrast this also applies to grayscale antialiasing.  Microsoft documents the default
+		/// as 1900.
+		/// </summary>
+		public const uint GammaLevelMin = 1000;
+		public const uint GammaLevelMax = 2200;
+		public const uint GammaLevelDefault = 1900;
+		/// <summary>
+		/// DirectWrite's second contrast control (EnhancedContrastLevel).  Higher numbers give
+		/// darker text.  Applies to grayscale as well as ClearType, and only under HKCU.
+		/// DirectWrite ignores values above 400 entirely.
+		/// </summary>
+		public const uint EnhancedContrastLevelMin = 0;
+		public const uint EnhancedContrastLevelMax = 400;
+		public const uint EnhancedContrastLevelDefault = 50;
 
 		bool registryFail = false;
 		private void SetRegistryDWORDValue(RegistryKey baseKey, string keyPath, string name, int value)
@@ -395,12 +503,16 @@ namespace BetterClearTypeTuner
 			}
 			return defaultValue;
 		}
-		private int GetClearTypeLevel()
+		/// <summary>
+		/// Reads one of the Avalon.Graphics values from HKCU.  Every display is written with the
+		/// same values, so the first display speaks for all of them.
+		/// </summary>
+		private int GetAvalonValue(string name, int defaultValue)
 		{
 			string[] displayNames = GetDisplayNames();
 			if (displayNames.Length == 0)
-				return (int)ClearTypeLevelDefault;
-			return GetRegistryDWORDValue(Registry.CurrentUser, "Software\\Microsoft\\Avalon.Graphics\\" + displayNames[0], "ClearTypeLevel", (int)ClearTypeLevelDefault);
+				return defaultValue;
+			return GetRegistryDWORDValue(Registry.CurrentUser, AvalonKeyPath + "\\" + displayNames[0], name, defaultValue);
 		}
 		private void DeleteRegistrySubkeys(RegistryKey baseKey, string keyPath)
 		{
@@ -457,77 +569,52 @@ namespace BetterClearTypeTuner
 				bool aaEnabled = FontSmoothing.GetAntialiasingEnabled();
 				FontSmoothingOrientation orientation = FontSmoothing.GetFontSmoothingOrientation();
 				FontSmoothingType smoothingType = FontSmoothing.GetFontSmoothingType();
-				uint contrast = FontSmoothing.GetContrast();
-				int clearTypeLevel = GetClearTypeLevel();
+				uint gdiContrast = FontSmoothing.GetContrast();
+				int gammaLevel = GetAvalonValue("GammaLevel", (int)GammaLevelDefault);
+				int clearTypeLevel = GetAvalonValue("ClearTypeLevel", (int)ClearTypeLevelDefault);
+				int enhancedContrastLevel = GetAvalonValue("EnhancedContrastLevel", (int)EnhancedContrastLevelDefault);
 
 				// Update UI controls
 				DisableEvents();
 
 				cbFontAntialiasing.Checked = aaEnabled;
 
-				bool clearTypeLevelEnabled = false;
+				bool clearTypeSelected = false;
 				if (smoothingType == FontSmoothingType.Standard)
-				{
 					rbGrayscale.Checked = true;
-					nudContrast.Enabled = false;
-				}
+				else if (orientation == FontSmoothingOrientation.RGB)
+					clearTypeSelected = rbRGB.Checked = true;
+				else if (orientation == FontSmoothingOrientation.BGR)
+					clearTypeSelected = rbBGR.Checked = true;
 				else
-				{
-					if (orientation == FontSmoothingOrientation.RGB)
-					{
-						rbRGB.Checked = true;
-						nudContrast.Enabled = true;
-						clearTypeLevelEnabled = true;
-					}
-					else if (orientation == FontSmoothingOrientation.BGR)
-					{
-						rbBGR.Checked = true;
-						nudContrast.Enabled = true;
-						clearTypeLevelEnabled = true;
-					}
-					else if (orientation == FontSmoothingOrientation.Unknown)
-					{
-						rbGrayscale.Checked = rbRGB.Checked = rbBGR.Checked = false;
-						nudContrast.Enabled = false;
-					}
-				}
+					rbGrayscale.Checked = rbRGB.Checked = rbBGR.Checked = false;
 
-				nudContrast.Value = Clamp(contrast, (uint)nudContrast.Minimum, (uint)nudContrast.Maximum);
-				if (contrast < 1000 || contrast > 2200)
-					nudContrast.ForeColor = Color.Red;
-				else
-					nudContrast.ForeColor = TextColor;
+				ShowValue(nudGdiContrast, (int)gdiContrast, FontSmoothing.ContrastMin, FontSmoothing.ContrastMax);
+				ShowValue(nudDwContrast, gammaLevel, GammaLevelMin, GammaLevelMax);
+				ShowValue(nudEnhancedContrast, enhancedContrastLevel, EnhancedContrastLevelMin, EnhancedContrastLevelMax);
+				// Grayscale mode stores a ClearType Level of 0, which is not the user's choice of
+				// level but a consequence of the mode, so only read it back when it is in use.
+				if (aaEnabled && clearTypeSelected)
+					ShowValue(nudClearTypeLevel, clearTypeLevel, ClearTypeLevelMin, ClearTypeLevelMax);
 
-				rbGrayscale.Enabled = rbRGB.Enabled = rbBGR.Enabled = aaEnabled;
-
-				if (!aaEnabled)
-				{
-					nudContrast.Enabled = false;
-					clearTypeLevelEnabled = false;
-				}
-
-				nudClearTypeLevel.Enabled = clearTypeLevelEnabled;
-				if (clearTypeLevelEnabled)
-				{
-					nudClearTypeLevel.Value = Clamp((uint)clearTypeLevel, ClearTypeLevelMin, ClearTypeLevelMax);
-					nudClearTypeLevel.ForeColor = TextColor;
-				}
+				ApplyEnabledStates();
 
 				EnableEvents();
 
 				string quick = "The Wizard's lily box. ";
 				// Update status text
-				if (aaEnabled)
-				{
-					if (smoothingType == FontSmoothingType.ClearType)
-						status.Text = quick + orientation + " (Contrast " + contrast + ", ClearType Level " + clearTypeLevel + ")";
-					else
-						status.Text = quick + "Grayscale (Contrast " + contrast + ")";
-				}
-				else
-				{
+				if (!aaEnabled)
 					status.Text = quick + "Font Antialiasing is disabled.";
-				}
+				else if (smoothingType == FontSmoothingType.ClearType)
+					status.Text = quick + orientation
+						+ "  ·  GDI contrast " + gdiContrast
+						+ "  ·  DirectWrite contrast " + gammaLevel
+						+ ", ClearType Level " + clearTypeLevel
+						+ ", enhanced contrast " + enhancedContrastLevel;
+				else
+					status.Text = quick + "Grayscale"
+						+ "  ·  DirectWrite contrast " + gammaLevel
+						+ ", enhanced contrast " + enhancedContrastLevel;
 
 				// Snapshot the sample text and render it zoomed-in
 				CopyZoomedSnapshot();
@@ -541,6 +628,67 @@ namespace BetterClearTypeTuner
 			if (val < minimum)
 				val = minimum;
 			return val;
+		}
+
+		/// <summary>
+		/// Puts a value that was read back from the system into its input box, in red if it is
+		/// outside the range that Windows documents for that setting.  The box itself may not be
+		/// able to show such a value, but the color still says that something else set it.
+		/// </summary>
+		private void ShowValue(NumericUpDown nud, int value, uint documentedMin, uint documentedMax)
+		{
+			decimal shown = value;
+			if (shown < nud.Minimum)
+				shown = nud.Minimum;
+			else if (shown > nud.Maximum)
+				shown = nud.Maximum;
+			nud.Value = shown;
+			nud.ForeColor = (value < documentedMin || value > documentedMax) ? Color.Red : InputTextColor;
+		}
+
+		/// <summary>
+		/// Grays out every setting that the current antialiasing mode makes irrelevant, so that
+		/// the window only offers changes which will actually alter the rendered text.
+		/// </summary>
+		private void ApplyEnabledStates()
+		{
+			// With antialiasing off, text is drawn with hard pixel edges and nothing below the
+			// checkbox reaches either renderer.
+			bool aaEnabled = cbFontAntialiasing.Checked;
+			bool clearType = aaEnabled && (rbRGB.Checked || rbBGR.Checked);
+
+			rbGrayscale.Enabled = rbRGB.Enabled = rbBGR.Enabled = aaEnabled;
+
+			// GDI applies its contrast only while drawing ClearType; grayscale GDI text ignores it.
+			SetRowEnabled(clearType, nudGdiContrast, lblGdiContrast, lblGdiContrastRange, lblGdiHeader);
+			// Both DirectWrite contrast controls also act on grayscale antialiasing.
+			SetRowEnabled(aaEnabled, nudDwContrast, lblDwContrast, lblDwContrastRange, lblDwHeader);
+			SetRowEnabled(aaEnabled, nudEnhancedContrast, lblEnhancedContrast, lblEnhancedContrastRange);
+			// ClearType Level is the subpixel blend amount, so it means nothing outside RGB/BGR.
+			SetRowEnabled(clearType, nudClearTypeLevel, lblClearTypeLevel, lblClearTypeLevelRange);
+		}
+
+		private void SetRowEnabled(bool enabled, NumericUpDown nud, params Label[] labels)
+		{
+			nud.Enabled = enabled;
+			foreach (Label label in labels)
+				label.ForeColor = enabled ? LabelTextColor : DisabledTextColor;
+		}
+
+		/// <summary>Color that <see cref="SetDarkMode"/> gives ordinary label text.</summary>
+		private Color LabelTextColor
+		{
+			get { return cbDarkmode.Checked ? ColorTranslator.FromHtml("#DEDEDE") : Color.Black; }
+		}
+		/// <summary>Color for the labels of a setting that has no effect in the current mode.</summary>
+		private Color DisabledTextColor
+		{
+			get { return cbDarkmode.Checked ? ColorTranslator.FromHtml("#6B6B6B") : SystemColors.GrayText; }
+		}
+		/// <summary>Color that <see cref="SetDarkMode"/> gives text inside an input box.</summary>
+		private Color InputTextColor
+		{
+			get { return cbDarkmode.Checked ? ColorTranslator.FromHtml("#DEDEDE") : Color.Black; }
 		}
 
 		private void CopyZoomedSnapshot()
@@ -582,8 +730,9 @@ namespace BetterClearTypeTuner
 				AntialiasingEnabled = cbFontAntialiasing.Checked,
 				SmoothingType = rbGrayscale.Checked ? FontSmoothingType.Standard : FontSmoothingType.ClearType,
 				Orientation = rbBGR.Checked ? FontSmoothingOrientation.BGR : FontSmoothingOrientation.RGB,
-				Contrast = (uint)nudContrast.Value,
-				ClearTypeLevel = rbGrayscale.Checked ? 0 : (int)nudClearTypeLevel.Value
+				GammaLevel = (uint)nudDwContrast.Value,
+				ClearTypeLevel = rbGrayscale.Checked ? 0 : (int)nudClearTypeLevel.Value,
+				EnhancedContrastLevel = (int)nudEnhancedContrast.Value
 			};
 
 			Bitmap rendered = dwRenderer.Render(pbDwSmall.Width, pbDwSmall.Height, fonts, texts,
@@ -671,8 +820,10 @@ namespace BetterClearTypeTuner
 			rbGrayscale.CheckedChanged -= ControlsChanged;
 			rbRGB.CheckedChanged -= ControlsChanged;
 			rbBGR.CheckedChanged -= ControlsChanged;
-			nudContrast.ValueChanged -= ControlsChanged;
+			nudGdiContrast.ValueChanged -= ControlsChanged;
+			nudDwContrast.ValueChanged -= ControlsChanged;
 			nudClearTypeLevel.ValueChanged -= ControlsChanged;
+			nudEnhancedContrast.ValueChanged -= ControlsChanged;
 		}
 		public void EnableEvents()
 		{
@@ -680,8 +831,10 @@ namespace BetterClearTypeTuner
 			rbGrayscale.CheckedChanged += ControlsChanged;
 			rbRGB.CheckedChanged += ControlsChanged;
 			rbBGR.CheckedChanged += ControlsChanged;
-			nudContrast.ValueChanged += ControlsChanged;
+			nudGdiContrast.ValueChanged += ControlsChanged;
+			nudDwContrast.ValueChanged += ControlsChanged;
 			nudClearTypeLevel.ValueChanged += ControlsChanged;
+			nudEnhancedContrast.ValueChanged += ControlsChanged;
 		}
 		private static bool PrefersDarkMode()
 		{
@@ -735,23 +888,100 @@ namespace BetterClearTypeTuner
 			{
 				c.Font = new Font(c.Font.Name, (float)(baselineFontSizes[c.Name] * fontScale), c.Font.Style, c.Font.Unit);
 			}
-			//label9.Text = "DPI Scale: " + OSReportedDpiScale.ToString("0.##") + ", Font Scale: " + fontScale.ToString("0.##");
 		}
 		#endregion
 
-		private void linkAboutClearTypeLevel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		#region Per-setting help
+		/// <summary>
+		/// Note appended to every DirectWrite setting, which the preview applies live but other
+		/// applications only read once.
+		/// </summary>
+		private const string DirectWriteRestartNote =
+			"The DirectWrite preview updates immediately.  Applications such as Firefox, Edge and "
+			+ "WPF read this value when they start, so they have to be restarted to pick it up.";
+
+		private const string HelpGdiContrast =
+			"GDI contrast - SystemParametersInfo, SPI_SETFONTSMOOTHINGCONTRAST\r\n"
+			+ "Range 1000 to 2200, default 1200.  Higher numbers give lighter text.\r\n"
+			+ "\r\n"
+			+ "GDI applies this only while it is drawing ClearType, so it has no effect in "
+			+ "grayscale mode.  DirectWrite applications ignore it entirely; they have their own "
+			+ "contrast setting below.";
+
+		private const string HelpDwContrast =
+			"DirectWrite contrast - HKCU and HKLM\\" + AvalonKeyPath + "\\<display>\\GammaLevel\r\n"
+			+ "Range 1000 to 2200, default 1900.  Higher numbers give lighter text.\r\n"
+			+ "\r\n"
+			+ "This is DirectWrite's gamma.  Unlike the GDI contrast it applies to grayscale "
+			+ "antialiasing as well as to ClearType.  GDI ignores it.\r\n"
+			+ "\r\n"
+			+ DirectWriteRestartNote;
+
+		private const string HelpClearTypeLevel =
+			"ClearType Level - HKCU\\" + AvalonKeyPath + "\\<display>\\ClearTypeLevel\r\n"
+			+ "Range 0 to 100, default 100.\r\n"
+			+ "\r\n"
+			+ "How much of the antialiasing is done with the display's individual color subpixels "
+			+ "rather than with whole gray pixels.  Lower it to reduce color fringing at the cost "
+			+ "of sharpness.  It therefore only means anything in the RGB and BGR modes, and GDI "
+			+ "ignores it in all of them.  This is the same setting as the color-intensity step of "
+			+ "the Windows ClearType tuner.\r\n"
+			+ "\r\n"
+			+ DirectWriteRestartNote;
+
+		private const string HelpEnhancedContrast =
+			"Enhanced Contrast - HKCU\\" + AvalonKeyPath + "\\<display>\\EnhancedContrastLevel\r\n"
+			+ "Range 0 to 400, default 50.  Higher numbers give darker text.\r\n"
+			+ "\r\n"
+			+ "A second contrast control, applied on top of the DirectWrite contrast above and "
+			+ "pulling in the opposite direction.  It applies to grayscale antialiasing as well as "
+			+ "to ClearType.  GDI ignores it, and DirectWrite discards values above 400.\r\n"
+			+ "\r\n"
+			+ DirectWriteRestartNote;
+
+		/// <summary>
+		/// Hangs the help text off the inputs as tooltips.  The [?] links show the same text in a
+		/// dialog, for anyone who does not think to hover.
+		/// </summary>
+		private void InitializeHelpText()
 		{
-			linkAboutClearTypeLevel.LinkVisited = true;
-			MessageBox.Show(this
-				, toolTip1.GetToolTip(nudClearTypeLevel)
-				, "About ClearType Level"
-				, MessageBoxButtons.OK
-				, MessageBoxIcon.Information);
+			SetHelpText(HelpGdiContrast, nudGdiContrast, lblGdiContrast, lblGdiContrastRange, linkGdiContrast);
+			SetHelpText(HelpDwContrast, nudDwContrast, lblDwContrast, lblDwContrastRange, linkDwContrast);
+			SetHelpText(HelpClearTypeLevel, nudClearTypeLevel, lblClearTypeLevel, lblClearTypeLevelRange, linkClearTypeLevel);
+			SetHelpText(HelpEnhancedContrast, nudEnhancedContrast, lblEnhancedContrast, lblEnhancedContrastRange, linkEnhancedContrast);
 		}
 
-		private void label9_Click(object sender, EventArgs e)
+		private void SetHelpText(string text, params Control[] controls)
 		{
-			//FixFontSizing();
+			foreach (Control control in controls)
+				toolTip1.SetToolTip(control, text);
 		}
+
+		private void ShowHelp(LinkLabel link, string title, string text)
+		{
+			link.LinkVisited = true;
+			MessageBox.Show(this, text, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+		}
+
+		private void linkGdiContrast_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			ShowHelp(linkGdiContrast, "About GDI Contrast", HelpGdiContrast);
+		}
+
+		private void linkDwContrast_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			ShowHelp(linkDwContrast, "About DirectWrite Contrast", HelpDwContrast);
+		}
+
+		private void linkClearTypeLevel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			ShowHelp(linkClearTypeLevel, "About ClearType Level", HelpClearTypeLevel);
+		}
+
+		private void linkEnhancedContrast_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			ShowHelp(linkEnhancedContrast, "About Enhanced Contrast", HelpEnhancedContrast);
+		}
+		#endregion
 	}
 }

@@ -51,10 +51,15 @@ namespace BetterClearTypeTuner.Native
 			public bool AntialiasingEnabled;
 			public FontSmoothingType SmoothingType;
 			public FontSmoothingOrientation Orientation;
-			/// <summary>Contrast in the same 1000-2200 units the UI and SPI use.</summary>
-			public uint Contrast;
+			/// <summary>
+			/// DirectWrite contrast in the same 1000-2200 units the UI and the GammaLevel
+			/// registry value use.  This is not the GDI contrast, which DirectWrite never reads.
+			/// </summary>
+			public uint GammaLevel;
 			/// <summary>ClearType level in the same 0-100 units the UI and registry use.</summary>
 			public int ClearTypeLevel;
+			/// <summary>Enhanced contrast in the same 0-400 units the UI and registry use.</summary>
+			public int EnhancedContrastLevel;
 		}
 
 		private IDWriteFactory factory;
@@ -284,14 +289,18 @@ namespace BetterClearTypeTuner.Native
 		{
 			// Map the UI's units onto DirectWrite's. The pixel geometry enum values are
 			// deliberately identical to the legacy PixelStructure registry values.
-			float gamma = settings.Contrast / 1000f;
+			float gamma = settings.GammaLevel / 1000f;
 			if (gamma < 1f)
 				gamma = 1f;
 			else if (gamma > 2.2f)
 				gamma = 2.2f;
 
-			// Matches the EnhancedContrastLevel of 50 this application writes to the registry.
-			const float enhancedContrast = 0.5f;
+			// DirectWrite reads EnhancedContrastLevel in hundredths and ignores anything above 4.
+			float enhancedContrast = settings.EnhancedContrastLevel / 100f;
+			if (enhancedContrast < 0f)
+				enhancedContrast = 0f;
+			else if (enhancedContrast > 4f)
+				enhancedContrast = 4f;
 
 			float clearTypeLevel = settings.ClearTypeLevel / 100f;
 			if (clearTypeLevel < 0f)

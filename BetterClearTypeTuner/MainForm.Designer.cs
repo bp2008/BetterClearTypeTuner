@@ -1,4 +1,4 @@
-﻿namespace BetterClearTypeTuner
+namespace BetterClearTypeTuner
 {
 	partial class MainForm
 	{
@@ -36,247 +36,373 @@
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.panelContent = new System.Windows.Forms.Panel();
-			this.cbDarkmode = new System.Windows.Forms.CheckBox();
-			this.btnChangeFont = new System.Windows.Forms.Button();
-			this.lblNotAdmin = new System.Windows.Forms.Label();
-			this.label9 = new System.Windows.Forms.Label();
-			this.lblDwSmallHeader = new System.Windows.Forms.Label();
-			this.lblDwZoomHeader = new System.Windows.Forms.Label();
-			this.label8 = new System.Windows.Forms.Label();
-			this.btnSet = new System.Windows.Forms.Button();
-			this.label7 = new System.Windows.Forms.Label();
-			this.label6 = new System.Windows.Forms.Label();
-			this.btnRestoreDefaults = new System.Windows.Forms.Button();
-			this.labelClearTypeLevelRange = new System.Windows.Forms.Label();
-			this.labelClearTypeLevel = new System.Windows.Forms.Label();
-			this.nudClearTypeLevel = new System.Windows.Forms.NumericUpDown();
-			this.label5 = new System.Windows.Forms.Label();
-			this.label4 = new System.Windows.Forms.Label();
-			this.nudContrast = new System.Windows.Forms.NumericUpDown();
-			this.panel1 = new System.Windows.Forms.Panel();
+			this.cbFontAntialiasing = new System.Windows.Forms.CheckBox();
+			this.panelAaMode = new System.Windows.Forms.Panel();
 			this.rbBGR = new System.Windows.Forms.RadioButton();
 			this.rbRGB = new System.Windows.Forms.RadioButton();
 			this.rbGrayscale = new System.Windows.Forms.RadioButton();
-			this.cbFontAntialiasing = new System.Windows.Forms.CheckBox();
-			this.pbZoomed = new System.Windows.Forms.PictureBox();
-			this.pbDwZoomed = new System.Windows.Forms.PictureBox();
+			this.lblGdiHeader = new System.Windows.Forms.Label();
+			this.panelRuleGdi = new System.Windows.Forms.Panel();
+			this.lblGdiContrast = new System.Windows.Forms.Label();
+			this.nudGdiContrast = new System.Windows.Forms.NumericUpDown();
+			this.linkGdiContrast = new System.Windows.Forms.LinkLabel();
+			this.lblGdiContrastRange = new System.Windows.Forms.Label();
+			this.lblDwHeader = new System.Windows.Forms.Label();
+			this.panelRuleDw = new System.Windows.Forms.Panel();
+			this.lblDwContrast = new System.Windows.Forms.Label();
+			this.nudDwContrast = new System.Windows.Forms.NumericUpDown();
+			this.linkDwContrast = new System.Windows.Forms.LinkLabel();
+			this.lblDwContrastRange = new System.Windows.Forms.Label();
+			this.lblClearTypeLevel = new System.Windows.Forms.Label();
+			this.nudClearTypeLevel = new System.Windows.Forms.NumericUpDown();
+			this.linkClearTypeLevel = new System.Windows.Forms.LinkLabel();
+			this.lblClearTypeLevelRange = new System.Windows.Forms.Label();
+			this.lblEnhancedContrast = new System.Windows.Forms.Label();
+			this.nudEnhancedContrast = new System.Windows.Forms.NumericUpDown();
+			this.linkEnhancedContrast = new System.Windows.Forms.LinkLabel();
+			this.lblEnhancedContrastRange = new System.Windows.Forms.Label();
+			this.btnApply = new System.Windows.Forms.Button();
+			this.btnRestoreDefaults = new System.Windows.Forms.Button();
+			this.lblNotAdmin = new System.Windows.Forms.Label();
+			this.lblNotes = new System.Windows.Forms.Label();
+			this.lblGdiSmallHeader = new System.Windows.Forms.Label();
 			this.panelSmall = new System.Windows.Forms.Panel();
 			this.lblSample3 = new System.Windows.Forms.Label();
 			this.lblSample2 = new System.Windows.Forms.Label();
 			this.lblSample1 = new System.Windows.Forms.Label();
+			this.lblDwSmallHeader = new System.Windows.Forms.Label();
 			this.pbDwSmall = new System.Windows.Forms.PictureBox();
+			this.lblGdiZoomHeader = new System.Windows.Forms.Label();
+			this.pbZoomed = new System.Windows.Forms.PictureBox();
+			this.lblDwZoomHeader = new System.Windows.Forms.Label();
+			this.pbDwZoomed = new System.Windows.Forms.PictureBox();
+			this.cbDarkmode = new System.Windows.Forms.CheckBox();
+			this.btnChangeFont = new System.Windows.Forms.Button();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.fontDialog1 = new System.Windows.Forms.FontDialog();
 			this.status = new System.Windows.Forms.Label();
 			this.panelBottomBorder = new System.Windows.Forms.Panel();
-			this.linkAboutClearTypeLevel = new System.Windows.Forms.LinkLabel();
 			this.panelContent.SuspendLayout();
+			this.panelAaMode.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.nudGdiContrast)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudDwContrast)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudClearTypeLevel)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.nudContrast)).BeginInit();
-			this.panel1.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.pbZoomed)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.pbDwZoomed)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudEnhancedContrast)).BeginInit();
 			this.panelSmall.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pbDwSmall)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.pbZoomed)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.pbDwZoomed)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// panelContent
 			// 
 			this.panelContent.AutoScroll = true;
-			this.panelContent.Controls.Add(this.linkAboutClearTypeLevel);
+			this.panelContent.Controls.Add(this.cbFontAntialiasing);
+			this.panelContent.Controls.Add(this.panelAaMode);
+			this.panelContent.Controls.Add(this.lblGdiHeader);
+			this.panelContent.Controls.Add(this.panelRuleGdi);
+			this.panelContent.Controls.Add(this.lblGdiContrast);
+			this.panelContent.Controls.Add(this.nudGdiContrast);
+			this.panelContent.Controls.Add(this.linkGdiContrast);
+			this.panelContent.Controls.Add(this.lblGdiContrastRange);
+			this.panelContent.Controls.Add(this.lblDwHeader);
+			this.panelContent.Controls.Add(this.panelRuleDw);
+			this.panelContent.Controls.Add(this.lblDwContrast);
+			this.panelContent.Controls.Add(this.nudDwContrast);
+			this.panelContent.Controls.Add(this.linkDwContrast);
+			this.panelContent.Controls.Add(this.lblDwContrastRange);
+			this.panelContent.Controls.Add(this.lblClearTypeLevel);
+			this.panelContent.Controls.Add(this.nudClearTypeLevel);
+			this.panelContent.Controls.Add(this.linkClearTypeLevel);
+			this.panelContent.Controls.Add(this.lblClearTypeLevelRange);
+			this.panelContent.Controls.Add(this.lblEnhancedContrast);
+			this.panelContent.Controls.Add(this.nudEnhancedContrast);
+			this.panelContent.Controls.Add(this.linkEnhancedContrast);
+			this.panelContent.Controls.Add(this.lblEnhancedContrastRange);
+			this.panelContent.Controls.Add(this.btnApply);
+			this.panelContent.Controls.Add(this.btnRestoreDefaults);
+			this.panelContent.Controls.Add(this.lblNotAdmin);
+			this.panelContent.Controls.Add(this.lblNotes);
+			this.panelContent.Controls.Add(this.lblGdiSmallHeader);
+			this.panelContent.Controls.Add(this.panelSmall);
+			this.panelContent.Controls.Add(this.lblDwSmallHeader);
+			this.panelContent.Controls.Add(this.pbDwSmall);
+			this.panelContent.Controls.Add(this.lblGdiZoomHeader);
+			this.panelContent.Controls.Add(this.pbZoomed);
+			this.panelContent.Controls.Add(this.lblDwZoomHeader);
+			this.panelContent.Controls.Add(this.pbDwZoomed);
 			this.panelContent.Controls.Add(this.cbDarkmode);
 			this.panelContent.Controls.Add(this.btnChangeFont);
-			this.panelContent.Controls.Add(this.lblNotAdmin);
-			this.panelContent.Controls.Add(this.label9);
-			this.panelContent.Controls.Add(this.lblDwSmallHeader);
-			this.panelContent.Controls.Add(this.lblDwZoomHeader);
-			this.panelContent.Controls.Add(this.label8);
-			this.panelContent.Controls.Add(this.btnSet);
-			this.panelContent.Controls.Add(this.label7);
-			this.panelContent.Controls.Add(this.label6);
-			this.panelContent.Controls.Add(this.btnRestoreDefaults);
-			this.panelContent.Controls.Add(this.labelClearTypeLevelRange);
-			this.panelContent.Controls.Add(this.labelClearTypeLevel);
-			this.panelContent.Controls.Add(this.nudClearTypeLevel);
-			this.panelContent.Controls.Add(this.label5);
-			this.panelContent.Controls.Add(this.label4);
-			this.panelContent.Controls.Add(this.nudContrast);
-			this.panelContent.Controls.Add(this.panel1);
-			this.panelContent.Controls.Add(this.cbFontAntialiasing);
-			this.panelContent.Controls.Add(this.pbZoomed);
-			this.panelContent.Controls.Add(this.pbDwZoomed);
-			this.panelContent.Controls.Add(this.panelSmall);
-			this.panelContent.Controls.Add(this.pbDwSmall);
 			this.panelContent.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelContent.Location = new System.Drawing.Point(0, 0);
-			this.panelContent.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.panelContent.Margin = new System.Windows.Forms.Padding(4);
 			this.panelContent.Name = "panelContent";
-			this.panelContent.Size = new System.Drawing.Size(1420, 674);
+			this.panelContent.Size = new System.Drawing.Size(1485, 680);
 			this.panelContent.TabIndex = 0;
 			// 
-			// cbDarkmode
+			// cbFontAntialiasing
 			// 
-			this.cbDarkmode.BackColor = System.Drawing.Color.Transparent;
-			this.cbDarkmode.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.cbDarkmode.Location = new System.Drawing.Point(1122, 5);
-			this.cbDarkmode.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-			this.cbDarkmode.Name = "cbDarkmode";
-			this.cbDarkmode.Size = new System.Drawing.Size(125, 25);
-			this.cbDarkmode.TabIndex = 8;
-			this.cbDarkmode.Text = "Dark Mode";
-			this.cbDarkmode.UseVisualStyleBackColor = false;
-			this.cbDarkmode.CheckedChanged += new System.EventHandler(this.cbDarkmode_CheckedChanged);
+			this.cbFontAntialiasing.BackColor = System.Drawing.Color.Transparent;
+			this.cbFontAntialiasing.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.cbFontAntialiasing.Location = new System.Drawing.Point(15, 6);
+			this.cbFontAntialiasing.Margin = new System.Windows.Forms.Padding(4);
+			this.cbFontAntialiasing.Name = "cbFontAntialiasing";
+			this.cbFontAntialiasing.Size = new System.Drawing.Size(250, 25);
+			this.cbFontAntialiasing.TabIndex = 1;
+			this.cbFontAntialiasing.Text = "Enable Font Antialiasing";
+			this.toolTip1.SetToolTip(this.cbFontAntialiasing, "SystemParametersInfo: SPI_SETFONTSMOOTHING\r\nWith antialiasing off, every other se" +
+        "tting below is ignored,\r\nbecause text is drawn with hard pixel edges only.");
+			this.cbFontAntialiasing.UseVisualStyleBackColor = false;
+			this.cbFontAntialiasing.CheckedChanged += new System.EventHandler(this.ControlsChanged);
 			// 
-			// btnChangeFont
+			// panelAaMode
 			// 
-			this.btnChangeFont.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnChangeFont.Location = new System.Drawing.Point(1256, 2);
-			this.btnChangeFont.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-			this.btnChangeFont.Name = "btnChangeFont";
-			this.btnChangeFont.Size = new System.Drawing.Size(149, 29);
-			this.btnChangeFont.TabIndex = 9;
-			this.btnChangeFont.Text = "Change Font";
-			this.btnChangeFont.UseVisualStyleBackColor = true;
-			this.btnChangeFont.Click += new System.EventHandler(this.btnChangeFont_Click);
+			this.panelAaMode.Controls.Add(this.rbBGR);
+			this.panelAaMode.Controls.Add(this.rbRGB);
+			this.panelAaMode.Controls.Add(this.rbGrayscale);
+			this.panelAaMode.Location = new System.Drawing.Point(15, 32);
+			this.panelAaMode.Margin = new System.Windows.Forms.Padding(4);
+			this.panelAaMode.Name = "panelAaMode";
+			this.panelAaMode.Size = new System.Drawing.Size(340, 88);
+			this.panelAaMode.TabIndex = 2;
 			// 
-			// lblNotAdmin
+			// rbBGR
 			// 
-			this.lblNotAdmin.BackColor = System.Drawing.Color.White;
-			this.lblNotAdmin.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.lblNotAdmin.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblNotAdmin.ForeColor = System.Drawing.Color.Red;
-			this.lblNotAdmin.Location = new System.Drawing.Point(4, 289);
-			this.lblNotAdmin.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-			this.lblNotAdmin.Name = "lblNotAdmin";
-			this.lblNotAdmin.Size = new System.Drawing.Size(214, 33);
-			this.lblNotAdmin.TabIndex = 16;
-			this.lblNotAdmin.Text = "Please run as administrator";
-			this.lblNotAdmin.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.rbBGR.BackColor = System.Drawing.Color.Transparent;
+			this.rbBGR.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.rbBGR.Location = new System.Drawing.Point(24, 60);
+			this.rbBGR.Margin = new System.Windows.Forms.Padding(4);
+			this.rbBGR.Name = "rbBGR";
+			this.rbBGR.Size = new System.Drawing.Size(200, 25);
+			this.rbBGR.TabIndex = 2;
+			this.rbBGR.TabStop = true;
+			this.rbBGR.Text = "BGR";
+			this.toolTip1.SetToolTip(this.rbBGR, "ClearType subpixel antialiasing for displays whose subpixels\r\nare ordered blue, g" +
+        "reen, red from left to right.");
+			this.rbBGR.UseVisualStyleBackColor = false;
+			this.rbBGR.CheckedChanged += new System.EventHandler(this.ControlsChanged);
 			// 
-			// label9
+			// rbRGB
 			// 
-			this.label9.BackColor = System.Drawing.Color.Transparent;
-			this.label9.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label9.Location = new System.Drawing.Point(305, 8);
-			this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-			this.label9.Name = "label9";
-			this.label9.Size = new System.Drawing.Size(800, 20);
-			this.label9.TabIndex = 15;
-			this.label9.Text = "400% Zoomed — GDI  (this app, File Explorer, Chrome)";
-			this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.label9.Click += new System.EventHandler(this.label9_Click);
+			this.rbRGB.BackColor = System.Drawing.Color.Transparent;
+			this.rbRGB.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.rbRGB.Location = new System.Drawing.Point(24, 31);
+			this.rbRGB.Margin = new System.Windows.Forms.Padding(4);
+			this.rbRGB.Name = "rbRGB";
+			this.rbRGB.Size = new System.Drawing.Size(200, 25);
+			this.rbRGB.TabIndex = 1;
+			this.rbRGB.TabStop = true;
+			this.rbRGB.Text = "RGB";
+			this.toolTip1.SetToolTip(this.rbRGB, "ClearType subpixel antialiasing for displays whose subpixels\r\nare ordered red, gr" +
+        "een, blue from left to right.  This is by far\r\nthe most common layout.");
+			this.rbRGB.UseVisualStyleBackColor = false;
+			this.rbRGB.CheckedChanged += new System.EventHandler(this.ControlsChanged);
 			// 
-			// lblDwSmallHeader
+			// rbGrayscale
 			// 
-			this.lblDwSmallHeader.BackColor = System.Drawing.Color.Transparent;
-			this.lblDwSmallHeader.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblDwSmallHeader.Location = new System.Drawing.Point(15, 561);
-			this.lblDwSmallHeader.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-			this.lblDwSmallHeader.Name = "lblDwSmallHeader";
-			this.lblDwSmallHeader.Size = new System.Drawing.Size(275, 18);
-			this.lblDwSmallHeader.TabIndex = 21;
-			this.lblDwSmallHeader.Text = "Normal Scale — DirectWrite:";
+			this.rbGrayscale.BackColor = System.Drawing.Color.Transparent;
+			this.rbGrayscale.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.rbGrayscale.Location = new System.Drawing.Point(24, 2);
+			this.rbGrayscale.Margin = new System.Windows.Forms.Padding(4);
+			this.rbGrayscale.Name = "rbGrayscale";
+			this.rbGrayscale.Size = new System.Drawing.Size(200, 25);
+			this.rbGrayscale.TabIndex = 0;
+			this.rbGrayscale.TabStop = true;
+			this.rbGrayscale.Text = "Grayscale";
+			this.toolTip1.SetToolTip(this.rbGrayscale, "SystemParametersInfo: SPI_SETFONTSMOOTHINGTYPE = Standard\r\nSmooths with shades of" +
+        " gray only, so there is no color fringing.");
+			this.rbGrayscale.UseVisualStyleBackColor = false;
+			this.rbGrayscale.CheckedChanged += new System.EventHandler(this.ControlsChanged);
 			// 
-			// lblDwZoomHeader
+			// lblGdiHeader
 			// 
-			this.lblDwZoomHeader.BackColor = System.Drawing.Color.Transparent;
-			this.lblDwZoomHeader.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblDwZoomHeader.Location = new System.Drawing.Point(305, 344);
-			this.lblDwZoomHeader.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-			this.lblDwZoomHeader.Name = "lblDwZoomHeader";
-			this.lblDwZoomHeader.Size = new System.Drawing.Size(1100, 20);
-			this.lblDwZoomHeader.TabIndex = 22;
-			this.lblDwZoomHeader.Text = "400% Zoomed — DirectWrite  (Firefox, Edge, WPF).  Honors ClearType Level, live.";
-			this.lblDwZoomHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.lblGdiHeader.BackColor = System.Drawing.Color.Transparent;
+			this.lblGdiHeader.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblGdiHeader.Location = new System.Drawing.Point(15, 126);
+			this.lblGdiHeader.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.lblGdiHeader.Name = "lblGdiHeader";
+			this.lblGdiHeader.Size = new System.Drawing.Size(340, 20);
+			this.lblGdiHeader.TabIndex = 3;
+			this.lblGdiHeader.Text = "GDI  (this app, File Explorer, Chrome)";
+			this.lblGdiHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
-			// label8
+			// panelRuleGdi
 			// 
-			this.label8.AutoEllipsis = true;
-			this.label8.BackColor = System.Drawing.Color.Transparent;
-			this.label8.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label8.Location = new System.Drawing.Point(15, 370);
-			this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-			this.label8.Name = "label8";
-			this.label8.Size = new System.Drawing.Size(275, 80);
-			this.label8.TabIndex = 14;
-			this.label8.Text = "The font-smoothing settings chosen above affect all connected displays, because W" +
-    "indows 10 1903 currently does not offer a functional way to set these per-monito" +
-    "r.";
+			this.panelRuleGdi.BackColor = System.Drawing.SystemColors.ControlDark;
+			this.panelRuleGdi.Location = new System.Drawing.Point(15, 146);
+			this.panelRuleGdi.Margin = new System.Windows.Forms.Padding(4);
+			this.panelRuleGdi.Name = "panelRuleGdi";
+			this.panelRuleGdi.Size = new System.Drawing.Size(340, 1);
+			this.panelRuleGdi.TabIndex = 4;
 			// 
-			// btnSet
+			// lblGdiContrast
 			// 
-			this.btnSet.Location = new System.Drawing.Point(161, 131);
-			this.btnSet.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-			this.btnSet.Name = "btnSet";
-			this.btnSet.Size = new System.Drawing.Size(54, 29);
-			this.btnSet.TabIndex = 6;
-			this.btnSet.Text = "> set";
-			this.toolTip1.SetToolTip(this.btnSet, "Contrast is set when you unfocus the contrast control, or when you click this but" +
-        "ton.");
-			this.btnSet.UseVisualStyleBackColor = true;
-			this.btnSet.Click += new System.EventHandler(this.ControlsChanged);
+			this.lblGdiContrast.BackColor = System.Drawing.Color.Transparent;
+			this.lblGdiContrast.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblGdiContrast.Location = new System.Drawing.Point(15, 152);
+			this.lblGdiContrast.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.lblGdiContrast.Name = "lblGdiContrast";
+			this.lblGdiContrast.Size = new System.Drawing.Size(138, 30);
+			this.lblGdiContrast.TabIndex = 5;
+			this.lblGdiContrast.Text = "Contrast:";
+			this.lblGdiContrast.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
-			// label7
+			// nudGdiContrast
 			// 
-			this.label7.AutoEllipsis = true;
-			this.label7.BackColor = System.Drawing.Color.Transparent;
-			this.label7.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label7.Location = new System.Drawing.Point(15, 329);
-			this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(275, 38);
-			this.label7.TabIndex = 12;
-			this.label7.Text = "You may need to reboot your computer for changes to take effect everywhere.\r\n";
+			this.nudGdiContrast.BackColor = System.Drawing.Color.White;
+			this.nudGdiContrast.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.nudGdiContrast.ForeColor = System.Drawing.Color.Black;
+			this.nudGdiContrast.Increment = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+			this.nudGdiContrast.Location = new System.Drawing.Point(157, 154);
+			this.nudGdiContrast.Margin = new System.Windows.Forms.Padding(4);
+			this.nudGdiContrast.Maximum = new decimal(new int[] {
+            2200,
+            0,
+            0,
+            0});
+			this.nudGdiContrast.Minimum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+			this.nudGdiContrast.Name = "nudGdiContrast";
+			this.nudGdiContrast.Size = new System.Drawing.Size(68, 26);
+			this.nudGdiContrast.TabIndex = 6;
+			this.nudGdiContrast.Value = new decimal(new int[] {
+            1200,
+            0,
+            0,
+            0});
+			this.nudGdiContrast.ValueChanged += new System.EventHandler(this.ControlsChanged);
 			// 
-			// label6
+			// linkGdiContrast
 			// 
-			this.label6.BackColor = System.Drawing.Color.Transparent;
-			this.label6.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label6.Location = new System.Drawing.Point(15, 458);
-			this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(275, 18);
-			this.label6.TabIndex = 11;
-			this.label6.Text = "Normal Scale — GDI:";
+			this.linkGdiContrast.BackColor = System.Drawing.Color.Transparent;
+			this.linkGdiContrast.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.linkGdiContrast.Location = new System.Drawing.Point(329, 157);
+			this.linkGdiContrast.Name = "linkGdiContrast";
+			this.linkGdiContrast.Size = new System.Drawing.Size(24, 20);
+			this.linkGdiContrast.TabIndex = 7;
+			this.linkGdiContrast.TabStop = true;
+			this.linkGdiContrast.Text = "[?]";
+			this.linkGdiContrast.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkGdiContrast_LinkClicked);
 			// 
-			// btnRestoreDefaults
+			// lblGdiContrastRange
 			// 
-			this.btnRestoreDefaults.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnRestoreDefaults.Location = new System.Drawing.Point(11, 250);
-			this.btnRestoreDefaults.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-			this.btnRestoreDefaults.Name = "btnRestoreDefaults";
-			this.btnRestoreDefaults.Size = new System.Drawing.Size(199, 29);
-			this.btnRestoreDefaults.TabIndex = 7;
-			this.btnRestoreDefaults.Text = "Restore Defaults";
-			this.toolTip1.SetToolTip(this.btnRestoreDefaults, "Deletes legacy registry keys and \r\nrestores common default settings:\r\n* RGB subpi" +
-        "xel antialiasing\r\n* contrast 1200\r\n* ClearType Level 100");
-			this.btnRestoreDefaults.UseVisualStyleBackColor = true;
-			this.btnRestoreDefaults.Click += new System.EventHandler(this.BtnRestoreDefaults_Click);
+			this.lblGdiContrastRange.BackColor = System.Drawing.Color.Transparent;
+			this.lblGdiContrastRange.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblGdiContrastRange.Location = new System.Drawing.Point(229, 152);
+			this.lblGdiContrastRange.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.lblGdiContrastRange.Name = "lblGdiContrastRange";
+			this.lblGdiContrastRange.Size = new System.Drawing.Size(96, 30);
+			this.lblGdiContrastRange.TabIndex = 8;
+			this.lblGdiContrastRange.Text = "[1000-2200]";
+			this.lblGdiContrastRange.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
-			// labelClearTypeLevelRange
+			// lblDwHeader
 			// 
-			this.labelClearTypeLevelRange.BackColor = System.Drawing.Color.Transparent;
-			this.labelClearTypeLevelRange.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelClearTypeLevelRange.Location = new System.Drawing.Point(82, 220);
-			this.labelClearTypeLevelRange.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-			this.labelClearTypeLevelRange.Name = "labelClearTypeLevelRange";
-			this.labelClearTypeLevelRange.Size = new System.Drawing.Size(110, 24);
-			this.labelClearTypeLevelRange.TabIndex = 20;
-			this.labelClearTypeLevelRange.Text = "[0-100]";
+			this.lblDwHeader.BackColor = System.Drawing.Color.Transparent;
+			this.lblDwHeader.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblDwHeader.Location = new System.Drawing.Point(15, 190);
+			this.lblDwHeader.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.lblDwHeader.Name = "lblDwHeader";
+			this.lblDwHeader.Size = new System.Drawing.Size(340, 20);
+			this.lblDwHeader.TabIndex = 9;
+			this.lblDwHeader.Text = "DirectWrite  (Firefox, Edge, WPF)";
+			this.lblDwHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
-			// labelClearTypeLevel
+			// panelRuleDw
 			// 
-			this.labelClearTypeLevel.BackColor = System.Drawing.Color.Transparent;
-			this.labelClearTypeLevel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelClearTypeLevel.Location = new System.Drawing.Point(11, 178);
-			this.labelClearTypeLevel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-			this.labelClearTypeLevel.Name = "labelClearTypeLevel";
-			this.labelClearTypeLevel.Size = new System.Drawing.Size(74, 46);
-			this.labelClearTypeLevel.TabIndex = 19;
-			this.labelClearTypeLevel.Text = "ClearType\r\nLevel:";
-			this.labelClearTypeLevel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.toolTip1.SetToolTip(this.labelClearTypeLevel, "Registry: HKCU\\Software\\Microsoft\\Avalon.Graphics\\<display>\\ClearTypeLevel\r\nSame " +
-        "setting as Windows ClearType Tuner step for color intensity.");
+			this.panelRuleDw.BackColor = System.Drawing.SystemColors.ControlDark;
+			this.panelRuleDw.Location = new System.Drawing.Point(15, 210);
+			this.panelRuleDw.Margin = new System.Windows.Forms.Padding(4);
+			this.panelRuleDw.Name = "panelRuleDw";
+			this.panelRuleDw.Size = new System.Drawing.Size(340, 1);
+			this.panelRuleDw.TabIndex = 10;
+			// 
+			// lblDwContrast
+			// 
+			this.lblDwContrast.BackColor = System.Drawing.Color.Transparent;
+			this.lblDwContrast.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblDwContrast.Location = new System.Drawing.Point(15, 216);
+			this.lblDwContrast.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.lblDwContrast.Name = "lblDwContrast";
+			this.lblDwContrast.Size = new System.Drawing.Size(138, 30);
+			this.lblDwContrast.TabIndex = 11;
+			this.lblDwContrast.Text = "Contrast:";
+			this.lblDwContrast.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// nudDwContrast
+			// 
+			this.nudDwContrast.BackColor = System.Drawing.Color.White;
+			this.nudDwContrast.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.nudDwContrast.ForeColor = System.Drawing.Color.Black;
+			this.nudDwContrast.Increment = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+			this.nudDwContrast.Location = new System.Drawing.Point(157, 218);
+			this.nudDwContrast.Margin = new System.Windows.Forms.Padding(4);
+			this.nudDwContrast.Maximum = new decimal(new int[] {
+            2200,
+            0,
+            0,
+            0});
+			this.nudDwContrast.Minimum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+			this.nudDwContrast.Name = "nudDwContrast";
+			this.nudDwContrast.Size = new System.Drawing.Size(68, 26);
+			this.nudDwContrast.TabIndex = 12;
+			this.nudDwContrast.Value = new decimal(new int[] {
+            1900,
+            0,
+            0,
+            0});
+			this.nudDwContrast.ValueChanged += new System.EventHandler(this.ControlsChanged);
+			// 
+			// linkDwContrast
+			// 
+			this.linkDwContrast.BackColor = System.Drawing.Color.Transparent;
+			this.linkDwContrast.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.linkDwContrast.Location = new System.Drawing.Point(329, 221);
+			this.linkDwContrast.Name = "linkDwContrast";
+			this.linkDwContrast.Size = new System.Drawing.Size(24, 20);
+			this.linkDwContrast.TabIndex = 13;
+			this.linkDwContrast.TabStop = true;
+			this.linkDwContrast.Text = "[?]";
+			this.linkDwContrast.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkDwContrast_LinkClicked);
+			// 
+			// lblDwContrastRange
+			// 
+			this.lblDwContrastRange.BackColor = System.Drawing.Color.Transparent;
+			this.lblDwContrastRange.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblDwContrastRange.Location = new System.Drawing.Point(229, 216);
+			this.lblDwContrastRange.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.lblDwContrastRange.Name = "lblDwContrastRange";
+			this.lblDwContrastRange.Size = new System.Drawing.Size(96, 30);
+			this.lblDwContrastRange.TabIndex = 14;
+			this.lblDwContrastRange.Text = "[1000-2200]";
+			this.lblDwContrastRange.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// lblClearTypeLevel
+			// 
+			this.lblClearTypeLevel.BackColor = System.Drawing.Color.Transparent;
+			this.lblClearTypeLevel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblClearTypeLevel.Location = new System.Drawing.Point(15, 248);
+			this.lblClearTypeLevel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.lblClearTypeLevel.Name = "lblClearTypeLevel";
+			this.lblClearTypeLevel.Size = new System.Drawing.Size(138, 30);
+			this.lblClearTypeLevel.TabIndex = 15;
+			this.lblClearTypeLevel.Text = "ClearType Level:";
+			this.lblClearTypeLevel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// nudClearTypeLevel
 			// 
@@ -288,12 +414,11 @@
             0,
             0,
             0});
-			this.nudClearTypeLevel.Location = new System.Drawing.Point(86, 190);
-			this.nudClearTypeLevel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.nudClearTypeLevel.Location = new System.Drawing.Point(157, 250);
+			this.nudClearTypeLevel.Margin = new System.Windows.Forms.Padding(4);
 			this.nudClearTypeLevel.Name = "nudClearTypeLevel";
 			this.nudClearTypeLevel.Size = new System.Drawing.Size(68, 26);
-			this.nudClearTypeLevel.TabIndex = 10;
-			this.toolTip1.SetToolTip(this.nudClearTypeLevel, resources.GetString("nudClearTypeLevel.ToolTip"));
+			this.nudClearTypeLevel.TabIndex = 16;
 			this.nudClearTypeLevel.Value = new decimal(new int[] {
             100,
             0,
@@ -301,140 +426,158 @@
             0});
 			this.nudClearTypeLevel.ValueChanged += new System.EventHandler(this.ControlsChanged);
 			// 
-			// label5
+			// linkClearTypeLevel
 			// 
-			this.label5.BackColor = System.Drawing.Color.Transparent;
-			this.label5.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label5.Location = new System.Drawing.Point(82, 161);
-			this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(110, 22);
-			this.label5.TabIndex = 9;
-			this.label5.Text = "[1000-2200]";
+			this.linkClearTypeLevel.BackColor = System.Drawing.Color.Transparent;
+			this.linkClearTypeLevel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.linkClearTypeLevel.Location = new System.Drawing.Point(329, 253);
+			this.linkClearTypeLevel.Name = "linkClearTypeLevel";
+			this.linkClearTypeLevel.Size = new System.Drawing.Size(24, 20);
+			this.linkClearTypeLevel.TabIndex = 17;
+			this.linkClearTypeLevel.TabStop = true;
+			this.linkClearTypeLevel.Text = "[?]";
+			this.linkClearTypeLevel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkClearTypeLevel_LinkClicked);
 			// 
-			// label4
+			// lblClearTypeLevelRange
 			// 
-			this.label4.BackColor = System.Drawing.Color.Transparent;
-			this.label4.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label4.Location = new System.Drawing.Point(11, 135);
-			this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(68, 22);
-			this.label4.TabIndex = 8;
-			this.label4.Text = "Contrast:";
+			this.lblClearTypeLevelRange.BackColor = System.Drawing.Color.Transparent;
+			this.lblClearTypeLevelRange.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblClearTypeLevelRange.Location = new System.Drawing.Point(229, 248);
+			this.lblClearTypeLevelRange.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.lblClearTypeLevelRange.Name = "lblClearTypeLevelRange";
+			this.lblClearTypeLevelRange.Size = new System.Drawing.Size(96, 30);
+			this.lblClearTypeLevelRange.TabIndex = 18;
+			this.lblClearTypeLevelRange.Text = "[0-100]";
+			this.lblClearTypeLevelRange.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
-			// nudContrast
+			// lblEnhancedContrast
 			// 
-			this.nudContrast.BackColor = System.Drawing.Color.White;
-			this.nudContrast.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.nudContrast.ForeColor = System.Drawing.Color.Black;
-			this.nudContrast.Increment = new decimal(new int[] {
-            100,
+			this.lblEnhancedContrast.BackColor = System.Drawing.Color.Transparent;
+			this.lblEnhancedContrast.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblEnhancedContrast.Location = new System.Drawing.Point(15, 280);
+			this.lblEnhancedContrast.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.lblEnhancedContrast.Name = "lblEnhancedContrast";
+			this.lblEnhancedContrast.Size = new System.Drawing.Size(138, 30);
+			this.lblEnhancedContrast.TabIndex = 19;
+			this.lblEnhancedContrast.Text = "Enhanced Contrast:";
+			this.lblEnhancedContrast.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// nudEnhancedContrast
+			// 
+			this.nudEnhancedContrast.BackColor = System.Drawing.Color.White;
+			this.nudEnhancedContrast.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.nudEnhancedContrast.ForeColor = System.Drawing.Color.Black;
+			this.nudEnhancedContrast.Increment = new decimal(new int[] {
+            10,
             0,
             0,
             0});
-			this.nudContrast.Location = new System.Drawing.Point(86, 131);
-			this.nudContrast.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-			this.nudContrast.Maximum = new decimal(new int[] {
-            2200,
+			this.nudEnhancedContrast.Location = new System.Drawing.Point(157, 282);
+			this.nudEnhancedContrast.Margin = new System.Windows.Forms.Padding(4);
+			this.nudEnhancedContrast.Maximum = new decimal(new int[] {
+            400,
             0,
             0,
             0});
-			this.nudContrast.Name = "nudContrast";
-			this.nudContrast.Size = new System.Drawing.Size(68, 26);
-			this.nudContrast.TabIndex = 5;
-			this.nudContrast.Value = new decimal(new int[] {
-            1200,
+			this.nudEnhancedContrast.Name = "nudEnhancedContrast";
+			this.nudEnhancedContrast.Size = new System.Drawing.Size(68, 26);
+			this.nudEnhancedContrast.TabIndex = 20;
+			this.nudEnhancedContrast.Value = new decimal(new int[] {
+            50,
             0,
             0,
             0});
-			this.nudContrast.ValueChanged += new System.EventHandler(this.ControlsChanged);
+			this.nudEnhancedContrast.ValueChanged += new System.EventHandler(this.ControlsChanged);
 			// 
-			// panel1
+			// linkEnhancedContrast
 			// 
-			this.panel1.Controls.Add(this.rbBGR);
-			this.panel1.Controls.Add(this.rbRGB);
-			this.panel1.Controls.Add(this.rbGrayscale);
-			this.panel1.Location = new System.Drawing.Point(15, 38);
-			this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(200, 88);
-			this.panel1.TabIndex = 2;
+			this.linkEnhancedContrast.BackColor = System.Drawing.Color.Transparent;
+			this.linkEnhancedContrast.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.linkEnhancedContrast.Location = new System.Drawing.Point(329, 285);
+			this.linkEnhancedContrast.Name = "linkEnhancedContrast";
+			this.linkEnhancedContrast.Size = new System.Drawing.Size(24, 20);
+			this.linkEnhancedContrast.TabIndex = 21;
+			this.linkEnhancedContrast.TabStop = true;
+			this.linkEnhancedContrast.Text = "[?]";
+			this.linkEnhancedContrast.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkEnhancedContrast_LinkClicked);
 			// 
-			// rbBGR
+			// lblEnhancedContrastRange
 			// 
-			this.rbBGR.BackColor = System.Drawing.Color.Transparent;
-			this.rbBGR.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.rbBGR.Location = new System.Drawing.Point(24, 60);
-			this.rbBGR.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-			this.rbBGR.Name = "rbBGR";
-			this.rbBGR.Size = new System.Drawing.Size(172, 25);
-			this.rbBGR.TabIndex = 4;
-			this.rbBGR.TabStop = true;
-			this.rbBGR.Text = "BGR";
-			this.rbBGR.UseVisualStyleBackColor = false;
-			this.rbBGR.CheckedChanged += new System.EventHandler(this.ControlsChanged);
+			this.lblEnhancedContrastRange.BackColor = System.Drawing.Color.Transparent;
+			this.lblEnhancedContrastRange.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblEnhancedContrastRange.Location = new System.Drawing.Point(229, 280);
+			this.lblEnhancedContrastRange.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.lblEnhancedContrastRange.Name = "lblEnhancedContrastRange";
+			this.lblEnhancedContrastRange.Size = new System.Drawing.Size(96, 30);
+			this.lblEnhancedContrastRange.TabIndex = 22;
+			this.lblEnhancedContrastRange.Text = "[0-400]";
+			this.lblEnhancedContrastRange.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
-			// rbRGB
+			// btnApply
 			// 
-			this.rbRGB.BackColor = System.Drawing.Color.Transparent;
-			this.rbRGB.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.rbRGB.Location = new System.Drawing.Point(24, 31);
-			this.rbRGB.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-			this.rbRGB.Name = "rbRGB";
-			this.rbRGB.Size = new System.Drawing.Size(172, 25);
-			this.rbRGB.TabIndex = 3;
-			this.rbRGB.TabStop = true;
-			this.rbRGB.Text = "RGB";
-			this.rbRGB.UseVisualStyleBackColor = false;
-			this.rbRGB.CheckedChanged += new System.EventHandler(this.ControlsChanged);
+			this.btnApply.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.btnApply.Location = new System.Drawing.Point(15, 318);
+			this.btnApply.Margin = new System.Windows.Forms.Padding(4);
+			this.btnApply.Name = "btnApply";
+			this.btnApply.Size = new System.Drawing.Size(110, 29);
+			this.btnApply.TabIndex = 23;
+			this.btnApply.Text = "Apply";
+			this.toolTip1.SetToolTip(this.btnApply, "Values are applied when you leave a box after typing in it,\r\nor when you click th" +
+        "is button.");
+			this.btnApply.UseVisualStyleBackColor = true;
+			this.btnApply.Click += new System.EventHandler(this.btnApply_Click);
 			// 
-			// rbGrayscale
+			// btnRestoreDefaults
 			// 
-			this.rbGrayscale.BackColor = System.Drawing.Color.Transparent;
-			this.rbGrayscale.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.rbGrayscale.Location = new System.Drawing.Point(24, 2);
-			this.rbGrayscale.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-			this.rbGrayscale.Name = "rbGrayscale";
-			this.rbGrayscale.Size = new System.Drawing.Size(172, 25);
-			this.rbGrayscale.TabIndex = 2;
-			this.rbGrayscale.TabStop = true;
-			this.rbGrayscale.Text = "Grayscale";
-			this.rbGrayscale.UseVisualStyleBackColor = false;
-			this.rbGrayscale.CheckedChanged += new System.EventHandler(this.ControlsChanged);
+			this.btnRestoreDefaults.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.btnRestoreDefaults.Location = new System.Drawing.Point(133, 318);
+			this.btnRestoreDefaults.Margin = new System.Windows.Forms.Padding(4);
+			this.btnRestoreDefaults.Name = "btnRestoreDefaults";
+			this.btnRestoreDefaults.Size = new System.Drawing.Size(170, 29);
+			this.btnRestoreDefaults.TabIndex = 24;
+			this.btnRestoreDefaults.Text = "Restore Defaults";
+			this.toolTip1.SetToolTip(this.btnRestoreDefaults, resources.GetString("btnRestoreDefaults.ToolTip"));
+			this.btnRestoreDefaults.UseVisualStyleBackColor = true;
+			this.btnRestoreDefaults.Click += new System.EventHandler(this.BtnRestoreDefaults_Click);
 			// 
-			// cbFontAntialiasing
+			// lblNotAdmin
 			// 
-			this.cbFontAntialiasing.BackColor = System.Drawing.Color.Transparent;
-			this.cbFontAntialiasing.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.cbFontAntialiasing.Location = new System.Drawing.Point(15, 10);
-			this.cbFontAntialiasing.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-			this.cbFontAntialiasing.Name = "cbFontAntialiasing";
-			this.cbFontAntialiasing.Size = new System.Drawing.Size(221, 25);
-			this.cbFontAntialiasing.TabIndex = 1;
-			this.cbFontAntialiasing.Text = "Enable Font Antialiasing";
-			this.cbFontAntialiasing.UseVisualStyleBackColor = false;
-			this.cbFontAntialiasing.CheckedChanged += new System.EventHandler(this.ControlsChanged);
+			this.lblNotAdmin.BackColor = System.Drawing.Color.White;
+			this.lblNotAdmin.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.lblNotAdmin.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblNotAdmin.ForeColor = System.Drawing.Color.Red;
+			this.lblNotAdmin.Location = new System.Drawing.Point(15, 352);
+			this.lblNotAdmin.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.lblNotAdmin.Name = "lblNotAdmin";
+			this.lblNotAdmin.Size = new System.Drawing.Size(250, 28);
+			this.lblNotAdmin.TabIndex = 25;
+			this.lblNotAdmin.Text = "Please run as administrator";
+			this.lblNotAdmin.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
-			// pbZoomed
+			// lblNotes
 			// 
-			this.pbZoomed.BackColor = System.Drawing.Color.White;
-			this.pbZoomed.Location = new System.Drawing.Point(305, 31);
-			this.pbZoomed.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-			this.pbZoomed.Name = "pbZoomed";
-			this.pbZoomed.Size = new System.Drawing.Size(1100, 300);
-			this.pbZoomed.TabIndex = 2;
-			this.pbZoomed.TabStop = false;
+			this.lblNotes.AutoEllipsis = true;
+			this.lblNotes.BackColor = System.Drawing.Color.Transparent;
+			this.lblNotes.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblNotes.Location = new System.Drawing.Point(15, 386);
+			this.lblNotes.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.lblNotes.Name = "lblNotes";
+			this.lblNotes.Size = new System.Drawing.Size(340, 90);
+			this.lblNotes.TabIndex = 26;
+			this.lblNotes.Text = "Applications read these settings at startup, so restart them (or reboot) to see t" +
+    "he change everywhere.  All connected displays are affected; Windows has no worki" +
+    "ng per-monitor equivalent.";
 			// 
-			// pbDwZoomed
+			// lblGdiSmallHeader
 			// 
-			this.pbDwZoomed.BackColor = System.Drawing.Color.White;
-			this.pbDwZoomed.Location = new System.Drawing.Point(305, 368);
-			this.pbDwZoomed.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-			this.pbDwZoomed.Name = "pbDwZoomed";
-			this.pbDwZoomed.Size = new System.Drawing.Size(1100, 300);
-			this.pbDwZoomed.TabIndex = 4;
-			this.pbDwZoomed.TabStop = false;
+			this.lblGdiSmallHeader.BackColor = System.Drawing.Color.Transparent;
+			this.lblGdiSmallHeader.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblGdiSmallHeader.Location = new System.Drawing.Point(15, 478);
+			this.lblGdiSmallHeader.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.lblGdiSmallHeader.Name = "lblGdiSmallHeader";
+			this.lblGdiSmallHeader.Size = new System.Drawing.Size(275, 18);
+			this.lblGdiSmallHeader.TabIndex = 27;
+			this.lblGdiSmallHeader.Text = "Normal Scale - GDI:";
 			// 
 			// panelSmall
 			// 
@@ -443,11 +586,11 @@
 			this.panelSmall.Controls.Add(this.lblSample2);
 			this.panelSmall.Controls.Add(this.lblSample1);
 			this.panelSmall.ForeColor = System.Drawing.Color.Black;
-			this.panelSmall.Location = new System.Drawing.Point(15, 479);
-			this.panelSmall.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.panelSmall.Location = new System.Drawing.Point(15, 498);
+			this.panelSmall.Margin = new System.Windows.Forms.Padding(4);
 			this.panelSmall.Name = "panelSmall";
 			this.panelSmall.Size = new System.Drawing.Size(275, 75);
-			this.panelSmall.TabIndex = 1;
+			this.panelSmall.TabIndex = 28;
 			// 
 			// lblSample3
 			// 
@@ -482,15 +625,97 @@
 			this.lblSample1.TabIndex = 0;
 			this.lblSample1.Text = "The quick brown fox jumps over the lazy dog.";
 			// 
+			// lblDwSmallHeader
+			// 
+			this.lblDwSmallHeader.BackColor = System.Drawing.Color.Transparent;
+			this.lblDwSmallHeader.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblDwSmallHeader.Location = new System.Drawing.Point(15, 577);
+			this.lblDwSmallHeader.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.lblDwSmallHeader.Name = "lblDwSmallHeader";
+			this.lblDwSmallHeader.Size = new System.Drawing.Size(275, 18);
+			this.lblDwSmallHeader.TabIndex = 29;
+			this.lblDwSmallHeader.Text = "Normal Scale - DirectWrite:";
+			// 
 			// pbDwSmall
 			// 
 			this.pbDwSmall.BackColor = System.Drawing.Color.White;
-			this.pbDwSmall.Location = new System.Drawing.Point(15, 582);
-			this.pbDwSmall.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.pbDwSmall.Location = new System.Drawing.Point(15, 597);
+			this.pbDwSmall.Margin = new System.Windows.Forms.Padding(4);
 			this.pbDwSmall.Name = "pbDwSmall";
 			this.pbDwSmall.Size = new System.Drawing.Size(275, 75);
-			this.pbDwSmall.TabIndex = 3;
+			this.pbDwSmall.TabIndex = 30;
 			this.pbDwSmall.TabStop = false;
+			// 
+			// lblGdiZoomHeader
+			// 
+			this.lblGdiZoomHeader.BackColor = System.Drawing.Color.Transparent;
+			this.lblGdiZoomHeader.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblGdiZoomHeader.Location = new System.Drawing.Point(370, 6);
+			this.lblGdiZoomHeader.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.lblGdiZoomHeader.Name = "lblGdiZoomHeader";
+			this.lblGdiZoomHeader.Size = new System.Drawing.Size(760, 20);
+			this.lblGdiZoomHeader.TabIndex = 31;
+			this.lblGdiZoomHeader.Text = "400% Zoomed - GDI  (this app, File Explorer, Chrome).  Reflects the settings that" +
+    " are already applied.";
+			this.lblGdiZoomHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// pbZoomed
+			// 
+			this.pbZoomed.BackColor = System.Drawing.Color.White;
+			this.pbZoomed.Location = new System.Drawing.Point(370, 29);
+			this.pbZoomed.Margin = new System.Windows.Forms.Padding(4);
+			this.pbZoomed.Name = "pbZoomed";
+			this.pbZoomed.Size = new System.Drawing.Size(1100, 300);
+			this.pbZoomed.TabIndex = 32;
+			this.pbZoomed.TabStop = false;
+			// 
+			// lblDwZoomHeader
+			// 
+			this.lblDwZoomHeader.BackColor = System.Drawing.Color.Transparent;
+			this.lblDwZoomHeader.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblDwZoomHeader.Location = new System.Drawing.Point(370, 342);
+			this.lblDwZoomHeader.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.lblDwZoomHeader.Name = "lblDwZoomHeader";
+			this.lblDwZoomHeader.Size = new System.Drawing.Size(1100, 20);
+			this.lblDwZoomHeader.TabIndex = 33;
+			this.lblDwZoomHeader.Text = "400% Zoomed - DirectWrite  (Firefox, Edge, WPF).  Live preview: every DirectWrite" +
+    " setting is applied here without a restart.";
+			this.lblDwZoomHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// pbDwZoomed
+			// 
+			this.pbDwZoomed.BackColor = System.Drawing.Color.White;
+			this.pbDwZoomed.Location = new System.Drawing.Point(370, 366);
+			this.pbDwZoomed.Margin = new System.Windows.Forms.Padding(4);
+			this.pbDwZoomed.Name = "pbDwZoomed";
+			this.pbDwZoomed.Size = new System.Drawing.Size(1100, 300);
+			this.pbDwZoomed.TabIndex = 34;
+			this.pbDwZoomed.TabStop = false;
+			// 
+			// cbDarkmode
+			// 
+			this.cbDarkmode.BackColor = System.Drawing.Color.Transparent;
+			this.cbDarkmode.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.cbDarkmode.Location = new System.Drawing.Point(1187, 3);
+			this.cbDarkmode.Margin = new System.Windows.Forms.Padding(4);
+			this.cbDarkmode.Name = "cbDarkmode";
+			this.cbDarkmode.Size = new System.Drawing.Size(125, 25);
+			this.cbDarkmode.TabIndex = 35;
+			this.cbDarkmode.Text = "Dark Mode";
+			this.cbDarkmode.UseVisualStyleBackColor = false;
+			this.cbDarkmode.CheckedChanged += new System.EventHandler(this.cbDarkmode_CheckedChanged);
+			// 
+			// btnChangeFont
+			// 
+			this.btnChangeFont.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.btnChangeFont.Location = new System.Drawing.Point(1321, 0);
+			this.btnChangeFont.Margin = new System.Windows.Forms.Padding(4);
+			this.btnChangeFont.Name = "btnChangeFont";
+			this.btnChangeFont.Size = new System.Drawing.Size(149, 29);
+			this.btnChangeFont.TabIndex = 36;
+			this.btnChangeFont.Text = "Change Font";
+			this.btnChangeFont.UseVisualStyleBackColor = true;
+			this.btnChangeFont.Click += new System.EventHandler(this.btnChangeFont_Click);
 			// 
 			// fontDialog1
 			// 
@@ -501,11 +726,11 @@
 			this.status.BackColor = System.Drawing.Color.Transparent;
 			this.status.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.status.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.status.Location = new System.Drawing.Point(0, 675);
+			this.status.Location = new System.Drawing.Point(0, 681);
 			this.status.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.status.Name = "status";
 			this.status.Padding = new System.Windows.Forms.Padding(8, 4, 8, 0);
-			this.status.Size = new System.Drawing.Size(1420, 25);
+			this.status.Size = new System.Drawing.Size(1485, 25);
 			this.status.TabIndex = 18;
 			this.status.Text = "...";
 			// 
@@ -513,34 +738,23 @@
 			// 
 			this.panelBottomBorder.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.panelBottomBorder.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelBottomBorder.Location = new System.Drawing.Point(0, 674);
-			this.panelBottomBorder.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.panelBottomBorder.Location = new System.Drawing.Point(0, 680);
+			this.panelBottomBorder.Margin = new System.Windows.Forms.Padding(4);
 			this.panelBottomBorder.Name = "panelBottomBorder";
-			this.panelBottomBorder.Size = new System.Drawing.Size(1420, 1);
+			this.panelBottomBorder.Size = new System.Drawing.Size(1485, 1);
 			this.panelBottomBorder.TabIndex = 17;
 			// 
-			// linkAboutClearTypeLevel
-			// 
-			this.linkAboutClearTypeLevel.AutoSize = true;
-			this.linkAboutClearTypeLevel.Location = new System.Drawing.Point(161, 192);
-			this.linkAboutClearTypeLevel.Name = "linkAboutClearTypeLevel";
-			this.linkAboutClearTypeLevel.Size = new System.Drawing.Size(23, 19);
-			this.linkAboutClearTypeLevel.TabIndex = 23;
-			this.linkAboutClearTypeLevel.TabStop = true;
-			this.linkAboutClearTypeLevel.Text = "[?]";
-			this.linkAboutClearTypeLevel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkAboutClearTypeLevel_LinkClicked);
-			//
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.BackColor = System.Drawing.SystemColors.Control;
-			this.ClientSize = new System.Drawing.Size(1420, 700);
+			this.ClientSize = new System.Drawing.Size(1485, 706);
 			this.Controls.Add(this.panelContent);
 			this.Controls.Add(this.panelBottomBorder);
 			this.Controls.Add(this.status);
 			this.Font = new System.Drawing.Font("Segoe UI", 8.25F);
-			this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.Margin = new System.Windows.Forms.Padding(4);
 			this.MinimumSize = new System.Drawing.Size(520, 313);
 			this.Name = "MainForm";
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
@@ -548,14 +762,15 @@
 			this.Load += new System.EventHandler(this.MainForm_Load);
 			this.DpiChanged += new System.Windows.Forms.DpiChangedEventHandler(this.MainForm_DpiChanged);
 			this.panelContent.ResumeLayout(false);
-			this.panelContent.PerformLayout();
+			this.panelAaMode.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.nudGdiContrast)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudDwContrast)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudClearTypeLevel)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.nudContrast)).EndInit();
-			this.panel1.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.pbZoomed)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.pbDwZoomed)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudEnhancedContrast)).EndInit();
 			this.panelSmall.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.pbDwSmall)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.pbZoomed)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.pbDwZoomed)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -563,39 +778,51 @@
 		#endregion
 
 		private System.Windows.Forms.Panel panelContent;
-		private System.Windows.Forms.Label lblSample1;
-		private System.Windows.Forms.Panel panelSmall;
-		private System.Windows.Forms.Label lblSample3;
-		private System.Windows.Forms.Label lblSample2;
-		private System.Windows.Forms.PictureBox pbZoomed;
-		private System.Windows.Forms.PictureBox pbDwSmall;
-		private System.Windows.Forms.PictureBox pbDwZoomed;
 		private System.Windows.Forms.CheckBox cbFontAntialiasing;
+		private System.Windows.Forms.Panel panelAaMode;
 		private System.Windows.Forms.RadioButton rbGrayscale;
-		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.RadioButton rbBGR;
 		private System.Windows.Forms.RadioButton rbRGB;
-		private System.Windows.Forms.NumericUpDown nudContrast;
-		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.Label label5;
+		private System.Windows.Forms.RadioButton rbBGR;
+		private System.Windows.Forms.Label lblGdiHeader;
+		private System.Windows.Forms.Panel panelRuleGdi;
+		private System.Windows.Forms.Label lblGdiContrast;
+		private System.Windows.Forms.NumericUpDown nudGdiContrast;
+		private System.Windows.Forms.LinkLabel linkGdiContrast;
+		private System.Windows.Forms.Label lblGdiContrastRange;
+		private System.Windows.Forms.Label lblDwHeader;
+		private System.Windows.Forms.Panel panelRuleDw;
+		private System.Windows.Forms.Label lblDwContrast;
+		private System.Windows.Forms.NumericUpDown nudDwContrast;
+		private System.Windows.Forms.LinkLabel linkDwContrast;
+		private System.Windows.Forms.Label lblDwContrastRange;
+		private System.Windows.Forms.Label lblClearTypeLevel;
 		private System.Windows.Forms.NumericUpDown nudClearTypeLevel;
-		private System.Windows.Forms.Label labelClearTypeLevel;
-		private System.Windows.Forms.Label labelClearTypeLevelRange;
+		private System.Windows.Forms.LinkLabel linkClearTypeLevel;
+		private System.Windows.Forms.Label lblClearTypeLevelRange;
+		private System.Windows.Forms.Label lblEnhancedContrast;
+		private System.Windows.Forms.NumericUpDown nudEnhancedContrast;
+		private System.Windows.Forms.LinkLabel linkEnhancedContrast;
+		private System.Windows.Forms.Label lblEnhancedContrastRange;
+		private System.Windows.Forms.Button btnApply;
 		private System.Windows.Forms.Button btnRestoreDefaults;
-		private System.Windows.Forms.Label label6;
-		private System.Windows.Forms.Label label7;
-		private System.Windows.Forms.Button btnSet;
-		private System.Windows.Forms.Label label9;
-		private System.Windows.Forms.Label lblDwSmallHeader;
-		private System.Windows.Forms.Label lblDwZoomHeader;
-		private System.Windows.Forms.ToolTip toolTip1;
 		private System.Windows.Forms.Label lblNotAdmin;
-		private System.Windows.Forms.Button btnChangeFont;
-		private System.Windows.Forms.FontDialog fontDialog1;
+		private System.Windows.Forms.Label lblNotes;
+		private System.Windows.Forms.Label lblGdiSmallHeader;
+		private System.Windows.Forms.Panel panelSmall;
+		private System.Windows.Forms.Label lblSample1;
+		private System.Windows.Forms.Label lblSample2;
+		private System.Windows.Forms.Label lblSample3;
+		private System.Windows.Forms.Label lblDwSmallHeader;
+		private System.Windows.Forms.PictureBox pbDwSmall;
+		private System.Windows.Forms.Label lblGdiZoomHeader;
+		private System.Windows.Forms.PictureBox pbZoomed;
+		private System.Windows.Forms.Label lblDwZoomHeader;
+		private System.Windows.Forms.PictureBox pbDwZoomed;
 		private System.Windows.Forms.CheckBox cbDarkmode;
+		private System.Windows.Forms.Button btnChangeFont;
+		private System.Windows.Forms.ToolTip toolTip1;
+		private System.Windows.Forms.FontDialog fontDialog1;
 		private System.Windows.Forms.Label status;
 		private System.Windows.Forms.Panel panelBottomBorder;
-		private System.Windows.Forms.Label label8;
-		private System.Windows.Forms.LinkLabel linkAboutClearTypeLevel;
 	}
 }
