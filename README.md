@@ -6,12 +6,12 @@ A better way to configure ClearType font smoothing on Windows.
 Quickly set font-smoothing settings in Windows 7, 10, or 11, and know what you are getting, unlike using the broken ClearType tuner that is built-in to the OS.  This program includes all font-smoothing settings that I have found to work in modern Windows, and does not expose settings that are non-functional.
 
 * Enable or disable font antialiasing.
-* Choose between Grayscale antialiasing or subpixel antialiasing using RGB or BGR subpixel layouts.
+* Choose between Grayscale antialiasing or subpixel antialiasing using RGB or BGR subpixel layouts.  "ClearType" technology specifically refers to RGB and BGR subpixel antialiasing.
 * Edit the text contrast and other text rendering settings.
 * Preview the results at several font sizes and see a zoomed-in view to better-understand what is going on internally!
 * Compatibility varies between apps. Windows has multiple text rendering APIs and apps typically use one or the other and may not respect all of settings as configured in the operating system.
 
-![Main Application Screenshot](https://i.imgur.com/1dMqenI.png)
+<img width="1487" height="745" alt="image" src="https://github.com/user-attachments/assets/29c62fb5-10ff-4069-b9ae-6a8ad814d2c4" />
 
 ## Usage
 
