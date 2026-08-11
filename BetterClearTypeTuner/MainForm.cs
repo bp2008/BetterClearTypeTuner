@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -484,6 +485,16 @@ namespace BetterClearTypeTuner
 			{
 				DeleteRegistryKeyTree(Registry.LocalMachine, AvalonKeyPath);
 				DeleteRegistryKeyTree(Registry.CurrentUser, AvalonKeyPath);
+				// A refused deletion is not something the framework reports - see
+				// DeleteRegistryKeyTree - so whether the keys are gone is established by looking
+				// for them rather than by nothing having gone wrong.  Without this, a key that
+				// this instance is not allowed to remove leaves the override checkbox ticking
+				// itself straight back on, with no prompt for the rights that would fix it.
+				//
+				// The answer replaces anything the two calls above reported rather than adding to
+				// it, so that a failure which turns out not to have left any setting behind does
+				// not ask the user for administrator rights it has no use for.
+				registryAccessDenied = AvalonKeysExist();
 				return;
 			}
 
@@ -663,14 +674,28 @@ namespace BetterClearTypeTuner
 				return;
 			try
 			{
-				RegistryKey key = baseKey.CreateSubKey(keyPath);
-				key.SetValue(name, value, RegistryValueKind.DWord);
+				// Closed rather than left to the finalizer: a handle still open on one of these
+				// keys is a handle the deletion pass has to contend with when the override is
+				// switched back off.
+				using (RegistryKey key = baseKey.CreateSubKey(keyPath))
+				{
+					if (key == null)
+					{
+						registryAccessDenied = true;
+						return;
+					}
+					key.SetValue(name, value, RegistryValueKind.DWord);
+				}
 			}
 			catch (SecurityException)
 			{
 				registryAccessDenied = true;
 			}
 			catch (UnauthorizedAccessException)
+			{
+				registryAccessDenied = true;
+			}
+			catch (IOException)
 			{
 				registryAccessDenied = true;
 			}
@@ -691,16 +716,20 @@ namespace BetterClearTypeTuner
 		{
 			try
 			{
-				RegistryKey key = baseKey.OpenSubKey(keyPath, false);
-				if (key == null)
-					return defaultValue;
-				object value = key.GetValue(name);
-				if (value == null)
-					return defaultValue;
-				if (value is int i)
-					return i;
-				if (int.TryParse(value.ToString(), out int parsed))
-					return parsed;
+				// UpdateStatus reads several of these per refresh, and every one of them left open
+				// is another handle on a key this application may shortly be asked to delete.
+				using (RegistryKey key = baseKey.OpenSubKey(keyPath, false))
+				{
+					if (key == null)
+						return defaultValue;
+					object value = key.GetValue(name);
+					if (value == null)
+						return defaultValue;
+					if (value is int i)
+						return i;
+					if (int.TryParse(value.ToString(), out int parsed))
+						return parsed;
+				}
 			}
 			catch
 			{
@@ -778,6 +807,14 @@ namespace BetterClearTypeTuner
 		/// has to go and not just its contents: a clean Windows installation has no Avalon.Graphics
 		/// key at all, and at least one consumer decides whether the ClearType tuner has ever been run
 		/// by testing whether the key exists, so an emptied out key does not read as untuned.
+		///
+		/// Failure here is not reliably an exception.  DeleteSubKeyTree opens the key for writing
+		/// first, and the internal open it uses hands back a plain null when Windows refuses - the
+		/// same null it gives for a key that is not there - so with throwOnMissingSubKey off the
+		/// refusal is read as "already gone" and the call returns quietly having deleted nothing.
+		/// That is why the caller checks afterwards whether the keys are actually gone instead of
+		/// trusting a clean return.  The catches below still matter: a refusal met further down the
+		/// tree, once the key has been opened, does throw.
 		/// </summary>
 		private void DeleteRegistryKeyTree(RegistryKey baseKey, string keyPath)
 		{
@@ -791,6 +828,13 @@ namespace BetterClearTypeTuner
 			}
 			catch (UnauthorizedAccessException)
 			{
+				registryAccessDenied = true;
+			}
+			catch (IOException)
+			{
+				// Every registry error that is not a permission problem arrives as this, including
+				// the one for a key that another handle is holding open.  Letting it out of here
+				// would take down the application from inside a control's event handler.
 				registryAccessDenied = true;
 			}
 		}
