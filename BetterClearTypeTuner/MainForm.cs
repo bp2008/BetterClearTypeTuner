@@ -425,8 +425,8 @@ namespace BetterClearTypeTuner
 		{
 			if (setDefaults)
 			{
-				DeleteRegistrySubkeys(Registry.LocalMachine, AvalonKeyPath);
-				DeleteRegistrySubkeys(Registry.CurrentUser, AvalonKeyPath);
+				DeleteRegistryKeyTree(Registry.LocalMachine, AvalonKeyPath);
+				DeleteRegistryKeyTree(Registry.CurrentUser, AvalonKeyPath);
 				return;
 			}
 
@@ -481,6 +481,11 @@ namespace BetterClearTypeTuner
 			nudEnhancedContrast.Value = EnhancedContrastLevelDefault;
 			EnableEvents();
 			ControlsChanged(sender, e);
+			// ControlsChanged only refreshes the display when it wrote something, and a machine which
+			// is already at its defaults - the registry keys absent and the system parameters
+			// untouched - gives it nothing to write, which would leave this click looking ignored.
+			if (!restartingElevated)
+				UpdateStatus();
 		}
 
 		private void btnApply_Click(object sender, EventArgs e)
@@ -631,16 +636,17 @@ namespace BetterClearTypeTuner
 				return defaultValue;
 			return GetRegistryDWORDValue(Registry.CurrentUser, AvalonKeyPath + "\\" + displayNames[0], name, defaultValue);
 		}
-		private void DeleteRegistrySubkeys(RegistryKey baseKey, string keyPath)
+		/// <summary>
+		/// Removes a key and everything beneath it, doing nothing if it is not there.  The key itself
+		/// has to go and not just its contents: a clean Windows installation has no Avalon.Graphics
+		/// key at all, and at least one consumer decides whether the ClearType tuner has ever been run
+		/// by testing whether the key exists, so an emptied out key does not read as untuned.
+		/// </summary>
+		private void DeleteRegistryKeyTree(RegistryKey baseKey, string keyPath)
 		{
 			try
 			{
-				RegistryKey folder = baseKey.OpenSubKey(keyPath, true);
-				if (folder != null)
-					foreach (string subkeyName in folder.GetSubKeyNames())
-						folder.DeleteSubKeyTree(subkeyName);
-				//RegistryKey key = baseKey.DeleteSubKeyTree();
-				//key.SetValue(name, value, RegistryValueKind.DWord);
+				baseKey.DeleteSubKeyTree(keyPath, false);
 			}
 			catch (SecurityException)
 			{
