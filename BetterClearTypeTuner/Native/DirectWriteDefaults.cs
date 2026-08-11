@@ -23,10 +23,24 @@ namespace BetterClearTypeTuner.Native
 		public int GammaLevel;
 		/// <summary>Enhanced contrast in the UI's 0-400 units (enhanced contrast * 100).</summary>
 		public int EnhancedContrastLevel;
+		/// <summary>
+		/// Grayscale enhanced contrast in the UI's 0-400 units.  Left at
+		/// <see cref="DefaultGrayscaleEnhancedContrastLevel"/> when this DirectWrite is too old to
+		/// have the setting; <see cref="GrayscaleMeasured"/> says which happened.
+		/// </summary>
+		public int GrayscaleEnhancedContrastLevel;
+		/// <summary>True if <see cref="GrayscaleEnhancedContrastLevel"/> came from DirectWrite.</summary>
+		public bool GrayscaleMeasured;
 		/// <summary>ClearType level in the UI's 0-100 units (ClearType level * 100).</summary>
 		public int ClearTypeLevel;
 		/// <summary>Subpixel geometry, whose values match the PixelStructure registry value.</summary>
 		public DWRITE_PIXEL_GEOMETRY PixelGeometry;
+
+		/// <summary>
+		/// What Microsoft documents for GrayscaleEnhancedContrastLevel, used only when DirectWrite
+		/// cannot be asked.
+		/// </summary>
+		public const int DefaultGrayscaleEnhancedContrastLevel = 100;
 
 		/// <summary>
 		/// Asks DirectWrite for the parameters it would use for the primary monitor.  Returns false
@@ -36,6 +50,7 @@ namespace BetterClearTypeTuner.Native
 		public static bool TryMeasure(out DirectWriteDefaults defaults)
 		{
 			defaults = new DirectWriteDefaults();
+			defaults.GrayscaleEnhancedContrastLevel = DefaultGrayscaleEnhancedContrastLevel;
 
 			object factoryObj = null;
 			IDWriteRenderingParams renderingParams = null;
@@ -59,6 +74,23 @@ namespace BetterClearTypeTuner.Native
 				defaults.EnhancedContrastLevel = Round(renderingParams.GetEnhancedContrast(), 100);
 				defaults.ClearTypeLevel = Round(renderingParams.GetClearTypeLevel(), 100);
 				defaults.PixelGeometry = renderingParams.GetPixelGeometry();
+
+				// The grayscale contrast lives on the DirectWrite 1.1 interface only.  Its absence
+				// is not a failed measurement, just an older Windows, so the rest of the answer
+				// still stands.  The cast is a QueryInterface on the same object, which is why the
+				// result is not released separately.
+				try
+				{
+					IDWriteRenderingParams1 renderingParams1 = renderingParams as IDWriteRenderingParams1;
+					if (renderingParams1 != null)
+					{
+						defaults.GrayscaleEnhancedContrastLevel = Round(renderingParams1.GetGrayscaleEnhancedContrast(), 100);
+						defaults.GrayscaleMeasured = true;
+					}
+				}
+				catch
+				{
+				}
 				return true;
 			}
 			catch

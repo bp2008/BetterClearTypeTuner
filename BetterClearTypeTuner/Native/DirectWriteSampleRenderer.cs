@@ -6,14 +6,39 @@ using System.Runtime.InteropServices;
 namespace BetterClearTypeTuner.Native
 {
 	/// <summary>
+	/// Which of DirectWrite's two rasterization paths a preview is drawn down.  The choice is not
+	/// the user's and not the system's: every application makes it for itself, which is why both
+	/// are previewed side by side rather than one being selected by the antialiasing mode.
+	/// </summary>
+	public enum DwPipeline
+	{
+		/// <summary>
+		/// ClearType rasterization, the default for a bitmap render target.  Reads the ClearType
+		/// level, the pixel geometry and the enhanced contrast.  Used by Firefox, Edge, WPF and
+		/// most DirectWrite applications that draw to a window of their own.
+		/// </summary>
+		ClearType,
+
+		/// <summary>
+		/// Grayscale rasterization, reached only by asking for it with SetTextAntialiasMode.  Reads
+		/// the grayscale enhanced contrast, and ignores the ClearType level and pixel geometry
+		/// entirely.  Used by the Settings app, WinUI and Store apps, whose text is drawn onto
+		/// composition surfaces that may be transparent, transformed or animated.
+		/// </summary>
+		Grayscale
+	}
+
+	/// <summary>
 	/// Renders sample text with DirectWrite so the effect of settings that GDI ignores
 	/// (most notably ClearType Level) can be previewed.
 	///
 	/// The rendering parameters are passed to DirectWrite per-draw via
-	/// IDWriteFactory::CreateCustomRenderingParams, so changes appear immediately without
-	/// writing the registry and without restarting this application. Apps such as Firefox,
-	/// Edge and WPF read the same values out of the registry at startup and feed them into
-	/// the same API, which is why this preview matches what they will draw after a restart.
+	/// CreateCustomRenderingParams, so changes appear immediately without writing the registry and
+	/// without restarting this application. Apps such as Firefox, Edge and WPF read the same values
+	/// out of the registry at startup and feed them into the same API, which is why this preview
+	/// matches what they will draw after a restart.
+	///
+	/// Both of DirectWrite's rasterization paths can be drawn; see <see cref="DwPipeline"/>.
 	/// </summary>
 	public class DirectWriteSampleRenderer : IDisposable
 	{
@@ -58,11 +83,24 @@ namespace BetterClearTypeTuner.Native
 			public uint GammaLevel;
 			/// <summary>ClearType level in the same 0-100 units the UI and registry use.</summary>
 			public int ClearTypeLevel;
-			/// <summary>Enhanced contrast in the same 0-400 units the UI and registry use.</summary>
+			/// <summary>
+			/// Enhanced contrast in the same 0-400 units the UI and registry use.  Only the
+			/// ClearType path reads this one.
+			/// </summary>
 			public int EnhancedContrastLevel;
+			/// <summary>
+			/// Grayscale enhanced contrast in the same 0-400 units the UI and registry use.  Only
+			/// the grayscale path reads this one.
+			/// </summary>
+			public int GrayscaleEnhancedContrastLevel;
 		}
 
 		private IDWriteFactory factory;
+		/// <summary>
+		/// The same factory asked for its DirectWrite 1.1 interface.  Null before Windows 8 without
+		/// the Platform Update, in which case the grayscale path cannot be previewed.
+		/// </summary>
+		private IDWriteFactory1 factory1;
 		private IDWriteGdiInterop gdiInterop;
 		private bool disposed;
 
@@ -84,6 +122,18 @@ namespace BetterClearTypeTuner.Native
 				}
 				factory = (IDWriteFactory)factoryObj;
 
+				// The same object under a newer interface, so it is not released separately.
+				// Failure here is not an error: it only means this Windows is too old to have a
+				// grayscale contrast setting for anything to read.
+				try
+				{
+					factory1 = factory as IDWriteFactory1;
+				}
+				catch (Exception)
+				{
+					factory1 = null;
+				}
+
 				hr = factory.GetGdiInterop(out gdiInterop);
 				if (hr != 0 || gdiInterop == null)
 				{
@@ -100,15 +150,25 @@ namespace BetterClearTypeTuner.Native
 		public bool Available { get { return factory != null && gdiInterop != null; } }
 
 		/// <summary>
+		/// True if <see cref="DwPipeline.Grayscale"/> can be drawn, which needs DirectWrite 1.1.
+		/// </summary>
+		public bool GrayscaleAvailable { get { return Available && factory1 != null; } }
+
+		/// <summary>
 		/// Renders each string in <paramref name="texts"/> on its own line using the matching
 		/// font in <paramref name="fonts"/>, and returns the result as a bitmap of the
 		/// requested size. Returns null on failure, with the reason in LastError.
 		/// </summary>
 		public Bitmap Render(int width, int height, Font[] fonts, string[] texts, float dpiY,
-			Color foreColor, Color backColor, Settings settings)
+			Color foreColor, Color backColor, Settings settings, DwPipeline pipeline)
 		{
 			if (!Available)
 				return null;
+			if (pipeline == DwPipeline.Grayscale && factory1 == null)
+			{
+				LastError = "Grayscale rasterization needs DirectWrite 1.1, which this version of Windows does not have.";
+				return null;
+			}
 			if (fonts == null || texts == null || fonts.Length != texts.Length || fonts.Length == 0)
 				return null;
 			if (width <= 0 || height <= 0)
@@ -152,7 +212,7 @@ namespace BetterClearTypeTuner.Native
 					return null;
 				}
 
-				renderingParams = CreateRenderingParams(settings);
+				renderingParams = CreateRenderingParams(settings, pipeline);
 				if (renderingParams == null)
 					return null;
 
@@ -161,6 +221,26 @@ namespace BetterClearTypeTuner.Native
 				{
 					LastError = "CreateBitmapRenderTarget failed (0x" + hr.ToString("X8") + ")";
 					return null;
+				}
+				if (pipeline == DwPipeline.Grayscale)
+				{
+					// A new render target rasterizes ClearType, so the grayscale path has to be
+					// asked for explicitly.  This is the whole difference between the two DirectWrite
+					// previews: the parameters above are only read once the mode has decided which of
+					// them apply.  The same object under a newer interface, so it is not released
+					// separately from target.
+					IDWriteBitmapRenderTarget1 target1 = target as IDWriteBitmapRenderTarget1;
+					if (target1 == null)
+					{
+						LastError = "This render target does not support grayscale antialiasing.";
+						return null;
+					}
+					hr = target1.SetTextAntialiasMode(DWRITE_TEXT_ANTIALIAS_MODE.GRAYSCALE);
+					if (hr != 0)
+					{
+						LastError = "SetTextAntialiasMode failed (0x" + hr.ToString("X8") + ")";
+						return null;
+					}
 				}
 				// Work in raw pixels: em sizes below are already converted from points.
 				target.SetPixelsPerDip(1f);
@@ -285,7 +365,7 @@ namespace BetterClearTypeTuner.Native
 			}
 		}
 
-		private IDWriteRenderingParams CreateRenderingParams(Settings settings)
+		private IDWriteRenderingParams CreateRenderingParams(Settings settings, DwPipeline pipeline)
 		{
 			// Map the UI's units onto DirectWrite's. The pixel geometry enum values are
 			// deliberately identical to the legacy PixelStructure registry values.
@@ -295,12 +375,9 @@ namespace BetterClearTypeTuner.Native
 			else if (gamma > 2.2f)
 				gamma = 2.2f;
 
-			// DirectWrite reads EnhancedContrastLevel in hundredths and ignores anything above 4.
-			float enhancedContrast = settings.EnhancedContrastLevel / 100f;
-			if (enhancedContrast < 0f)
-				enhancedContrast = 0f;
-			else if (enhancedContrast > 4f)
-				enhancedContrast = 4f;
+			// DirectWrite reads both contrast levels in hundredths and ignores anything above 4.
+			float enhancedContrast = Contrast(settings.EnhancedContrastLevel);
+			float grayscaleEnhancedContrast = Contrast(settings.GrayscaleEnhancedContrastLevel);
 
 			float clearTypeLevel = settings.ClearTypeLevel / 100f;
 			if (clearTypeLevel < 0f)
@@ -310,11 +387,7 @@ namespace BetterClearTypeTuner.Native
 
 			DWRITE_PIXEL_GEOMETRY geometry;
 			if (settings.SmoothingType != FontSmoothingType.ClearType)
-			{
-				// Grayscale antialiasing: no subpixel structure and no color fringing.
 				geometry = DWRITE_PIXEL_GEOMETRY.FLAT;
-				clearTypeLevel = 0f;
-			}
 			else if (settings.Orientation == FontSmoothingOrientation.BGR)
 				geometry = DWRITE_PIXEL_GEOMETRY.BGR;
 			else
@@ -324,14 +397,46 @@ namespace BetterClearTypeTuner.Native
 				? DWRITE_RENDERING_MODE.NATURAL_SYMMETRIC
 				: DWRITE_RENDERING_MODE.ALIASED;
 
+			int hr;
+			if (pipeline == DwPipeline.Grayscale)
+			{
+				// Grayscale rasterization computes one coverage value per pixel, so there is no
+				// subpixel structure to blend across and neither the ClearType level nor the pixel
+				// geometry is consulted.  They are passed as their inert values to make that plain.
+				IDWriteRenderingParams1 grayscaleResult;
+				hr = factory1.CreateCustomRenderingParams(gamma, enhancedContrast, grayscaleEnhancedContrast,
+					0f, DWRITE_PIXEL_GEOMETRY.FLAT, mode, out grayscaleResult);
+				if (hr != 0 || grayscaleResult == null)
+				{
+					LastError = "IDWriteFactory1::CreateCustomRenderingParams failed (0x" + hr.ToString("X8") + ")";
+					return null;
+				}
+				// The same object under the interface DrawGlyphRun takes, not a second one.
+				return (IDWriteRenderingParams)grayscaleResult;
+			}
+
+			// The five-argument overload is deliberate rather than a leftover: it is what a
+			// DirectWrite application written against the original interface calls, and the
+			// grayscale contrast it cannot express is one this path would not read anyway.
 			IDWriteRenderingParams result;
-			int hr = factory.CreateCustomRenderingParams(gamma, enhancedContrast, clearTypeLevel, geometry, mode, out result);
+			hr = factory.CreateCustomRenderingParams(gamma, enhancedContrast, clearTypeLevel, geometry, mode, out result);
 			if (hr != 0 || result == null)
 			{
 				LastError = "CreateCustomRenderingParams failed (0x" + hr.ToString("X8") + ")";
 				return null;
 			}
 			return result;
+		}
+
+		/// <summary>Converts one of the UI's 0-400 contrast values into DirectWrite's units.</summary>
+		private static float Contrast(int level)
+		{
+			float value = level / 100f;
+			if (value < 0f)
+				return 0f;
+			if (value > 4f)
+				return 4f;
+			return value;
 		}
 
 		private static uint ToColorRef(Color c)
@@ -351,6 +456,8 @@ namespace BetterClearTypeTuner.Native
 				return;
 			disposed = true;
 			ReleaseCom(gdiInterop);
+			// factory1 is the same underlying object as factory, so releasing factory covers both.
+			factory1 = null;
 			ReleaseCom(factory);
 			gdiInterop = null;
 			factory = null;

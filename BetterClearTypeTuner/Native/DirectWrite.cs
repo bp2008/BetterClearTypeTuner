@@ -40,6 +40,23 @@ namespace BetterClearTypeTuner.Native
 		GDI_NATURAL = 2
 	}
 
+	/// <summary>
+	/// How coverage is computed when glyphs are rasterized, and the setting which decides which of
+	/// DirectWrite's two contrast controls is consulted: ClearType rasterization uses
+	/// EnhancedContrast, grayscale rasterization uses GrayscaleEnhancedContrast, and neither one has
+	/// any effect in the other mode.
+	///
+	/// A bitmap render target starts in CLEARTYPE, so a ClearType level of zero produces text that
+	/// looks gray but is still rasterized down the ClearType path.  Only GRAYSCALE reaches the
+	/// grayscale path that composited XAML applications - the Settings app, WinUI and Store apps -
+	/// use for all of their text.
+	/// </summary>
+	public enum DWRITE_TEXT_ANTIALIAS_MODE
+	{
+		CLEARTYPE = 0,
+		GRAYSCALE = 1
+	}
+
 	#endregion
 
 	#region Structs
@@ -163,6 +180,67 @@ namespace BetterClearTypeTuner.Native
 		// Remaining methods (CreateTextLayout and beyond) are unused and omitted.
 	}
 
+	/// <summary>
+	/// DirectWrite 1.1, which shipped with Windows 8 and the Platform Update for Windows 7.  The
+	/// only thing this application wants from it is the seven-argument
+	/// CreateCustomRenderingParams, because the five-argument one on IDWriteFactory has no way to
+	/// express a grayscale contrast at all.
+	/// </summary>
+	[ComImport, Guid("30572f99-dac6-41db-a16e-0486307e606a"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+	public interface IDWriteFactory1
+	{
+		// IDWriteFactory's own twenty-one methods come first.  Every one of them has to occupy its
+		// vtable slot for the two that follow to be found, whether or not it is ever called.
+		[PreserveSig] int GetSystemFontCollection__();
+		[PreserveSig] int CreateCustomFontCollection__();
+		[PreserveSig] int RegisterFontCollectionLoader__();
+		[PreserveSig] int UnregisterFontCollectionLoader__();
+		[PreserveSig] int CreateFontFileReference__();
+		[PreserveSig] int CreateCustomFontFileReference__();
+		[PreserveSig] int CreateFontFace__();
+
+		[PreserveSig]
+		int CreateRenderingParams(out IDWriteRenderingParams renderingParams);
+
+		[PreserveSig]
+		int CreateMonitorRenderingParams(IntPtr monitor, out IDWriteRenderingParams renderingParams);
+
+		/// <summary>The five-argument overload, which is reached through IDWriteFactory instead.</summary>
+		[PreserveSig] int CreateCustomRenderingParams0__();
+
+		[PreserveSig] int RegisterFontFileLoader__();
+		[PreserveSig] int UnregisterFontFileLoader__();
+		[PreserveSig] int CreateTextFormat__();
+		[PreserveSig] int CreateTypography__();
+
+		[PreserveSig]
+		int GetGdiInterop(out IDWriteGdiInterop gdiInterop);
+
+		[PreserveSig] int CreateTextLayout__();
+		[PreserveSig] int CreateGdiCompatibleTextLayout__();
+		[PreserveSig] int CreateEllipsisTrimmingSign__();
+		[PreserveSig] int CreateTextAnalyzer__();
+		[PreserveSig] int CreateNumberSubstitution__();
+		[PreserveSig] int CreateGlyphRunAnalysis__();
+
+		// IDWriteFactory1 adds these two.
+		[PreserveSig] int GetEudcFontCollection__();
+
+		/// <summary>
+		/// Note the argument order: the grayscale contrast comes before the ClearType level, not
+		/// after it.
+		/// </summary>
+		[PreserveSig]
+		int CreateCustomRenderingParams(
+			float gamma,
+			float enhancedContrast,
+			float grayscaleEnhancedContrast,
+			float clearTypeLevel,
+			DWRITE_PIXEL_GEOMETRY pixelGeometry,
+			DWRITE_RENDERING_MODE renderingMode,
+			out IDWriteRenderingParams1 renderingParams);
+	}
+
 	[ComImport, Guid("2f0da53a-2add-47cd-82ee-d9ec34688e75"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 	public interface IDWriteRenderingParams
 	{
@@ -171,6 +249,23 @@ namespace BetterClearTypeTuner.Native
 		[PreserveSig] float GetClearTypeLevel();
 		[PreserveSig] DWRITE_PIXEL_GEOMETRY GetPixelGeometry();
 		[PreserveSig] DWRITE_RENDERING_MODE GetRenderingMode();
+	}
+
+	/// <summary>
+	/// Adds the one parameter that only grayscale rasterization reads.  Available from DirectWrite
+	/// 1.1; on anything older the QueryInterface for it fails and the grayscale preview is not
+	/// offered.
+	/// </summary>
+	[ComImport, Guid("94413cf4-a6fc-4248-8b50-6674348fcad3"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+	public interface IDWriteRenderingParams1
+	{
+		[PreserveSig] float GetGamma();
+		[PreserveSig] float GetEnhancedContrast();
+		[PreserveSig] float GetClearTypeLevel();
+		[PreserveSig] DWRITE_PIXEL_GEOMETRY GetPixelGeometry();
+		[PreserveSig] DWRITE_RENDERING_MODE GetRenderingMode();
+
+		[PreserveSig] float GetGrayscaleEnhancedContrast();
 	}
 
 	[ComImport, Guid("1edd9491-9853-4299-898f-6432983b6f3a"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
@@ -255,6 +350,42 @@ namespace BetterClearTypeTuner.Native
 		int SetPixelsPerDip(float pixelsPerDip);
 
 		// Remaining methods (GetCurrentTransform and beyond) are unused and omitted.
+	}
+
+	/// <summary>
+	/// The same render target with the antialiasing mode exposed.  Without this the target stays in
+	/// its default ClearType mode, and no amount of setting the ClearType level to zero moves it
+	/// onto the grayscale path: it only collapses the ClearType output until it happens to look
+	/// gray.
+	/// </summary>
+	[ComImport, Guid("791e8298-3ef3-4230-9880-c9bdecc42064"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+	public interface IDWriteBitmapRenderTarget1
+	{
+		[PreserveSig]
+		int DrawGlyphRun(
+			float baselineOriginX,
+			float baselineOriginY,
+			DWRITE_MEASURING_MODE measuringMode,
+			ref DWRITE_GLYPH_RUN glyphRun,
+			IDWriteRenderingParams renderingParams,
+			uint textColor,
+			IntPtr blackBoxRect);
+
+		[PreserveSig] IntPtr GetMemoryDC();
+		[PreserveSig] float GetPixelsPerDip();
+
+		[PreserveSig]
+		int SetPixelsPerDip(float pixelsPerDip);
+
+		[PreserveSig] int GetCurrentTransform__();
+		[PreserveSig] int SetCurrentTransform__();
+		[PreserveSig] int GetSize__();
+		[PreserveSig] int Resize__();
+
+		[PreserveSig] DWRITE_TEXT_ANTIALIAS_MODE GetTextAntialiasMode();
+
+		[PreserveSig]
+		int SetTextAntialiasMode(DWRITE_TEXT_ANTIALIAS_MODE antialiasMode);
 	}
 
 	#endregion

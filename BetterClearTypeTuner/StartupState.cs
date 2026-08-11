@@ -22,6 +22,7 @@ namespace BetterClearTypeTuner
 		private const string ArgGammaLevel = "--dw-contrast=";
 		private const string ArgClearTypeLevel = "--cleartype-level=";
 		private const string ArgEnhancedContrast = "--enhanced-contrast=";
+		private const string ArgGrayscaleEnhancedContrast = "--grayscale-contrast=";
 		private const string ArgDarkMode = "--dark-mode=";
 		private const string ArgMaximized = "--maximized=";
 		private const string ArgWindow = "--window=";
@@ -32,7 +33,7 @@ namespace BetterClearTypeTuner
 		/// too low a missing argument goes unnoticed, and if it is left too high every replay is
 		/// silently discarded and the elevated instance comes up having forgotten the change.
 		/// </summary>
-		private const int SettingCount = 7;
+		private const int SettingCount = 8;
 
 		/// <summary>
 		/// True if this instance was started by another one asking for elevation.  It stops a
@@ -57,6 +58,7 @@ namespace BetterClearTypeTuner
 		public int GammaLevel;
 		public int ClearTypeLevel;
 		public int EnhancedContrastLevel;
+		public int GrayscaleEnhancedContrastLevel;
 		/// <summary>
 		/// Dark mode checkbox state, or null to let the new instance read the Windows preference
 		/// as it would on an ordinary launch.
@@ -93,6 +95,7 @@ namespace BetterClearTypeTuner
 			Append(sb, ArgGammaLevel, GammaLevel);
 			Append(sb, ArgClearTypeLevel, ClearTypeLevel);
 			Append(sb, ArgEnhancedContrast, EnhancedContrastLevel);
+			Append(sb, ArgGrayscaleEnhancedContrast, GrayscaleEnhancedContrastLevel);
 			if (DarkMode.HasValue)
 				Append(sb, ArgDarkMode, DarkMode.Value ? 1 : 0);
 			if (Maximized)
@@ -158,6 +161,11 @@ namespace BetterClearTypeTuner
 				else if (TryValue(arg, ArgEnhancedContrast, out value))
 				{
 					state.EnhancedContrastLevel = value;
+					settingsSeen++;
+				}
+				else if (TryValue(arg, ArgGrayscaleEnhancedContrast, out value))
+				{
+					state.GrayscaleEnhancedContrastLevel = value;
 					settingsSeen++;
 				}
 				else if (TryValue(arg, ArgDarkMode, out value))

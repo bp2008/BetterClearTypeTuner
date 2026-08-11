@@ -30,9 +30,11 @@ namespace BetterClearTypeTuner
 		/// </summary>
 		DirectWriteSampleRenderer dwRenderer;
 		/// <summary>
-		/// Caption for the DirectWrite preview, restored after an error has been displayed there.
+		/// Captions for the two DirectWrite previews, restored after an error has been displayed
+		/// in their place.
 		/// </summary>
 		string dwZoomHeaderText;
+		string dwGrayZoomHeaderText;
 		/// <summary>
 		/// What the instance that restarted itself with administrator rights was in the middle of
 		/// doing, or null on an ordinary launch.
@@ -53,8 +55,18 @@ namespace BetterClearTypeTuner
 
 			InitializeComponent();
 
+			// Taken before anything below can move a control, so these are the designer's own
+			// positions after Windows Forms has scaled them for the current DPI.
+			CapturePreviewGridDesign();
+
 			dwZoomHeaderText = lblDwZoomHeader.Text;
+			dwGrayZoomHeaderText = lblDwGrayZoomHeader.Text;
 			dwRenderer = new DirectWriteSampleRenderer();
+
+			previewResizeTimer = new Timer();
+			previewResizeTimer.Interval = 150;
+			previewResizeTimer.Tick += PreviewResizeTimer_Tick;
+			panelContent.SizeChanged += PanelContent_SizeChanged;
 
 			InitializeDpiScale();
 			InitializeHelpText();
@@ -83,6 +95,7 @@ namespace BetterClearTypeTuner
 				ShrinkToFitScreen();
 			else if (startupState.Maximized)
 				this.WindowState = FormWindowState.Maximized;
+			LayoutPreviewGrid();
 			initialized = true;
 
 			if (startupState != null && startupState.HasSettings)
@@ -123,6 +136,7 @@ namespace BetterClearTypeTuner
 			ShowValue(nudDwContrast, startupState.GammaLevel, GammaLevelMin, GammaLevelMax);
 			ShowValue(nudClearTypeLevel, startupState.ClearTypeLevel, ClearTypeLevelMin, ClearTypeLevelMax);
 			ShowValue(nudEnhancedContrast, startupState.EnhancedContrastLevel, EnhancedContrastLevelMin, EnhancedContrastLevelMax);
+			ShowValue(nudGrayscaleContrast, startupState.GrayscaleEnhancedContrastLevel, EnhancedContrastLevelMin, EnhancedContrastLevelMax);
 			EnableEvents();
 
 			setDefaults = startupState.RestoreDefaults;
@@ -214,6 +228,27 @@ namespace BetterClearTypeTuner
 					control.BackColor = Color.White;
 				}
 			}
+			else if (control.Name == "lblBusy")
+			{
+				// Coloured rather than left to the ordinary label treatment: this one has to be
+				// noticeable at a glance, and it is the only thing on screen that moves.
+				if (dark)
+				{
+					control.BackColor = ColorTranslator.FromHtml("#4A3A00");
+					control.ForeColor = ColorTranslator.FromHtml("#FFD666");
+				}
+				else
+				{
+					control.BackColor = ColorTranslator.FromHtml("#FFF4CE");
+					control.ForeColor = ColorTranslator.FromHtml("#7A5D00");
+				}
+			}
+			else if (control.Name == "panelNormalScale")
+			{
+				// Only the gaps between the three sample boxes show, so this has to match the
+				// window rather than the samples.
+				control.BackColor = BackgroundColor;
+			}
 			else if (control.Name.StartsWith("panelRule"))
 			{
 				// The thin horizontal rules that separate the setting groups.
@@ -295,7 +330,63 @@ namespace BetterClearTypeTuner
 			}
 		}
 
+		#region Busy indicator
+		/// <summary>
+		/// How many nested operations are currently in progress.  One user action routinely starts
+		/// several - clicking Apply runs a change pass and then a refresh, and picking an
+		/// antialiasing mode unchecks the previous radio button as well as checking the new one -
+		/// so the indicator is put away by the outermost one rather than the first to finish.
+		/// </summary>
+		private int busyDepth;
+
+		/// <summary>
+		/// Shows that something is happening before anything slow starts.
+		///
+		/// All of this work runs on the UI thread: writing the registry, broadcasting the change to
+		/// every top-level window on the desktop with SPIF_SENDCHANGE, and then redrawing three
+		/// samples.  The window cannot repaint while any of that is going on, so the indicator has
+		/// to be painted before it begins rather than left to the next paint cycle - hence the
+		/// Refresh, which is the whole point of this method.
+		/// </summary>
+		private void BeginBusy()
+		{
+			if (busyDepth++ > 0)
+				return;
+			if (!IsHandleCreated)
+				return;
+			lblBusy.Visible = true;
+			lblBusy.Refresh();
+			this.UseWaitCursor = true;
+		}
+
+		private void EndBusy()
+		{
+			if (busyDepth > 0)
+				busyDepth--;
+			if (busyDepth > 0)
+				return;
+			if (!IsHandleCreated)
+				return;
+			this.UseWaitCursor = false;
+			lblBusy.Visible = false;
+			lblBusy.Update();
+		}
+		#endregion
+
 		private void ControlsChanged(object sender, EventArgs e)
+		{
+			BeginBusy();
+			try
+			{
+				ControlsChangedCore(sender, e);
+			}
+			finally
+			{
+				EndBusy();
+			}
+		}
+
+		private void ControlsChangedCore(object sender, EventArgs e)
 		{
 			bool restoringDefaults = setDefaults;
 			setDefaults = false;
@@ -385,17 +476,18 @@ namespace BetterClearTypeTuner
 			}
 		}
 		/// <summary>
-		/// ClearType Level.  Grayscale mode stores 0, because that is the value which stops
-		/// DirectWrite from blending across subpixels for clients that read this key directly.
+		/// ClearType Level, written exactly as it is set.
+		///
+		/// Earlier versions forced this to zero in grayscale mode, on the grounds that zero is what
+		/// stops DirectWrite blending across subpixels.  It is also what made the setting look dead:
+		/// the box was showing one number while a different one was being written, so moving it
+		/// changed nothing and said nothing about why.  Grayscale is conveyed by PixelStructure
+		/// instead, which is the value that actually removes the subpixel structure, and the two
+		/// DirectWrite previews now show directly what any combination of the two does.
 		/// </summary>
 		private int DesiredClearTypeLevel
 		{
-			get
-			{
-				if (DesiredPixelStructure == 0)
-					return 0;
-				return (int)Clamp((uint)nudClearTypeLevel.Value, ClearTypeLevelMin, ClearTypeLevelMax);
-			}
+			get { return (int)Clamp((uint)nudClearTypeLevel.Value, ClearTypeLevelMin, ClearTypeLevelMax); }
 		}
 		/// <summary>
 		/// DirectWrite contrast (GammaLevel).
@@ -405,11 +497,19 @@ namespace BetterClearTypeTuner
 			get { return (int)Clamp((uint)nudDwContrast.Value, GammaLevelMin, GammaLevelMax); }
 		}
 		/// <summary>
-		/// DirectWrite enhanced contrast (EnhancedContrastLevel).
+		/// DirectWrite enhanced contrast (EnhancedContrastLevel), read only by the ClearType path.
 		/// </summary>
 		private int DesiredEnhancedContrastLevel
 		{
 			get { return (int)Clamp((uint)nudEnhancedContrast.Value, EnhancedContrastLevelMin, EnhancedContrastLevelMax); }
+		}
+		/// <summary>
+		/// DirectWrite grayscale enhanced contrast (GrayscaleEnhancedContrastLevel), read only by
+		/// the grayscale path.
+		/// </summary>
+		private int DesiredGrayscaleEnhancedContrastLevel
+		{
+			get { return (int)Clamp((uint)nudGrayscaleContrast.Value, EnhancedContrastLevelMin, EnhancedContrastLevelMax); }
 		}
 		/// <summary>
 		/// Returns true if any Avalon.Graphics value that this application manages is not
@@ -427,7 +527,9 @@ namespace BetterClearTypeTuner
 			return GetAvalonValue("PixelStructure", -1) != DesiredPixelStructure
 				|| GetAvalonValue("ClearTypeLevel", FallbackClearTypeLevel) != DesiredClearTypeLevel
 				|| GetAvalonValue("GammaLevel", FallbackGammaLevel) != DesiredGammaLevel
-				|| GetAvalonValue("EnhancedContrastLevel", FallbackEnhancedContrastLevel) != DesiredEnhancedContrastLevel;
+				|| GetAvalonValue("EnhancedContrastLevel", FallbackEnhancedContrastLevel) != DesiredEnhancedContrastLevel
+				|| GetAvalonValue("GrayscaleEnhancedContrastLevel", FallbackGrayscaleEnhancedContrastLevel)
+					!= DesiredGrayscaleEnhancedContrastLevel;
 		}
 		#endregion
 
@@ -483,7 +585,14 @@ namespace BetterClearTypeTuner
 
 			if (removeKeys)
 			{
-				DeleteRegistryKeyTree(Registry.LocalMachine, AvalonKeyPath);
+				// The only operation in this application that can still need administrator rights.
+				// Nothing writes the machine-wide key any more, but an older version of this
+				// program or another tuner may have left one, and "no override" has to mean the
+				// whole key is gone rather than only this user's half of it.  Tested for first so
+				// that the usual case - no machine-wide key at all - does not open it for writing
+				// and raise a prompt for a deletion with nothing to delete.
+				if (HasDisplayValues(Registry.LocalMachine))
+					DeleteRegistryKeyTree(Registry.LocalMachine, AvalonKeyPath);
 				DeleteRegistryKeyTree(Registry.CurrentUser, AvalonKeyPath);
 				// A refused deletion is not something the framework reports - see
 				// DeleteRegistryKeyTree - so whether the keys are gone is established by looking
@@ -502,20 +611,28 @@ namespace BetterClearTypeTuner
 			{
 				string keyPath = AvalonKeyPath + "\\" + displayName;
 
-				// Local Machine.  GammaLevel and PixelStructure are the only two values
-				// DirectWrite reads from this hive; anything else written here is ignored.
-				SetRegistryDWORDValue(Registry.LocalMachine, keyPath, "GammaLevel", DesiredGammaLevel);
-				SetRegistryDWORDValue(Registry.LocalMachine, keyPath, "PixelStructure", DesiredPixelStructure);
-
-				// Current User.  These take precedence over the Local Machine values above, and
-				// this is the only hive in which ClearTypeLevel and EnhancedContrastLevel work.
+				// Current User only, and that is on purpose.
+				//
+				// Earlier versions also wrote GammaLevel and PixelStructure under HKEY_LOCAL_MACHINE.
+				// Opening that hive for writing is refused without administrator rights whether or
+				// not the value would change, so every single settings change raised a UAC prompt.
+				// It bought nothing: asked what it resolves to with the machine-wide key absent
+				// entirely, DirectWrite answers with the Current User values exactly, through both
+				// CreateRenderingParams and CreateMonitorRenderingParams.  The full set is written
+				// here, so there is no value left for a machine-wide one to supply.
+				//
+				// The trade is that these settings are now this user's rather than the computer's.
+				// For a tool that tunes text to one pair of eyes on one set of monitors, per-user is
+				// the right scope anyway - and it is the scope that does not need a prompt.
 				SetRegistryDWORDValue(Registry.CurrentUser, keyPath, "ClearTypeLevel", DesiredClearTypeLevel);
 				SetRegistryDWORDValue(Registry.CurrentUser, keyPath, "EnhancedContrastLevel", DesiredEnhancedContrastLevel);
 				SetRegistryDWORDValue(Registry.CurrentUser, keyPath, "GammaLevel", DesiredGammaLevel);
 				SetRegistryDWORDValue(Registry.CurrentUser, keyPath, "PixelStructure", DesiredPixelStructure);
-				// Measurably inert, but written anyway so that a value left behind by another
-				// tuner is put back to its documented default rather than left in place.
-				SetRegistryDWORDValue(Registry.CurrentUser, keyPath, "GrayscaleEnhancedContrastLevel", 100);
+				SetRegistryDWORDValue(Registry.CurrentUser, keyPath, "GrayscaleEnhancedContrastLevel",
+					DesiredGrayscaleEnhancedContrastLevel);
+				// A WPF 3.5-era value with no known reader in modern Windows.  Not exposed, but
+				// written at its documented default so that a value left behind by another tuner is
+				// put back rather than left in place.
 				SetRegistryDWORDValue(Registry.CurrentUser, keyPath, "TextContrastLevel", 1);
 			}
 		}
@@ -544,15 +661,37 @@ namespace BetterClearTypeTuner
 		/// </summary>
 		private void cbDwOverride_CheckedChanged(object sender, EventArgs e)
 		{
-			ControlsChanged(sender, e);
-			// Unticking removes the keys, after which the inputs should stop showing the values that
-			// were in them and start showing what DirectWrite substitutes instead.  ControlsChanged
-			// only refreshes the display when it decided something changed, so make sure of it.
-			if (!restartingElevated)
-				UpdateStatus();
+			BeginBusy();
+			try
+			{
+				ControlsChanged(sender, e);
+				// Unticking removes the keys, after which the inputs should stop showing the values
+				// that were in them and start showing what DirectWrite substitutes instead.
+				// ControlsChanged only refreshes the display when it decided something changed, so
+				// make sure of it.
+				if (!restartingElevated)
+					UpdateStatus();
+			}
+			finally
+			{
+				EndBusy();
+			}
 		}
 
 		private void BtnRestoreDefaults_Click(object sender, EventArgs e)
+		{
+			BeginBusy();
+			try
+			{
+				RestoreDefaultsCore(sender, e);
+			}
+			finally
+			{
+				EndBusy();
+			}
+		}
+
+		private void RestoreDefaultsCore(object sender, EventArgs e)
 		{
 			DisableEvents();
 			setDefaults = true;
@@ -566,6 +705,7 @@ namespace BetterClearTypeTuner
 			nudDwContrast.Value = GammaLevelDefault;
 			nudClearTypeLevel.Value = ClearTypeLevelDefault;
 			nudEnhancedContrast.Value = EnhancedContrastLevelDefault;
+			nudGrayscaleContrast.Value = GrayscaleEnhancedContrastLevelDefault;
 			EnableEvents();
 			ControlsChanged(sender, e);
 			// ControlsChanged only refreshes the display when it wrote something, and a machine which
@@ -577,15 +717,28 @@ namespace BetterClearTypeTuner
 
 		private void btnApply_Click(object sender, EventArgs e)
 		{
-			// Nothing may have changed, in which case ControlsChanged writes nothing and leaves
-			// the previews alone, so refresh them here to show that the click was noticed.
-			ControlsChanged(sender, e);
-			UpdateStatus();
+			BeginBusy();
+			try
+			{
+				// Nothing may have changed, in which case ControlsChanged writes nothing and leaves
+				// the previews alone, so refresh them here to show that the click was noticed.
+				ControlsChanged(sender, e);
+				UpdateStatus();
+			}
+			finally
+			{
+				EndBusy();
+			}
 		}
 
 		private void btnChangeFont_Click(object sender, EventArgs e)
 		{
-			if (fontDialog1.ShowDialog() == DialogResult.OK)
+			// Outside the busy scope: the indicator is for work the user is waiting on, and while
+			// the font dialog is open they are not waiting on this window at all.
+			if (fontDialog1.ShowDialog() != DialogResult.OK)
+				return;
+			BeginBusy();
+			try
 			{
 				foreach (Control c in fontableControls)
 				{
@@ -593,15 +746,32 @@ namespace BetterClearTypeTuner
 				}
 				CopyZoomedSnapshot();
 			}
+			finally
+			{
+				EndBusy();
+			}
 		}
 
 		private void cbDarkmode_CheckedChanged(object sender, EventArgs e)
 		{
-			SetDarkMode(this, cbDarkmode.Checked);
+			BeginBusy();
+			try
+			{
+				SetDarkMode(this, cbDarkmode.Checked);
+			}
+			finally
+			{
+				EndBusy();
+			}
 		}
 
 		private void MainForm_DpiChanged(object sender, DpiChangedEventArgs e)
 		{
+			// Windows Forms rescales the controls, but the preview grid's minimum sizes were
+			// measured at the old scale and have to be moved with them.
+			if (e.DeviceDpiOld > 0)
+				ScalePreviewGridDesign(e.DeviceDpiNew / (double)e.DeviceDpiOld);
+			LayoutPreviewGrid();
 			FixFontSizing();
 			SetTimeout.OnGui(CopyZoomedSnapshot, 100, this, ex => MessageDialog.Show(ex.ToString()));
 			SetTimeout.OnGui(CopyZoomedSnapshot, 500, this, ex => MessageDialog.Show(ex.ToString()));
@@ -610,12 +780,14 @@ namespace BetterClearTypeTuner
 
 		#region Registry
 		/// <summary>
-		/// Where DirectWrite's per-display tuning values live, under both HKLM and HKCU.
+		/// Where DirectWrite's per-display tuning values live.  Written under HKCU only; HKLM is
+		/// still looked at, so that a machine-wide key left by another tuner is noticed and can be
+		/// removed, but never written.  See <see cref="SetAvalonKeys"/>.
 		/// </summary>
 		public const string AvalonKeyPath = "Software\\Microsoft\\Avalon.Graphics";
 		/// <summary>
 		/// DirectWrite/WPF ClearType amount (0 = grayscale … 100 = full). Same key as cttune.
-		/// Only meaningful in the ClearType modes, and only under HKCU.
+		/// Inert while PixelStructure is flat, which is what grayscale mode writes.
 		/// </summary>
 		public const uint ClearTypeLevelMin = 0;
 		public const uint ClearTypeLevelMax = 100;
@@ -636,12 +808,18 @@ namespace BetterClearTypeTuner
 		public const uint GammaLevelDefault = 1800;
 		/// <summary>
 		/// DirectWrite's second contrast control (EnhancedContrastLevel).  Higher numbers give
-		/// darker text.  Applies to grayscale as well as ClearType, and only under HKCU.
+		/// darker text.  Read only when DirectWrite is rasterizing ClearType.
 		/// DirectWrite ignores values above 400 entirely.
 		/// </summary>
 		public const uint EnhancedContrastLevelMin = 0;
 		public const uint EnhancedContrastLevelMax = 400;
 		public const uint EnhancedContrastLevelDefault = 50;
+		/// <summary>
+		/// The same control for grayscale rasterization (GrayscaleEnhancedContrastLevel), which is
+		/// a separate value read by a separate code path.  Same units and same range; the default
+		/// is 100 rather than 50.
+		/// </summary>
+		public const uint GrayscaleEnhancedContrastLevelDefault = 100;
 
 		/// <summary>
 		/// Set while a write pass is refused for lack of permission.  Cleared at the start of each
@@ -789,6 +967,15 @@ namespace BetterClearTypeTuner
 		{
 			get { return EnsureDwDefaultsMeasured() ? dwDefaults.EnhancedContrastLevel : (int)EnhancedContrastLevelDefault; }
 		}
+		private int FallbackGrayscaleEnhancedContrastLevel
+		{
+			get
+			{
+				return EnsureDwDefaultsMeasured()
+					? dwDefaults.GrayscaleEnhancedContrastLevel
+					: (int)GrayscaleEnhancedContrastLevelDefault;
+			}
+		}
 		#endregion
 
 		/// <summary>
@@ -852,8 +1039,9 @@ namespace BetterClearTypeTuner
 			{
 				// Administrator rights are not what is missing, so restarting again would only earn
 				// the same refusal.  Something else owns the key, such as a group policy.
-				ReportRegistryFailure("Unable to set all registry values.  While your change may have "
-					+ "worked, some values could not be written even with administrator permission.");
+				ReportRegistryFailure("Unable to change all registry values.  While your change may have "
+					+ "worked, some values could not be written or removed even with administrator "
+					+ "permission.  Something other than permissions is holding them, such as a group policy.");
 				return false;
 			}
 			if (elevationRefused)
@@ -868,6 +1056,7 @@ namespace BetterClearTypeTuner
 			state.GammaLevel = (int)nudDwContrast.Value;
 			state.ClearTypeLevel = (int)nudClearTypeLevel.Value;
 			state.EnhancedContrastLevel = (int)nudEnhancedContrast.Value;
+			state.GrayscaleEnhancedContrastLevel = (int)nudGrayscaleContrast.Value;
 			state.DarkMode = cbDarkmode.Checked;
 			state.Maximized = this.WindowState == FormWindowState.Maximized;
 			// RestoreBounds is the size the window would go back to, which is the one worth carrying
@@ -882,10 +1071,14 @@ namespace BetterClearTypeTuner
 			elevationRefused = true;
 			MessageDialog.Show(this,
 				(result == ElevationResult.Refused
-					? "Administrator permission is needed to change this setting for every application on this computer, and it was not granted."
+					? "Administrator permission is needed to remove text rendering settings that apply to every user of this computer, and it was not granted."
 					: "This application was unable to restart itself as an administrator: " + error)
-				+ "\r\n\r\nYour change has been applied everywhere it could be.  To apply it everywhere, "
-				+ "run Better ClearType Tuner as an administrator.",
+				+ "\r\n\r\nYour own settings have been changed successfully.  What is left behind is a "
+				+ "machine-wide copy under HKEY_LOCAL_MACHINE, written by an older version of this "
+				+ "program or by another tuner.  It does not affect how text looks for you, because "
+				+ "your own settings take precedence over it, but it will keep applying to any other "
+				+ "user of this computer who has none of their own.  To clear it out, run Better "
+				+ "ClearType Tuner as an administrator.",
 				"Administrator permission required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			return false;
 		}
@@ -931,6 +1124,7 @@ namespace BetterClearTypeTuner
 				int gammaLevel = GetAvalonValue("GammaLevel", FallbackGammaLevel);
 				int clearTypeLevel = GetAvalonValue("ClearTypeLevel", FallbackClearTypeLevel);
 				int enhancedContrastLevel = GetAvalonValue("EnhancedContrastLevel", FallbackEnhancedContrastLevel);
+				int grayscaleContrastLevel = GetAvalonValue("GrayscaleEnhancedContrastLevel", FallbackGrayscaleEnhancedContrastLevel);
 
 				// Update UI controls
 				DisableEvents();
@@ -938,45 +1132,38 @@ namespace BetterClearTypeTuner
 				cbFontAntialiasing.Checked = aaEnabled;
 				cbDwOverride.Checked = avalonKeysExist;
 
-				bool clearTypeSelected = false;
 				if (smoothingType == FontSmoothingType.Standard)
 					rbGrayscale.Checked = true;
 				else if (orientation == FontSmoothingOrientation.RGB)
-					clearTypeSelected = rbRGB.Checked = true;
+					rbRGB.Checked = true;
 				else if (orientation == FontSmoothingOrientation.BGR)
-					clearTypeSelected = rbBGR.Checked = true;
+					rbBGR.Checked = true;
 				else
 					rbGrayscale.Checked = rbRGB.Checked = rbBGR.Checked = false;
 
 				ShowValue(nudGdiContrast, (int)gdiContrast, FontSmoothing.ContrastMin, FontSmoothing.ContrastMax);
 				ShowValue(nudDwContrast, gammaLevel, GammaLevelMin, GammaLevelMax);
 				ShowValue(nudEnhancedContrast, enhancedContrastLevel, EnhancedContrastLevelMin, EnhancedContrastLevelMax);
-				// Grayscale mode stores a ClearType Level of 0, which is not the user's choice of
-				// level but a consequence of the mode, so only read it back when it is in use.
-				if (aaEnabled && clearTypeSelected)
-					ShowValue(nudClearTypeLevel, clearTypeLevel, ClearTypeLevelMin, ClearTypeLevelMax);
+				ShowValue(nudGrayscaleContrast, grayscaleContrastLevel, EnhancedContrastLevelMin, EnhancedContrastLevelMax);
+				ShowValue(nudClearTypeLevel, clearTypeLevel, ClearTypeLevelMin, ClearTypeLevelMax);
 
 				ApplyEnabledStates();
 
 				EnableEvents();
 
-				string quick = "";
 				// Says that the DirectWrite figures which follow are the ones DirectWrite fell back
 				// to rather than ones anybody chose, so that they are not read as settings in force.
 				string dwSource = avalonKeysExist ? "DirectWrite" : "DirectWrite defaults:";
 				// Update status text
 				if (!aaEnabled)
-					status.Text = quick + "Font Antialiasing is disabled.";
-				else if (smoothingType == FontSmoothingType.ClearType)
-					status.Text = quick + orientation
+					status.Text = "Font Antialiasing is disabled.";
+				else
+					status.Text = (smoothingType == FontSmoothingType.ClearType ? orientation.ToString() : "Grayscale")
 						+ "  ·  GDI contrast " + gdiContrast
 						+ "  ·  " + dwSource + " contrast " + gammaLevel
 						+ ", ClearType Level " + clearTypeLevel
-						+ ", enhanced contrast " + enhancedContrastLevel;
-				else
-					status.Text = quick + "Grayscale"
-						+ "  ·  " + dwSource + " contrast " + gammaLevel
-						+ ", enhanced contrast " + enhancedContrastLevel;
+						+ ", enhanced contrast " + enhancedContrastLevel
+						+ ", grayscale " + grayscaleContrastLevel;
 
 				// Snapshot the sample text and render it zoomed-in
 				CopyZoomedSnapshot();
@@ -1009,33 +1196,43 @@ namespace BetterClearTypeTuner
 		}
 
 		/// <summary>
-		/// Grays out every setting that the current antialiasing mode makes irrelevant, so that
-		/// the window only offers changes which will actually alter the rendered text.
+		/// Grays out the settings that nothing can currently read.
+		///
+		/// That is a much shorter list than it used to be, and deliberately so.  Earlier versions
+		/// also grayed out a setting whenever the antialiasing mode above made it look irrelevant -
+		/// ClearType Level outside RGB/BGR, the GDI contrast in grayscale mode - which quietly
+		/// taught the wrong lesson.  The antialiasing mode is not a mode the whole computer is in.
+		/// It commands GDI, and it is a hint the DirectWrite applications that bother to read it may
+		/// take; a WinUI application rasterizes grayscale whatever this window says, and a GDI
+		/// application can ask for ClearType per font.  So a setting the current mode does not use
+		/// is still a setting some running application does, and graying it out only made those
+		/// applications look unaffected by a value that was never being written.
+		///
+		/// What remains is the two cases where nothing anywhere is reading the value: antialiasing
+		/// switched off entirely, and the DirectWrite override switched off, where the boxes are
+		/// reporting what DirectWrite falls back to rather than offering anything to change.
 		/// </summary>
 		private void ApplyEnabledStates()
 		{
 			// With antialiasing off, text is drawn with hard pixel edges and nothing below the
 			// checkbox reaches either renderer.
 			bool aaEnabled = cbFontAntialiasing.Checked;
-			bool clearType = aaEnabled && (rbRGB.Checked || rbBGR.Checked);
-			// With the override off there are no Avalon.Graphics values to edit: the boxes below
-			// display what DirectWrite falls back to, which is not this application's to change.
 			bool dwOverride = aaEnabled && cbDwOverride.Checked;
 
 			rbGrayscale.Enabled = rbRGB.Enabled = rbBGR.Enabled = aaEnabled;
 			cbDwOverride.Enabled = aaEnabled;
-			// The section heading follows the antialiasing switch alone.  Turning the override off
+			// The section headings follow the antialiasing switch alone.  Turning the override off
 			// does not stop DirectWrite from drawing this application's text, it only means the
 			// settings under the heading are being reported rather than chosen.
 			lblDwHeader.ForeColor = aaEnabled ? LabelTextColor : DisabledTextColor;
+			lblDwClearTypePath.ForeColor = dwOverride ? LabelTextColor : DisabledTextColor;
+			lblDwGrayscalePath.ForeColor = dwOverride ? LabelTextColor : DisabledTextColor;
 
-			// GDI applies its contrast only while drawing ClearType; grayscale GDI text ignores it.
-			SetRowEnabled(clearType, nudGdiContrast, lblGdiContrast, lblGdiContrastRange, lblGdiHeader);
-			// Both DirectWrite contrast controls also act on grayscale antialiasing.
+			SetRowEnabled(aaEnabled, nudGdiContrast, lblGdiContrast, lblGdiContrastRange, lblGdiHeader);
 			SetRowEnabled(dwOverride, nudDwContrast, lblDwContrast, lblDwContrastRange);
+			SetRowEnabled(dwOverride, nudClearTypeLevel, lblClearTypeLevel, lblClearTypeLevelRange);
 			SetRowEnabled(dwOverride, nudEnhancedContrast, lblEnhancedContrast, lblEnhancedContrastRange);
-			// ClearType Level is the subpixel blend amount, so it means nothing outside RGB/BGR.
-			SetRowEnabled(clearType && cbDwOverride.Checked, nudClearTypeLevel, lblClearTypeLevel, lblClearTypeLevelRange);
+			SetRowEnabled(dwOverride, nudGrayscaleContrast, lblGrayscaleContrast, lblGrayscaleContrastRange);
 		}
 
 		private void SetRowEnabled(bool enabled, NumericUpDown nud, params Label[] labels)
@@ -1061,26 +1258,185 @@ namespace BetterClearTypeTuner
 			get { return cbDarkmode.Checked ? ColorTranslator.FromHtml("#DEDEDE") : Color.Black; }
 		}
 
+		#region Preview grid layout
+		/// <summary>
+		/// The designer's own geometry for the four preview quadrants, captured once at the DPI the
+		/// window came up at.  <see cref="LayoutPreviewGrid"/> never lays the grid out smaller than
+		/// this, so widening the window grows the quadrants and narrowing it scrolls instead.
+		/// </summary>
+		private int designGridLeft, designGridTop, designHeaderHeight, designHeaderGap;
+		private int designColumnWidth, designRowHeight, designColumnGap, designRowGap;
+		private int designRightMargin, designBottomMargin, designLaneInset, designLaneGap;
+		private bool previewGridCaptured;
+		/// <summary>
+		/// Redrawing three samples is far too much work to do for every intermediate size Windows
+		/// reports while a window is being dragged, so the boxes are moved at once and their
+		/// contents are redrawn when the dragging stops.
+		/// </summary>
+		private System.Windows.Forms.Timer previewResizeTimer;
+
+		private void CapturePreviewGridDesign()
+		{
+			designGridLeft = lblNormalScaleHeader.Left;
+			designGridTop = lblNormalScaleHeader.Top;
+			designHeaderHeight = lblNormalScaleHeader.Height;
+			designHeaderGap = panelNormalScale.Top - lblNormalScaleHeader.Top;
+			designColumnWidth = pbZoomed.Width;
+			designRowHeight = pbZoomed.Height;
+			designColumnGap = pbZoomed.Left - (panelNormalScale.Left + panelNormalScale.Width);
+			designRowGap = lblDwZoomHeader.Top - (panelNormalScale.Top + panelNormalScale.Height);
+			designLaneInset = panelNormalScale.Width - panelSmall.Width;
+			designLaneGap = panelSmall.Top - (lblGdiSmallHeader.Top + lblGdiSmallHeader.Height);
+			// Falling back to the column gap keeps these in scaled units on the off chance that the
+			// content panel has not been given its size yet.
+			designRightMargin = Math.Max(designColumnGap, panelContent.Width - (pbZoomed.Left + pbZoomed.Width));
+			designBottomMargin = Math.Max(designColumnGap, panelContent.Height - (pbDwZoomed.Top + pbDwZoomed.Height));
+			previewGridCaptured = true;
+		}
+
+		/// <summary>
+		/// Moves the captured geometry to a new DPI.  Windows Forms rescales the controls itself,
+		/// but the minimums above were measured at the old scale and would otherwise let the grid
+		/// lay out smaller than the designer intended.
+		/// </summary>
+		private void ScalePreviewGridDesign(double factor)
+		{
+			if (!previewGridCaptured || factor <= 0 || factor == 1)
+				return;
+			designGridLeft = (int)Math.Round(designGridLeft * factor);
+			designGridTop = (int)Math.Round(designGridTop * factor);
+			designHeaderHeight = (int)Math.Round(designHeaderHeight * factor);
+			designHeaderGap = (int)Math.Round(designHeaderGap * factor);
+			designColumnWidth = (int)Math.Round(designColumnWidth * factor);
+			designRowHeight = (int)Math.Round(designRowHeight * factor);
+			designColumnGap = (int)Math.Round(designColumnGap * factor);
+			designRowGap = (int)Math.Round(designRowGap * factor);
+			designRightMargin = (int)Math.Round(designRightMargin * factor);
+			designBottomMargin = (int)Math.Round(designBottomMargin * factor);
+			designLaneInset = (int)Math.Round(designLaneInset * factor);
+			designLaneGap = (int)Math.Round(designLaneGap * factor);
+		}
+
+		private void PanelContent_SizeChanged(object sender, EventArgs e)
+		{
+			LayoutPreviewGrid();
+			if (initialized)
+			{
+				previewResizeTimer.Stop();
+				previewResizeTimer.Start();
+			}
+		}
+
+		private void PreviewResizeTimer_Tick(object sender, EventArgs e)
+		{
+			previewResizeTimer.Stop();
+			BeginBusy();
+			try
+			{
+				CopyZoomedSnapshot();
+			}
+			finally
+			{
+				EndBusy();
+			}
+		}
+
+		/// <summary>
+		/// Lays the four preview quadrants out across whatever width and height the window has.
+		/// Both columns and both rows always get the same size as each other, so the two DirectWrite
+		/// samples stay directly comparable.
+		///
+		/// The scrollbar allowance is subtracted whether or not a scrollbar is showing, and the
+		/// measurement is taken from the panel's outer size rather than its client size.  Taken the
+		/// other way round, growing a quadrant could bring a scrollbar in, which would shrink the
+		/// client size, which would shrink the quadrant, which would send the scrollbar away again.
+		/// </summary>
+		private void LayoutPreviewGrid()
+		{
+			if (!previewGridCaptured)
+				return;
+
+			int usableWidth = panelContent.Width - SystemInformation.VerticalScrollBarWidth
+				- designGridLeft - designRightMargin;
+			int columnWidth = Math.Max(designColumnWidth, (usableWidth - designColumnGap) / 2);
+
+			int usableHeight = panelContent.Height - SystemInformation.HorizontalScrollBarHeight
+				- designGridTop - designBottomMargin - (2 * designHeaderGap) - designRowGap;
+			int rowHeight = Math.Max(designRowHeight, usableHeight / 2);
+
+			int leftColumn = designGridLeft;
+			int rightColumn = leftColumn + columnWidth + designColumnGap;
+			int topHeader = designGridTop;
+			int topBox = topHeader + designHeaderGap;
+			int bottomHeader = topBox + rowHeight + designRowGap;
+			int bottomBox = bottomHeader + designHeaderGap;
+
+			lblNormalScaleHeader.SetBounds(leftColumn, topHeader, columnWidth, designHeaderHeight);
+			panelNormalScale.SetBounds(leftColumn, topBox, columnWidth, rowHeight);
+			lblGdiZoomHeader.SetBounds(rightColumn, topHeader, columnWidth, designHeaderHeight);
+			pbZoomed.SetBounds(rightColumn, topBox, columnWidth, rowHeight);
+			lblDwZoomHeader.SetBounds(leftColumn, bottomHeader, columnWidth, designHeaderHeight);
+			pbDwZoomed.SetBounds(leftColumn, bottomBox, columnWidth, rowHeight);
+			lblDwGrayZoomHeader.SetBounds(rightColumn, bottomHeader, columnWidth, designHeaderHeight);
+			pbDwGrayZoomed.SetBounds(rightColumn, bottomBox, columnWidth, rowHeight);
+
+			LayoutNormalScaleLanes(columnWidth, rowHeight);
+		}
+
+		/// <summary>
+		/// Divides the normal-scale quadrant equally between the three rendering paths.
+		///
+		/// Each of those boxes is also the source its zoom box magnifies, so the division has to
+		/// leave every one of them at least a quarter of the quadrant's height for the magnified
+		/// copy to fill the box beside it.  A third of the height less one caption clears that
+		/// comfortably at any size this window can be given.
+		/// </summary>
+		private void LayoutNormalScaleLanes(int columnWidth, int rowHeight)
+		{
+			int laneHeight = rowHeight / 3;
+			int boxWidth = Math.Max(1, columnWidth - designLaneInset);
+			int boxHeight = Math.Max(1, laneHeight - designHeaderHeight - designLaneGap);
+
+			LayoutLane(lblGdiSmallHeader, panelSmall, 0, laneHeight, columnWidth, boxWidth, boxHeight);
+			LayoutLane(lblDwSmallHeader, pbDwSmall, laneHeight, laneHeight, columnWidth, boxWidth, boxHeight);
+			LayoutLane(lblDwGraySmallHeader, pbDwGraySmall, 2 * laneHeight, laneHeight, columnWidth, boxWidth, boxHeight);
+		}
+
+		private void LayoutLane(Label header, Control box, int top, int laneHeight,
+			int columnWidth, int boxWidth, int boxHeight)
+		{
+			header.SetBounds(0, top, columnWidth, designHeaderHeight);
+			box.SetBounds(0, top + designHeaderHeight + designLaneGap, boxWidth, boxHeight);
+		}
+		#endregion
+
+		/// <summary>
+		/// Redraws all three previews: the GDI sample is snapshotted out of the live controls, and
+		/// the two DirectWrite samples are drawn from scratch.  Each one is then magnified into the
+		/// zoom box beside it.
+		/// </summary>
 		private void CopyZoomedSnapshot()
 		{
 			this.Invalidate(true);
-			//foreach (Control control in this.Controls)
-			//	control.Invalidate();
-			//.Invalidate();
 			using (Bitmap src = new Bitmap(panelSmall.Width, panelSmall.Height))
 			{
 				panelSmall.DrawToBitmap(src, new Rectangle(0, 0, panelSmall.Width, panelSmall.Height));
-				Image old = pbZoomed.Image;
-				pbZoomed.Image = ScaleFast(src, 4);
-				old?.Dispose();
+				SetImage(pbZoomed, Magnify(src, ZoomFactor, pbZoomed.Width, pbZoomed.Height));
 			}
 			RenderDirectWritePreview();
 		}
 
+		/// <summary>How much the zoom boxes magnify their sample.</summary>
+		private const int ZoomFactor = 4;
+
 		/// <summary>
-		/// Draws the same sample text through DirectWrite. Unlike the GDI preview above it,
-		/// this reflects the ClearType Level, and it reads the settings straight from the
-		/// controls rather than from the registry, so it updates without restarting anything.
+		/// Draws the sample text through both of DirectWrite's rasterization paths.  Unlike the GDI
+		/// preview these read the settings straight from the controls rather than from the registry,
+		/// so they update without writing anything and without restarting anything.
+		///
+		/// The two paths are drawn side by side rather than one being picked, because the choice
+		/// belongs to each application rather than to the antialiasing mode: a WinUI application
+		/// draws its text down the grayscale path no matter what this window is set to.
 		/// </summary>
 		private void RenderDirectWritePreview()
 		{
@@ -1088,7 +1444,8 @@ namespace BetterClearTypeTuner
 				return;
 			if (!dwRenderer.Available)
 			{
-				ShowDirectWriteError(dwRenderer.LastError);
+				ShowDirectWriteError(pbDwSmall, pbDwZoomed, lblDwZoomHeader, dwRenderer.LastError);
+				ShowDirectWriteError(pbDwGraySmall, pbDwGrayZoomed, lblDwGrayZoomHeader, dwRenderer.LastError);
 				return;
 			}
 
@@ -1101,40 +1458,49 @@ namespace BetterClearTypeTuner
 				SmoothingType = rbGrayscale.Checked ? FontSmoothingType.Standard : FontSmoothingType.ClearType,
 				Orientation = rbBGR.Checked ? FontSmoothingOrientation.BGR : FontSmoothingOrientation.RGB,
 				GammaLevel = (uint)nudDwContrast.Value,
-				ClearTypeLevel = rbGrayscale.Checked ? 0 : (int)nudClearTypeLevel.Value,
-				EnhancedContrastLevel = (int)nudEnhancedContrast.Value
+				ClearTypeLevel = (int)nudClearTypeLevel.Value,
+				EnhancedContrastLevel = (int)nudEnhancedContrast.Value,
+				GrayscaleEnhancedContrastLevel = (int)nudGrayscaleContrast.Value
 			};
 
-			Bitmap rendered = dwRenderer.Render(pbDwSmall.Width, pbDwSmall.Height, fonts, texts,
-				this.DeviceDpi, TextColorForSamples(), BackColorForSamples(), settings);
+			RenderDirectWriteLane(DwPipeline.ClearType, settings, fonts, texts,
+				pbDwSmall, pbDwZoomed, lblDwZoomHeader, dwZoomHeaderText);
+			RenderDirectWriteLane(DwPipeline.Grayscale, settings, fonts, texts,
+				pbDwGraySmall, pbDwGrayZoomed, lblDwGrayZoomHeader, dwGrayZoomHeaderText);
+		}
+
+		private void RenderDirectWriteLane(DwPipeline pipeline, DirectWriteSampleRenderer.Settings settings,
+			Font[] fonts, string[] texts, PictureBox small, PictureBox zoomed, Label header, string headerText)
+		{
+			if (small.Width <= 0 || small.Height <= 0)
+				return;
+
+			Bitmap rendered = dwRenderer.Render(small.Width, small.Height, fonts, texts,
+				this.DeviceDpi, TextColorForSamples(), BackColorForSamples(), settings, pipeline);
 			if (rendered == null)
 			{
-				ShowDirectWriteError(dwRenderer.LastError);
+				ShowDirectWriteError(small, zoomed, header, dwRenderer.LastError);
 				return;
 			}
 
-			Image oldZoomed = pbDwZoomed.Image;
-			pbDwZoomed.Image = ScaleFast(rendered, 4);
-			oldZoomed?.Dispose();
-
-			Image oldSmall = pbDwSmall.Image;
-			pbDwSmall.Image = rendered;
-			oldSmall?.Dispose();
-
-			lblDwZoomHeader.Text = dwZoomHeaderText;
+			SetImage(zoomed, Magnify(rendered, ZoomFactor, zoomed.Width, zoomed.Height));
+			SetImage(small, rendered);
+			header.Text = headerText;
 		}
 
-		private void ShowDirectWriteError(string message)
+		private void ShowDirectWriteError(PictureBox small, PictureBox zoomed, Label header, string message)
 		{
-			Image oldZoomed = pbDwZoomed.Image;
-			pbDwZoomed.Image = null;
-			oldZoomed?.Dispose();
+			SetImage(zoomed, null);
+			SetImage(small, null);
+			header.Text = "Preview unavailable: " + (message ?? "unknown error");
+		}
 
-			Image oldSmall = pbDwSmall.Image;
-			pbDwSmall.Image = null;
-			oldSmall?.Dispose();
-
-			lblDwZoomHeader.Text = "DirectWrite preview unavailable: " + (message ?? "unknown error");
+		/// <summary>Swaps in a new image and disposes the one it replaces.</summary>
+		private static void SetImage(PictureBox box, Image image)
+		{
+			Image old = box.Image;
+			box.Image = image;
+			old?.Dispose();
 		}
 
 		private Color TextColorForSamples()
@@ -1146,17 +1512,51 @@ namespace BetterClearTypeTuner
 		{
 			return cbDarkmode.Checked ? Color.Black : Color.White;
 		}
-		private Bitmap ScaleFast(Bitmap src, double scale)
+		/// <summary>
+		/// Magnifies the top-left corner of <paramref name="src"/> by a whole-number factor, with
+		/// each source pixel becoming a solid block so that nothing is blended and the individual
+		/// subpixels stay visible.
+		///
+		/// The result is exactly the size asked for rather than the full magnification, which is
+		/// what lets the zoom boxes be narrower than the sample they magnify: whatever runs off the
+		/// right-hand edge is simply never drawn.  Anything past the end of the source is filled
+		/// with the sample background so a box taller or wider than its source looks like blank
+		/// paper rather than a black band.
+		/// </summary>
+		private Bitmap Magnify(Bitmap src, int scale, int targetW, int targetH)
 		{
-			int targetW = (int)(src.Width * scale);
-			int targetH = (int)(src.Height * scale);
-			int[] targetPixels = resizePixels(GetRawRGB(src), src.Width, src.Height, targetW, targetH);
+			if (targetW < 1)
+				targetW = 1;
+			if (targetH < 1)
+				targetH = 1;
 
-			Bitmap target = new Bitmap(targetW, targetH, PixelFormat.Format32bppRgb);
-			BitmapData targetData = target.LockBits(new Rectangle(0, 0, target.Width, target.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppRgb);
-			Marshal.Copy(targetPixels, 0, targetData.Scan0, targetPixels.Length);
-			target.UnlockBits(targetData);
-			return target;
+			int[] source = GetRawRGB(src);
+			int[] target = new int[targetW * targetH];
+			int fill = BackColorForSamples().ToArgb();
+
+			for (int y = 0; y < targetH; y++)
+			{
+				int sy = y / scale;
+				int row = y * targetW;
+				if (sy >= src.Height)
+				{
+					for (int x = 0; x < targetW; x++)
+						target[row + x] = fill;
+					continue;
+				}
+				int sourceRow = sy * src.Width;
+				for (int x = 0; x < targetW; x++)
+				{
+					int sx = x / scale;
+					target[row + x] = sx < src.Width ? source[sourceRow + sx] : fill;
+				}
+			}
+
+			Bitmap result = new Bitmap(targetW, targetH, PixelFormat.Format32bppRgb);
+			BitmapData resultData = result.LockBits(new Rectangle(0, 0, targetW, targetH), ImageLockMode.WriteOnly, PixelFormat.Format32bppRgb);
+			Marshal.Copy(target, 0, resultData.Scan0, target.Length);
+			result.UnlockBits(resultData);
+			return result;
 		}
 		private int[] GetRawRGB(Bitmap bmp)
 		{
@@ -1165,24 +1565,6 @@ namespace BetterClearTypeTuner
 			Marshal.Copy(data.Scan0, raw, 0, raw.Length);
 			bmp.UnlockBits(data);
 			return raw;
-		}
-
-		public int[] resizePixels(int[] pixels, int w1, int h1, int w2, int h2)
-		{
-			int[] temp = new int[w2 * h2];
-			double x_ratio = w1 / (double)w2;
-			double y_ratio = h1 / (double)h2;
-			double px, py;
-			for (int i = 0; i < h2; i++)
-			{
-				for (int j = 0; j < w2; j++)
-				{
-					px = Math.Floor(j * x_ratio);
-					py = Math.Floor(i * y_ratio);
-					temp[(i * w2) + j] = pixels[(int)((py * w1) + px)];
-				}
-			}
-			return temp;
 		}
 		public void DisableEvents()
 		{
@@ -1195,6 +1577,7 @@ namespace BetterClearTypeTuner
 			nudDwContrast.ValueChanged -= ControlsChanged;
 			nudClearTypeLevel.ValueChanged -= ControlsChanged;
 			nudEnhancedContrast.ValueChanged -= ControlsChanged;
+			nudGrayscaleContrast.ValueChanged -= ControlsChanged;
 		}
 		public void EnableEvents()
 		{
@@ -1207,6 +1590,7 @@ namespace BetterClearTypeTuner
 			nudDwContrast.ValueChanged += ControlsChanged;
 			nudClearTypeLevel.ValueChanged += ControlsChanged;
 			nudEnhancedContrast.ValueChanged += ControlsChanged;
+			nudGrayscaleContrast.ValueChanged += ControlsChanged;
 		}
 		private static bool PrefersDarkMode()
 		{
@@ -1269,33 +1653,61 @@ namespace BetterClearTypeTuner
 		/// applications only read once.
 		/// </summary>
 		private const string DirectWriteRestartNote =
-			"The DirectWrite preview updates immediately.  Applications such as Firefox, Edge and "
-			+ "WPF read this value when they start, so they have to be restarted to pick it up.";
+			"The DirectWrite previews update immediately.  Applications read this value when they "
+			+ "start, so they have to be restarted to pick it up.";
+
+		/// <summary>
+		/// The one thing worth understanding about the DirectWrite settings, appended to each of the
+		/// three that only one of the two paths reads.
+		/// </summary>
+		private const string DirectWritePathNote =
+			"DirectWrite rasterizes glyphs in one of two ways, and each application picks for itself "
+			+ "rather than being told by the antialiasing mode above:\r\n"
+			+ "\r\n"
+			+ "  ClearType path - computes coverage separately for the red, green and blue subpixels. "
+			+ "Firefox, Edge, WPF and most applications that draw into a window of their own.\r\n"
+			+ "\r\n"
+			+ "  Grayscale path - computes one coverage value per pixel.  The Settings app, WinUI and "
+			+ "Store apps, whose text is drawn onto composition surfaces that may be transparent, "
+			+ "transformed or animated, and so cannot carry per-subpixel coverage.\r\n"
+			+ "\r\n"
+			+ "That is why both are previewed at once, and why a setting one path ignores is still "
+			+ "worth setting: something on this computer is almost certainly using the other path.";
 
 		private const string HelpGdiContrast =
 			"GDI contrast - SystemParametersInfo, SPI_SETFONTSMOOTHINGCONTRAST\r\n"
 			+ "Range 1000 to 2200, default 1200.  Higher numbers give lighter text.\r\n"
 			+ "\r\n"
-			+ "GDI applies this only while it is drawing ClearType, so it has no effect in "
-			+ "grayscale mode.  DirectWrite applications ignore it entirely; they have their own "
-			+ "contrast setting below.";
+			+ "GDI reads this only while it is drawing ClearType.  That is normally decided by the "
+			+ "antialiasing mode above, but an application can ask for ClearType for a particular "
+			+ "font regardless of it, so this is left adjustable in grayscale mode too.\r\n"
+			+ "\r\n"
+			+ "DirectWrite applications ignore this value entirely; they have their own contrast "
+			+ "settings below.";
 
 		private const string HelpDwOverride =
-			"Override DirectWrite defaults - HKCU and HKLM\\" + AvalonKeyPath + "\r\n"
+			"Override DirectWrite defaults - HKCU\\" + AvalonKeyPath + "\r\n"
 			+ "\r\n"
 			+ "A clean Windows installation has no Avalon.Graphics registry key at all, and "
 			+ "DirectWrite falls back to settings of its own.  Apps like Firefox may also override "
 			+ "with their own different defaults. Clear this checkbox to return to that "
-			+ "state: the key is removed from both hives and the three settings below become "
+			+ "state: the key is removed and the settings below become "
 			+ "read-only, showing what DirectWrite falls back to rather than anything chosen here.\r\n"
+			+ "\r\n"
+			+ "These settings are written for your Windows account only, which is why changing them "
+			+ "needs no administrator permission.  DirectWrite reads a per-user value in preference "
+			+ "to a machine-wide one, and this program writes the complete set, so there is nothing "
+			+ "a machine-wide copy could add.  Clearing this checkbox will ask for administrator "
+			+ "permission only if it finds a machine-wide key to remove, left by an older version of "
+			+ "this program or by another tuner.\r\n"
 			+ "\r\n"
 			+ "Tick it to write the key and take control of those three settings.  They start at the "
 			+ "values that were already in effect, so turning the override on does not by itself "
 			+ "change how anything looks.\r\n"
 			+ "\r\n"
-			+ "It is deliberately all or nothing.  Which of these values DirectWrite honours, and in "
-			+ "which hive, is inconsistent enough that a half-written key produces rendering that "
-			+ "matches neither the defaults nor the settings asked for.\r\n"
+			+ "It is deliberately all or nothing.  Which of these values DirectWrite honours is "
+			+ "inconsistent enough that a half-written key produces rendering that matches neither "
+			+ "the defaults nor the settings asked for.\r\n"
 			+ "\r\n"
 			+ "The RGB and BGR buttons above keep working either way.  With the key absent "
 			+ "DirectWrite takes the subpixel order from the Windows font smoothing setting, and "
@@ -1304,11 +1716,12 @@ namespace BetterClearTypeTuner
 			+ DirectWriteRestartNote;
 
 		private const string HelpDwContrast =
-			"DirectWrite contrast - HKCU and HKLM\\" + AvalonKeyPath + "\\<display>\\GammaLevel\r\n"
+			"DirectWrite contrast - HKCU\\" + AvalonKeyPath + "\\<display>\\GammaLevel\r\n"
 			+ "Range 1000 to 2200.  Higher numbers give lighter text.\r\n"
 			+ "\r\n"
-			+ "This is DirectWrite's gamma.  Unlike the GDI contrast it applies to grayscale "
-			+ "antialiasing as well as to ClearType.  GDI ignores it.\r\n"
+			+ "This is DirectWrite's gamma, and the one DirectWrite setting that both rasterization "
+			+ "paths read, so it is the setting to reach for when you want every DirectWrite "
+			+ "application to change together.  GDI ignores it.\r\n"
 			+ "\r\n"
 			+ "Microsoft documents the default as 1900, but that is not what DirectWrite uses.  "
 			+ "Asked what it resolves to with this value absent, DirectWrite answers with a gamma of "
@@ -1319,24 +1732,60 @@ namespace BetterClearTypeTuner
 
 		private const string HelpClearTypeLevel =
 			"ClearType Level - HKCU\\" + AvalonKeyPath + "\\<display>\\ClearTypeLevel\r\n"
-			+ "Range 0 to 100, default 100.\r\n"
+			+ "Range 0 to 100, default 100.  ClearType path only.\r\n"
 			+ "\r\n"
 			+ "How much of the antialiasing is done with the display's individual color subpixels "
-			+ "rather than with whole gray pixels.  Lower it to reduce color fringing at the cost "
-			+ "of sharpness.  It therefore only means anything in the RGB and BGR modes, and GDI "
-			+ "ignores it in all of them.  This is the same setting as the color-intensity step of "
-			+ "the Windows ClearType tuner.\r\n"
+			+ "rather than with whole gray pixels.  Lower it to reduce color fringing at the cost of "
+			+ "sharpness.  This is the same setting as the color-intensity step of the Windows "
+			+ "ClearType tuner.  GDI ignores it.\r\n"
+			+ "\r\n"
+			+ "While Grayscale is selected at the top of this window, this setting does nothing at "
+			+ "all - measurably nothing, not merely little.  That mode writes a PixelStructure of "
+			+ "flat, and with no subpixel structure to blend across there is nothing for a ClearType "
+			+ "level to scale: rendering at 0 and at 100 comes out pixel for pixel identical.  It is "
+			+ "left adjustable anyway, because the value is still written and still read by anything "
+			+ "that pairs it with a subpixel geometry of its own.\r\n"
+			+ "\r\n"
+			+ "Turning it down to zero is also not the same as grayscale rendering, however much it "
+			+ "may look like it in the ClearType preview.  Zero collapses the ClearType output "
+			+ "instead of switching paths, so what applies is still the ClearType contrast below and "
+			+ "not the grayscale one.  Set the two previews side by side and you can see they do not "
+			+ "match.\r\n"
+			+ "\r\n"
+			+ DirectWritePathNote + "\r\n"
 			+ "\r\n"
 			+ DirectWriteRestartNote;
 
 		private const string HelpEnhancedContrast =
 			"Enhanced Contrast - HKCU\\" + AvalonKeyPath + "\\<display>\\EnhancedContrastLevel\r\n"
-			+ "Range 0 to 400, default 50.  Higher numbers give darker text.\r\n"
+			+ "Range 0 to 400, default 50.  Higher numbers give darker text.  ClearType path only.\r\n"
 			+ "\r\n"
 			+ "A second contrast control, applied on top of the DirectWrite contrast above and "
-			+ "pulling in the opposite direction.  It applies to grayscale antialiasing as well as "
-			+ "to ClearType.  GDI ignores it, and DirectWrite discards values above 400.  Some apps "
-			+ "may also ignore this setting while still respecting other DirectWrite font settings.\r\n"
+			+ "pulling in the opposite direction.  GDI ignores it, and DirectWrite discards values "
+			+ "above 400.  Some applications also ignore it while still respecting the other "
+			+ "DirectWrite settings.\r\n"
+			+ "\r\n"
+			+ "This is the ClearType path's copy of the setting.  Grayscale rasterization has its "
+			+ "own, below, and reads that one instead.\r\n"
+			+ "\r\n"
+			+ DirectWritePathNote + "\r\n"
+			+ "\r\n"
+			+ DirectWriteRestartNote;
+
+		private const string HelpGrayscaleContrast =
+			"Grayscale Enhanced Contrast - HKCU\\" + AvalonKeyPath + "\\<display>\\GrayscaleEnhancedContrastLevel\r\n"
+			+ "Range 0 to 400, default 100.  Higher numbers give darker text.  Grayscale path only.\r\n"
+			+ "\r\n"
+			+ "The same control as Enhanced Contrast above, kept as a separate value because "
+			+ "grayscale rasterization is a separate code path with its own contrast.  Setting one "
+			+ "does nothing to the other.\r\n"
+			+ "\r\n"
+			+ "This is the setting that reaches the Windows Settings app and other WinUI and Store "
+			+ "applications, which rasterize grayscale no matter which antialiasing mode is selected "
+			+ "at the top of this window.  Watch the grayscale preview while you change it; the "
+			+ "ClearType preview will not move.\r\n"
+			+ "\r\n"
+			+ DirectWritePathNote + "\r\n"
 			+ "\r\n"
 			+ DirectWriteRestartNote;
 
@@ -1351,6 +1800,8 @@ namespace BetterClearTypeTuner
 			SetHelpText(HelpDwContrast, nudDwContrast, lblDwContrast, lblDwContrastRange, linkDwContrast);
 			SetHelpText(HelpClearTypeLevel, nudClearTypeLevel, lblClearTypeLevel, lblClearTypeLevelRange, linkClearTypeLevel);
 			SetHelpText(HelpEnhancedContrast, nudEnhancedContrast, lblEnhancedContrast, lblEnhancedContrastRange, linkEnhancedContrast);
+			SetHelpText(HelpGrayscaleContrast, nudGrayscaleContrast, lblGrayscaleContrast, lblGrayscaleContrastRange, linkGrayscaleContrast);
+			SetHelpText(DirectWritePathNote, lblDwClearTypePath, lblDwGrayscalePath);
 		}
 
 		private void SetHelpText(string text, params Control[] controls)
@@ -1388,6 +1839,11 @@ namespace BetterClearTypeTuner
 		private void linkEnhancedContrast_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 			ShowHelp(linkEnhancedContrast, "About Enhanced Contrast", HelpEnhancedContrast);
+		}
+
+		private void linkGrayscaleContrast_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			ShowHelp(linkGrayscaleContrast, "About Grayscale Enhanced Contrast", HelpGrayscaleContrast);
 		}
 		#endregion
 	}
