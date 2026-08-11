@@ -178,7 +178,7 @@
 			this.rbBGR.Size = new System.Drawing.Size(200, 25);
 			this.rbBGR.TabIndex = 2;
 			this.rbBGR.TabStop = true;
-			this.rbBGR.Text = "BGR";
+			this.rbBGR.Text = "BGR (ClearType)";
 			this.toolTip1.SetToolTip(this.rbBGR, "ClearType subpixel antialiasing for displays whose subpixels\r\nare ordered blue, g" +
         "reen, red from left to right.");
 			this.rbBGR.UseVisualStyleBackColor = false;
@@ -194,7 +194,7 @@
 			this.rbRGB.Size = new System.Drawing.Size(200, 25);
 			this.rbRGB.TabIndex = 1;
 			this.rbRGB.TabStop = true;
-			this.rbRGB.Text = "RGB";
+			this.rbRGB.Text = "RGB (ClearType)";
 			this.toolTip1.SetToolTip(this.rbRGB, "ClearType subpixel antialiasing for displays whose subpixels\r\nare ordered red, gr" +
         "een, blue from left to right.  This is by far\r\nthe most common layout.");
 			this.rbRGB.UseVisualStyleBackColor = false;
@@ -283,11 +283,12 @@
 			// 
 			// linkGdiContrast
 			// 
+			this.linkGdiContrast.AutoSize = true;
 			this.linkGdiContrast.BackColor = System.Drawing.Color.Transparent;
 			this.linkGdiContrast.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.linkGdiContrast.Location = new System.Drawing.Point(329, 157);
 			this.linkGdiContrast.Name = "linkGdiContrast";
-			this.linkGdiContrast.Size = new System.Drawing.Size(24, 20);
+			this.linkGdiContrast.Size = new System.Drawing.Size(23, 19);
 			this.linkGdiContrast.TabIndex = 7;
 			this.linkGdiContrast.TabStop = true;
 			this.linkGdiContrast.Text = "[?]";
@@ -297,7 +298,7 @@
 			// 
 			this.lblGdiContrastRange.BackColor = System.Drawing.Color.Transparent;
 			this.lblGdiContrastRange.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblGdiContrastRange.Location = new System.Drawing.Point(229, 152);
+			this.lblGdiContrastRange.Location = new System.Drawing.Point(229, 150);
 			this.lblGdiContrastRange.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblGdiContrastRange.Name = "lblGdiContrastRange";
 			this.lblGdiContrastRange.Size = new System.Drawing.Size(96, 30);
@@ -325,9 +326,9 @@
 			this.panelRuleDw.Name = "panelRuleDw";
 			this.panelRuleDw.Size = new System.Drawing.Size(340, 1);
 			this.panelRuleDw.TabIndex = 10;
-			//
+			// 
 			// cbDwOverride
-			//
+			// 
 			this.cbDwOverride.BackColor = System.Drawing.Color.Transparent;
 			this.cbDwOverride.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.cbDwOverride.Location = new System.Drawing.Point(15, 216);
@@ -338,21 +339,22 @@
 			this.cbDwOverride.Text = "Override DirectWrite defaults";
 			this.cbDwOverride.UseVisualStyleBackColor = false;
 			this.cbDwOverride.CheckedChanged += new System.EventHandler(this.cbDwOverride_CheckedChanged);
-			//
+			// 
 			// linkDwOverride
-			//
+			// 
+			this.linkDwOverride.AutoSize = true;
 			this.linkDwOverride.BackColor = System.Drawing.Color.Transparent;
 			this.linkDwOverride.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.linkDwOverride.Location = new System.Drawing.Point(329, 218);
 			this.linkDwOverride.Name = "linkDwOverride";
-			this.linkDwOverride.Size = new System.Drawing.Size(24, 20);
+			this.linkDwOverride.Size = new System.Drawing.Size(23, 19);
 			this.linkDwOverride.TabIndex = 12;
 			this.linkDwOverride.TabStop = true;
 			this.linkDwOverride.Text = "[?]";
 			this.linkDwOverride.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkDwOverride_LinkClicked);
-			//
+			// 
 			// lblDwContrast
-			//
+			// 
 			this.lblDwContrast.BackColor = System.Drawing.Color.Transparent;
 			this.lblDwContrast.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.lblDwContrast.Location = new System.Drawing.Point(15, 246);
@@ -397,11 +399,12 @@
 			// 
 			// linkDwContrast
 			// 
+			this.linkDwContrast.AutoSize = true;
 			this.linkDwContrast.BackColor = System.Drawing.Color.Transparent;
 			this.linkDwContrast.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.linkDwContrast.Location = new System.Drawing.Point(329, 251);
 			this.linkDwContrast.Name = "linkDwContrast";
-			this.linkDwContrast.Size = new System.Drawing.Size(24, 20);
+			this.linkDwContrast.Size = new System.Drawing.Size(23, 19);
 			this.linkDwContrast.TabIndex = 15;
 			this.linkDwContrast.TabStop = true;
 			this.linkDwContrast.Text = "[?]";
@@ -411,7 +414,7 @@
 			// 
 			this.lblDwContrastRange.BackColor = System.Drawing.Color.Transparent;
 			this.lblDwContrastRange.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblDwContrastRange.Location = new System.Drawing.Point(229, 246);
+			this.lblDwContrastRange.Location = new System.Drawing.Point(229, 244);
 			this.lblDwContrastRange.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblDwContrastRange.Name = "lblDwContrastRange";
 			this.lblDwContrastRange.Size = new System.Drawing.Size(96, 30);
@@ -455,11 +458,12 @@
 			// 
 			// linkClearTypeLevel
 			// 
+			this.linkClearTypeLevel.AutoSize = true;
 			this.linkClearTypeLevel.BackColor = System.Drawing.Color.Transparent;
 			this.linkClearTypeLevel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.linkClearTypeLevel.Location = new System.Drawing.Point(329, 283);
 			this.linkClearTypeLevel.Name = "linkClearTypeLevel";
-			this.linkClearTypeLevel.Size = new System.Drawing.Size(24, 20);
+			this.linkClearTypeLevel.Size = new System.Drawing.Size(23, 19);
 			this.linkClearTypeLevel.TabIndex = 19;
 			this.linkClearTypeLevel.TabStop = true;
 			this.linkClearTypeLevel.Text = "[?]";
@@ -469,7 +473,7 @@
 			// 
 			this.lblClearTypeLevelRange.BackColor = System.Drawing.Color.Transparent;
 			this.lblClearTypeLevelRange.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblClearTypeLevelRange.Location = new System.Drawing.Point(229, 278);
+			this.lblClearTypeLevelRange.Location = new System.Drawing.Point(229, 276);
 			this.lblClearTypeLevelRange.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblClearTypeLevelRange.Name = "lblClearTypeLevelRange";
 			this.lblClearTypeLevelRange.Size = new System.Drawing.Size(96, 30);
@@ -518,11 +522,12 @@
 			// 
 			// linkEnhancedContrast
 			// 
+			this.linkEnhancedContrast.AutoSize = true;
 			this.linkEnhancedContrast.BackColor = System.Drawing.Color.Transparent;
 			this.linkEnhancedContrast.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.linkEnhancedContrast.Location = new System.Drawing.Point(329, 315);
 			this.linkEnhancedContrast.Name = "linkEnhancedContrast";
-			this.linkEnhancedContrast.Size = new System.Drawing.Size(24, 20);
+			this.linkEnhancedContrast.Size = new System.Drawing.Size(23, 19);
 			this.linkEnhancedContrast.TabIndex = 23;
 			this.linkEnhancedContrast.TabStop = true;
 			this.linkEnhancedContrast.Text = "[?]";
@@ -532,7 +537,7 @@
 			// 
 			this.lblEnhancedContrastRange.BackColor = System.Drawing.Color.Transparent;
 			this.lblEnhancedContrastRange.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblEnhancedContrastRange.Location = new System.Drawing.Point(229, 310);
+			this.lblEnhancedContrastRange.Location = new System.Drawing.Point(229, 308);
 			this.lblEnhancedContrastRange.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblEnhancedContrastRange.Name = "lblEnhancedContrastRange";
 			this.lblEnhancedContrastRange.Size = new System.Drawing.Size(96, 30);
@@ -775,6 +780,7 @@
 			this.Load += new System.EventHandler(this.MainForm_Load);
 			this.DpiChanged += new System.Windows.Forms.DpiChangedEventHandler(this.MainForm_DpiChanged);
 			this.panelContent.ResumeLayout(false);
+			this.panelContent.PerformLayout();
 			this.panelAaMode.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.nudGdiContrast)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudDwContrast)).EndInit();

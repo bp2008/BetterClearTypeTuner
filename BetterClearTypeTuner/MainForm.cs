@@ -916,7 +916,7 @@ namespace BetterClearTypeTuner
 
 				EnableEvents();
 
-				string quick = "The Wizard's lily box. ";
+				string quick = "";
 				// Says that the DirectWrite figures which follow are the ones DirectWrite fell back
 				// to rather than ones anybody chose, so that they are not read as settings in force.
 				string dwSource = avalonKeysExist ? "DirectWrite" : "DirectWrite defaults:";
