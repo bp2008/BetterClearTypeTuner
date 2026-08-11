@@ -1,15 +1,15 @@
 # Better ClearType Tuner
-A better way to configure ClearType font smoothing on Windows 10.
+A better way to configure ClearType font smoothing on Windows.
 
 ## Features
 
-Quickly set font-smoothing settings in Windows 10 and know what you are getting, unlike using the broken ClearType tuner that is built-in to the OS.  This program includes all font-smoothing settings that I have found to work in modern Windows, and does not expose settings that are non-functional.
+Quickly set font-smoothing settings in Windows 7, 10, or 11, and know what you are getting, unlike using the broken ClearType tuner that is built-in to the OS.  This program includes all font-smoothing settings that I have found to work in modern Windows, and does not expose settings that are non-functional.
 
 * Enable or disable font antialiasing.
 * Choose between Grayscale antialiasing or subpixel antialiasing using RGB or BGR subpixel layouts.
-* Edit the contrast of font rendering (when using RGB or BGR subpixel antialiasing).
-* Edit **ClearType Level** (0–100): the DirectWrite/WPF “amount of ClearType” registry setting (`ClearTypeLevel`). 0 is grayscale for those engines; 100 is full ClearType. Useful for apps that honor it (for example Firefox and WPF); many GDI apps and Chromium-based browsers ignore it.
+* Edit the text contrast and other text rendering settings.
 * Preview the results at several font sizes and see a zoomed-in view to better-understand what is going on internally!
+* Compatibility varies between apps. Windows has multiple text rendering APIs and apps typically use one or the other and may not respect all of settings as configured in the operating system.
 
 ![Main Application Screenshot](https://i.imgur.com/1dMqenI.png)
 
@@ -17,7 +17,7 @@ Quickly set font-smoothing settings in Windows 10 and know what you are getting,
 
 Download from the [Releases Section](https://github.com/bp2008/BetterClearTypeTuner/releases), extract, and run.
 
-The zip contains two builds of the same program.  Run whichever one suits your machine, and keep its `.config` file next to it:
+The zip contains two builds of the same program.  Run whichever one suits your machine, and keep its `.exe.config` file next to it:
 
 | Executable | Requires | Notes |
 | --- | --- | --- |
@@ -26,15 +26,15 @@ The zip contains two builds of the same program.  Run whichever one suits your m
 
 ## Caveats
 
-As of Windows 10 1903, several pages of Windows' built-in ClearType tuner have little or no effect on **GDI** text rendering.  The settings that only DirectWrite reads — **DirectWrite contrast** (`GammaLevel`), **ClearType Level** and **Enhanced Contrast** — are therefore grouped separately, and the in-app GDI zoom preview will not change when you adjust them.  Use the DirectWrite preview beside it instead.  `TextContrastLevel` and `GrayscaleEnhancedContrastLevel` are not exposed; they are written at their documented defaults so that a value left behind by another tuner is put back.
+Several of Windows' built-in ClearType tuner settings have no effect anywhere I could find.  Better ClearType Tuner only exposes the settings I could verify to work.   `TextContrastLevel` and `GrayscaleEnhancedContrastLevel` from the `Avalon.Graphics` registry keys are not exposed for this reason; they are written at their documented defaults so that the entire set of registry keys exist in case *something I'm not aware of* cares to read them.
 
-**Override DirectWrite defaults** decides whether the `Avalon.Graphics` registry key exists at all.  A clean Windows installation does not have it, and that is not the same as having it with default-looking values in it — DirectWrite falls back to settings of its own, and at least some applications behave differently depending on whether the key is there.  Clearing the box removes the key from both hives and returns to that state; the three boxes then show what DirectWrite falls back to, read from DirectWrite itself rather than assumed.  It is deliberately all-or-nothing, because a partly written key produces rendering that matches neither the defaults nor the settings asked for.
+Windows has at least two text rendering methods: **GDI** and **DirectWrite**.  Apps typically only use one or the other and some apps behave differently.  For example, Firefox is known to use DirectWrite, but in my tests Firefox ignores the **Enhanced Contrast** setting.
 
-Note that Microsoft documents the `GammaLevel` default as 1900, but DirectWrite does not use that number.  Asked what it resolves to with the key absent, it answers with a gamma of 1.8 — a `GammaLevel` of 1800.  Ticking the override box therefore starts from 1800 and leaves text looking unchanged.  You can see this for yourself with `BCT_Tests.exe --dwrite-defaults`.
+A checkbox **Override DirectWrite defaults** decides whether the `Avalon.Graphics` registry key exists at all.  A clean Windows installation does not have it, and that is not always the same as having it with default-looking values in it. DirectWrite falls back to settings of its own, and at least some applications behave differently depending on whether the key is there or missing.  Clearing the checkbox removes the keys from the Windows Registry; the settings boxes then show what DirectWrite falls back to, read from DirectWrite itself rather than assumed.
 
-The RGB/BGR buttons work either way.  With the key absent DirectWrite takes the subpixel order from the Windows font-smoothing setting; with it present, the `PixelStructure` value written here says the same thing — and, being the higher authority, would override the Windows setting if the two ever disagreed.
+Note that Microsoft documents the `Avalon.Graphics` `GammaLevel` default as 1900, but experiments show that DirectWrite does not use that number.  When the DirectWrite API is asked what it resolves to with the key absent, it answers with a gamma of 1.8 — a `GammaLevel` of 1800.
 
-There appears to be some level of support for setting different ClearType settings on different monitors.  However, this appears to be entirely non-functional in modern Windows, so this program sets all monitors the same.
+DirectWrite text rendering appears to have been designed with support for having different text rendering settings on different monitors.  However, this appears to be entirely non-functional in modern Windows, so this program sets `Avalon.Graphics` registry keys for all monitors the same.
 
 **Sources / further reading**
 
