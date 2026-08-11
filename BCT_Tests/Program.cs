@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -19,6 +19,8 @@ namespace BCT_Tests
 		///   --render --out DIR --name NAME         Renders one configuration.  Used internally.
 		///   --report-only [--out DIR]              Rewrites the reports from an earlier run's files.
 		///   --restore FILE                         Puts a settings-backup.txt file back.
+		///   --dwrite-defaults                      Reports what DirectWrite resolves to right now.
+		///   --dwrite-defaults --probe [--out DIR]  Sweeps the registry states and reports each one.
 		/// </summary>
 		[STAThread]
 		static int Main(string[] args)
@@ -67,6 +69,23 @@ namespace BCT_Tests
 					? "Restored and verified."
 					: "Restore finished with problems.");
 				return problems.Count == 0 && differences.Count == 0 ? 0 : 1;
+			}
+
+			if (cmd.Has("dwrite-defaults"))
+			{
+				// Without --probe this only reads, so it is safe to run at any time and is the
+				// quickest way to see what DirectWrite makes of the current settings.
+				if (!cmd.Has("probe"))
+					return DWriteDefaultsProbe.ReportCurrent(Console.WriteLine);
+
+				int exitCode = DWriteDefaultsProbe.RunSweep(cmd.Value("out") ?? DefaultOutputDirectory, Console.WriteLine);
+				if (cmd.Has("pause"))
+				{
+					Console.WriteLine();
+					Console.WriteLine("Press Enter to close.");
+					Console.ReadLine();
+				}
+				return exitCode;
 			}
 
 			if (cmd.Has("report-only"))

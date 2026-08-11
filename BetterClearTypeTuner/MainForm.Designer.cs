@@ -1,4 +1,4 @@
-namespace BetterClearTypeTuner
+﻿namespace BetterClearTypeTuner
 {
 	partial class MainForm
 	{
@@ -49,6 +49,8 @@ namespace BetterClearTypeTuner
 			this.lblGdiContrastRange = new System.Windows.Forms.Label();
 			this.lblDwHeader = new System.Windows.Forms.Label();
 			this.panelRuleDw = new System.Windows.Forms.Panel();
+			this.cbDwOverride = new System.Windows.Forms.CheckBox();
+			this.linkDwOverride = new System.Windows.Forms.LinkLabel();
 			this.lblDwContrast = new System.Windows.Forms.Label();
 			this.nudDwContrast = new System.Windows.Forms.NumericUpDown();
 			this.linkDwContrast = new System.Windows.Forms.LinkLabel();
@@ -106,6 +108,8 @@ namespace BetterClearTypeTuner
 			this.panelContent.Controls.Add(this.lblGdiContrastRange);
 			this.panelContent.Controls.Add(this.lblDwHeader);
 			this.panelContent.Controls.Add(this.panelRuleDw);
+			this.panelContent.Controls.Add(this.cbDwOverride);
+			this.panelContent.Controls.Add(this.linkDwOverride);
 			this.panelContent.Controls.Add(this.lblDwContrast);
 			this.panelContent.Controls.Add(this.nudDwContrast);
 			this.panelContent.Controls.Add(this.linkDwContrast);
@@ -321,16 +325,41 @@ namespace BetterClearTypeTuner
 			this.panelRuleDw.Name = "panelRuleDw";
 			this.panelRuleDw.Size = new System.Drawing.Size(340, 1);
 			this.panelRuleDw.TabIndex = 10;
-			// 
+			//
+			// cbDwOverride
+			//
+			this.cbDwOverride.BackColor = System.Drawing.Color.Transparent;
+			this.cbDwOverride.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.cbDwOverride.Location = new System.Drawing.Point(15, 216);
+			this.cbDwOverride.Margin = new System.Windows.Forms.Padding(4);
+			this.cbDwOverride.Name = "cbDwOverride";
+			this.cbDwOverride.Size = new System.Drawing.Size(305, 24);
+			this.cbDwOverride.TabIndex = 11;
+			this.cbDwOverride.Text = "Override DirectWrite defaults";
+			this.cbDwOverride.UseVisualStyleBackColor = false;
+			this.cbDwOverride.CheckedChanged += new System.EventHandler(this.cbDwOverride_CheckedChanged);
+			//
+			// linkDwOverride
+			//
+			this.linkDwOverride.BackColor = System.Drawing.Color.Transparent;
+			this.linkDwOverride.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.linkDwOverride.Location = new System.Drawing.Point(329, 218);
+			this.linkDwOverride.Name = "linkDwOverride";
+			this.linkDwOverride.Size = new System.Drawing.Size(24, 20);
+			this.linkDwOverride.TabIndex = 12;
+			this.linkDwOverride.TabStop = true;
+			this.linkDwOverride.Text = "[?]";
+			this.linkDwOverride.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkDwOverride_LinkClicked);
+			//
 			// lblDwContrast
-			// 
+			//
 			this.lblDwContrast.BackColor = System.Drawing.Color.Transparent;
 			this.lblDwContrast.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblDwContrast.Location = new System.Drawing.Point(15, 216);
+			this.lblDwContrast.Location = new System.Drawing.Point(15, 246);
 			this.lblDwContrast.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblDwContrast.Name = "lblDwContrast";
 			this.lblDwContrast.Size = new System.Drawing.Size(138, 30);
-			this.lblDwContrast.TabIndex = 11;
+			this.lblDwContrast.TabIndex = 13;
 			this.lblDwContrast.Text = "Contrast:";
 			this.lblDwContrast.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
@@ -344,7 +373,7 @@ namespace BetterClearTypeTuner
             0,
             0,
             0});
-			this.nudDwContrast.Location = new System.Drawing.Point(157, 218);
+			this.nudDwContrast.Location = new System.Drawing.Point(157, 248);
 			this.nudDwContrast.Margin = new System.Windows.Forms.Padding(4);
 			this.nudDwContrast.Maximum = new decimal(new int[] {
             2200,
@@ -358,9 +387,9 @@ namespace BetterClearTypeTuner
             0});
 			this.nudDwContrast.Name = "nudDwContrast";
 			this.nudDwContrast.Size = new System.Drawing.Size(68, 26);
-			this.nudDwContrast.TabIndex = 12;
+			this.nudDwContrast.TabIndex = 14;
 			this.nudDwContrast.Value = new decimal(new int[] {
-            1900,
+            1800,
             0,
             0,
             0});
@@ -370,10 +399,10 @@ namespace BetterClearTypeTuner
 			// 
 			this.linkDwContrast.BackColor = System.Drawing.Color.Transparent;
 			this.linkDwContrast.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.linkDwContrast.Location = new System.Drawing.Point(329, 221);
+			this.linkDwContrast.Location = new System.Drawing.Point(329, 251);
 			this.linkDwContrast.Name = "linkDwContrast";
 			this.linkDwContrast.Size = new System.Drawing.Size(24, 20);
-			this.linkDwContrast.TabIndex = 13;
+			this.linkDwContrast.TabIndex = 15;
 			this.linkDwContrast.TabStop = true;
 			this.linkDwContrast.Text = "[?]";
 			this.linkDwContrast.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkDwContrast_LinkClicked);
@@ -382,11 +411,11 @@ namespace BetterClearTypeTuner
 			// 
 			this.lblDwContrastRange.BackColor = System.Drawing.Color.Transparent;
 			this.lblDwContrastRange.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblDwContrastRange.Location = new System.Drawing.Point(229, 216);
+			this.lblDwContrastRange.Location = new System.Drawing.Point(229, 246);
 			this.lblDwContrastRange.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblDwContrastRange.Name = "lblDwContrastRange";
 			this.lblDwContrastRange.Size = new System.Drawing.Size(96, 30);
-			this.lblDwContrastRange.TabIndex = 14;
+			this.lblDwContrastRange.TabIndex = 16;
 			this.lblDwContrastRange.Text = "[1000-2200]";
 			this.lblDwContrastRange.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
@@ -394,11 +423,11 @@ namespace BetterClearTypeTuner
 			// 
 			this.lblClearTypeLevel.BackColor = System.Drawing.Color.Transparent;
 			this.lblClearTypeLevel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblClearTypeLevel.Location = new System.Drawing.Point(15, 248);
+			this.lblClearTypeLevel.Location = new System.Drawing.Point(15, 278);
 			this.lblClearTypeLevel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblClearTypeLevel.Name = "lblClearTypeLevel";
 			this.lblClearTypeLevel.Size = new System.Drawing.Size(138, 30);
-			this.lblClearTypeLevel.TabIndex = 15;
+			this.lblClearTypeLevel.TabIndex = 17;
 			this.lblClearTypeLevel.Text = "ClearType Level:";
 			this.lblClearTypeLevel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
@@ -412,11 +441,11 @@ namespace BetterClearTypeTuner
             0,
             0,
             0});
-			this.nudClearTypeLevel.Location = new System.Drawing.Point(157, 250);
+			this.nudClearTypeLevel.Location = new System.Drawing.Point(157, 280);
 			this.nudClearTypeLevel.Margin = new System.Windows.Forms.Padding(4);
 			this.nudClearTypeLevel.Name = "nudClearTypeLevel";
 			this.nudClearTypeLevel.Size = new System.Drawing.Size(68, 26);
-			this.nudClearTypeLevel.TabIndex = 16;
+			this.nudClearTypeLevel.TabIndex = 18;
 			this.nudClearTypeLevel.Value = new decimal(new int[] {
             100,
             0,
@@ -428,10 +457,10 @@ namespace BetterClearTypeTuner
 			// 
 			this.linkClearTypeLevel.BackColor = System.Drawing.Color.Transparent;
 			this.linkClearTypeLevel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.linkClearTypeLevel.Location = new System.Drawing.Point(329, 253);
+			this.linkClearTypeLevel.Location = new System.Drawing.Point(329, 283);
 			this.linkClearTypeLevel.Name = "linkClearTypeLevel";
 			this.linkClearTypeLevel.Size = new System.Drawing.Size(24, 20);
-			this.linkClearTypeLevel.TabIndex = 17;
+			this.linkClearTypeLevel.TabIndex = 19;
 			this.linkClearTypeLevel.TabStop = true;
 			this.linkClearTypeLevel.Text = "[?]";
 			this.linkClearTypeLevel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkClearTypeLevel_LinkClicked);
@@ -440,11 +469,11 @@ namespace BetterClearTypeTuner
 			// 
 			this.lblClearTypeLevelRange.BackColor = System.Drawing.Color.Transparent;
 			this.lblClearTypeLevelRange.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblClearTypeLevelRange.Location = new System.Drawing.Point(229, 248);
+			this.lblClearTypeLevelRange.Location = new System.Drawing.Point(229, 278);
 			this.lblClearTypeLevelRange.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblClearTypeLevelRange.Name = "lblClearTypeLevelRange";
 			this.lblClearTypeLevelRange.Size = new System.Drawing.Size(96, 30);
-			this.lblClearTypeLevelRange.TabIndex = 18;
+			this.lblClearTypeLevelRange.TabIndex = 20;
 			this.lblClearTypeLevelRange.Text = "[0-100]";
 			this.lblClearTypeLevelRange.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
@@ -452,11 +481,11 @@ namespace BetterClearTypeTuner
 			// 
 			this.lblEnhancedContrast.BackColor = System.Drawing.Color.Transparent;
 			this.lblEnhancedContrast.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblEnhancedContrast.Location = new System.Drawing.Point(15, 280);
+			this.lblEnhancedContrast.Location = new System.Drawing.Point(15, 310);
 			this.lblEnhancedContrast.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblEnhancedContrast.Name = "lblEnhancedContrast";
 			this.lblEnhancedContrast.Size = new System.Drawing.Size(138, 30);
-			this.lblEnhancedContrast.TabIndex = 19;
+			this.lblEnhancedContrast.TabIndex = 21;
 			this.lblEnhancedContrast.Text = "Enhanced Contrast:";
 			this.lblEnhancedContrast.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
@@ -470,7 +499,7 @@ namespace BetterClearTypeTuner
             0,
             0,
             0});
-			this.nudEnhancedContrast.Location = new System.Drawing.Point(157, 282);
+			this.nudEnhancedContrast.Location = new System.Drawing.Point(157, 312);
 			this.nudEnhancedContrast.Margin = new System.Windows.Forms.Padding(4);
 			this.nudEnhancedContrast.Maximum = new decimal(new int[] {
             400,
@@ -479,7 +508,7 @@ namespace BetterClearTypeTuner
             0});
 			this.nudEnhancedContrast.Name = "nudEnhancedContrast";
 			this.nudEnhancedContrast.Size = new System.Drawing.Size(68, 26);
-			this.nudEnhancedContrast.TabIndex = 20;
+			this.nudEnhancedContrast.TabIndex = 22;
 			this.nudEnhancedContrast.Value = new decimal(new int[] {
             50,
             0,
@@ -491,10 +520,10 @@ namespace BetterClearTypeTuner
 			// 
 			this.linkEnhancedContrast.BackColor = System.Drawing.Color.Transparent;
 			this.linkEnhancedContrast.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.linkEnhancedContrast.Location = new System.Drawing.Point(329, 285);
+			this.linkEnhancedContrast.Location = new System.Drawing.Point(329, 315);
 			this.linkEnhancedContrast.Name = "linkEnhancedContrast";
 			this.linkEnhancedContrast.Size = new System.Drawing.Size(24, 20);
-			this.linkEnhancedContrast.TabIndex = 21;
+			this.linkEnhancedContrast.TabIndex = 23;
 			this.linkEnhancedContrast.TabStop = true;
 			this.linkEnhancedContrast.Text = "[?]";
 			this.linkEnhancedContrast.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkEnhancedContrast_LinkClicked);
@@ -503,22 +532,22 @@ namespace BetterClearTypeTuner
 			// 
 			this.lblEnhancedContrastRange.BackColor = System.Drawing.Color.Transparent;
 			this.lblEnhancedContrastRange.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblEnhancedContrastRange.Location = new System.Drawing.Point(229, 280);
+			this.lblEnhancedContrastRange.Location = new System.Drawing.Point(229, 310);
 			this.lblEnhancedContrastRange.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblEnhancedContrastRange.Name = "lblEnhancedContrastRange";
 			this.lblEnhancedContrastRange.Size = new System.Drawing.Size(96, 30);
-			this.lblEnhancedContrastRange.TabIndex = 22;
+			this.lblEnhancedContrastRange.TabIndex = 24;
 			this.lblEnhancedContrastRange.Text = "[0-400]";
 			this.lblEnhancedContrastRange.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// btnApply
 			// 
 			this.btnApply.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnApply.Location = new System.Drawing.Point(15, 318);
+			this.btnApply.Location = new System.Drawing.Point(15, 348);
 			this.btnApply.Margin = new System.Windows.Forms.Padding(4);
 			this.btnApply.Name = "btnApply";
 			this.btnApply.Size = new System.Drawing.Size(110, 29);
-			this.btnApply.TabIndex = 23;
+			this.btnApply.TabIndex = 25;
 			this.btnApply.Text = "Apply";
 			this.toolTip1.SetToolTip(this.btnApply, "Values are applied when you leave a box after typing in it,\r\nor when you click th" +
         "is button.");
@@ -528,11 +557,11 @@ namespace BetterClearTypeTuner
 			// btnRestoreDefaults
 			// 
 			this.btnRestoreDefaults.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnRestoreDefaults.Location = new System.Drawing.Point(133, 318);
+			this.btnRestoreDefaults.Location = new System.Drawing.Point(133, 348);
 			this.btnRestoreDefaults.Margin = new System.Windows.Forms.Padding(4);
 			this.btnRestoreDefaults.Name = "btnRestoreDefaults";
 			this.btnRestoreDefaults.Size = new System.Drawing.Size(170, 29);
-			this.btnRestoreDefaults.TabIndex = 24;
+			this.btnRestoreDefaults.TabIndex = 26;
 			this.btnRestoreDefaults.Text = "Restore Defaults";
 			this.toolTip1.SetToolTip(this.btnRestoreDefaults, resources.GetString("btnRestoreDefaults.ToolTip"));
 			this.btnRestoreDefaults.UseVisualStyleBackColor = true;
@@ -547,7 +576,7 @@ namespace BetterClearTypeTuner
 			this.lblNotes.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblNotes.Name = "lblNotes";
 			this.lblNotes.Size = new System.Drawing.Size(340, 90);
-			this.lblNotes.TabIndex = 26;
+			this.lblNotes.TabIndex = 28;
 			this.lblNotes.Text = "Applications read these settings at startup, so restart them (or reboot) to see t" +
     "he change everywhere.  All connected displays are affected; Windows has no worki" +
     "ng per-monitor equivalent.";
@@ -560,7 +589,7 @@ namespace BetterClearTypeTuner
 			this.lblGdiSmallHeader.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblGdiSmallHeader.Name = "lblGdiSmallHeader";
 			this.lblGdiSmallHeader.Size = new System.Drawing.Size(275, 18);
-			this.lblGdiSmallHeader.TabIndex = 27;
+			this.lblGdiSmallHeader.TabIndex = 29;
 			this.lblGdiSmallHeader.Text = "Normal Scale - GDI:";
 			// 
 			// panelSmall
@@ -574,7 +603,7 @@ namespace BetterClearTypeTuner
 			this.panelSmall.Margin = new System.Windows.Forms.Padding(4);
 			this.panelSmall.Name = "panelSmall";
 			this.panelSmall.Size = new System.Drawing.Size(275, 75);
-			this.panelSmall.TabIndex = 28;
+			this.panelSmall.TabIndex = 30;
 			// 
 			// lblSample3
 			// 
@@ -617,7 +646,7 @@ namespace BetterClearTypeTuner
 			this.lblDwSmallHeader.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblDwSmallHeader.Name = "lblDwSmallHeader";
 			this.lblDwSmallHeader.Size = new System.Drawing.Size(275, 18);
-			this.lblDwSmallHeader.TabIndex = 29;
+			this.lblDwSmallHeader.TabIndex = 31;
 			this.lblDwSmallHeader.Text = "Normal Scale - DirectWrite:";
 			// 
 			// pbDwSmall
@@ -627,7 +656,7 @@ namespace BetterClearTypeTuner
 			this.pbDwSmall.Margin = new System.Windows.Forms.Padding(4);
 			this.pbDwSmall.Name = "pbDwSmall";
 			this.pbDwSmall.Size = new System.Drawing.Size(275, 75);
-			this.pbDwSmall.TabIndex = 30;
+			this.pbDwSmall.TabIndex = 32;
 			this.pbDwSmall.TabStop = false;
 			// 
 			// lblGdiZoomHeader
@@ -638,7 +667,7 @@ namespace BetterClearTypeTuner
 			this.lblGdiZoomHeader.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblGdiZoomHeader.Name = "lblGdiZoomHeader";
 			this.lblGdiZoomHeader.Size = new System.Drawing.Size(760, 20);
-			this.lblGdiZoomHeader.TabIndex = 31;
+			this.lblGdiZoomHeader.TabIndex = 33;
 			this.lblGdiZoomHeader.Text = "400% Zoomed - GDI  (this app, File Explorer, Chrome).  Reflects the settings that" +
     " are already applied.";
 			this.lblGdiZoomHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -650,7 +679,7 @@ namespace BetterClearTypeTuner
 			this.pbZoomed.Margin = new System.Windows.Forms.Padding(4);
 			this.pbZoomed.Name = "pbZoomed";
 			this.pbZoomed.Size = new System.Drawing.Size(1100, 300);
-			this.pbZoomed.TabIndex = 32;
+			this.pbZoomed.TabIndex = 34;
 			this.pbZoomed.TabStop = false;
 			// 
 			// lblDwZoomHeader
@@ -661,7 +690,7 @@ namespace BetterClearTypeTuner
 			this.lblDwZoomHeader.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.lblDwZoomHeader.Name = "lblDwZoomHeader";
 			this.lblDwZoomHeader.Size = new System.Drawing.Size(1100, 20);
-			this.lblDwZoomHeader.TabIndex = 33;
+			this.lblDwZoomHeader.TabIndex = 35;
 			this.lblDwZoomHeader.Text = "400% Zoomed - DirectWrite  (Firefox, Edge, WPF).  Live preview: every DirectWrite" +
     " setting is applied here without a restart.";
 			this.lblDwZoomHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -673,7 +702,7 @@ namespace BetterClearTypeTuner
 			this.pbDwZoomed.Margin = new System.Windows.Forms.Padding(4);
 			this.pbDwZoomed.Name = "pbDwZoomed";
 			this.pbDwZoomed.Size = new System.Drawing.Size(1100, 300);
-			this.pbDwZoomed.TabIndex = 34;
+			this.pbDwZoomed.TabIndex = 36;
 			this.pbDwZoomed.TabStop = false;
 			// 
 			// cbDarkmode
@@ -684,7 +713,7 @@ namespace BetterClearTypeTuner
 			this.cbDarkmode.Margin = new System.Windows.Forms.Padding(4);
 			this.cbDarkmode.Name = "cbDarkmode";
 			this.cbDarkmode.Size = new System.Drawing.Size(125, 25);
-			this.cbDarkmode.TabIndex = 35;
+			this.cbDarkmode.TabIndex = 37;
 			this.cbDarkmode.Text = "Dark Mode";
 			this.cbDarkmode.UseVisualStyleBackColor = false;
 			this.cbDarkmode.CheckedChanged += new System.EventHandler(this.cbDarkmode_CheckedChanged);
@@ -696,7 +725,7 @@ namespace BetterClearTypeTuner
 			this.btnChangeFont.Margin = new System.Windows.Forms.Padding(4);
 			this.btnChangeFont.Name = "btnChangeFont";
 			this.btnChangeFont.Size = new System.Drawing.Size(149, 29);
-			this.btnChangeFont.TabIndex = 36;
+			this.btnChangeFont.TabIndex = 38;
 			this.btnChangeFont.Text = "Change Font";
 			this.btnChangeFont.UseVisualStyleBackColor = true;
 			this.btnChangeFont.Click += new System.EventHandler(this.btnChangeFont_Click);
@@ -775,6 +804,8 @@ namespace BetterClearTypeTuner
 		private System.Windows.Forms.Label lblGdiContrastRange;
 		private System.Windows.Forms.Label lblDwHeader;
 		private System.Windows.Forms.Panel panelRuleDw;
+		private System.Windows.Forms.CheckBox cbDwOverride;
+		private System.Windows.Forms.LinkLabel linkDwOverride;
 		private System.Windows.Forms.Label lblDwContrast;
 		private System.Windows.Forms.NumericUpDown nudDwContrast;
 		private System.Windows.Forms.LinkLabel linkDwContrast;

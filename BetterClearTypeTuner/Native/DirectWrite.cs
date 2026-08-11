@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 
 namespace BetterClearTypeTuner.Native
@@ -126,8 +126,22 @@ namespace BetterClearTypeTuner.Native
 		[PreserveSig] int CreateFontFileReference__();
 		[PreserveSig] int CreateCustomFontFileReference__();
 		[PreserveSig] int CreateFontFace__();
-		[PreserveSig] int CreateRenderingParams__();
-		[PreserveSig] int CreateMonitorRenderingParams__();
+
+		/// <summary>
+		/// The rendering parameters DirectWrite itself resolves for the primary monitor, from the
+		/// Avalon.Graphics registry values and the system font smoothing settings.  With those
+		/// registry values absent this reports DirectWrite's own built-in fallbacks, which is the
+		/// only way to find out what they are.
+		/// </summary>
+		[PreserveSig]
+		int CreateRenderingParams(out IDWriteRenderingParams renderingParams);
+
+		/// <summary>
+		/// As CreateRenderingParams, but for one specific monitor, which is how an application
+		/// picks up the per-display Avalon.Graphics values.
+		/// </summary>
+		[PreserveSig]
+		int CreateMonitorRenderingParams(IntPtr monitor, out IDWriteRenderingParams renderingParams);
 
 		[PreserveSig]
 		int CreateCustomRenderingParams(

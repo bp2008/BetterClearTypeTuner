@@ -117,6 +117,7 @@ namespace BetterClearTypeTuner
 			rbGrayscale.Checked = startupState.PixelStructure == 0;
 			rbRGB.Checked = startupState.PixelStructure == 1;
 			rbBGR.Checked = startupState.PixelStructure == 2;
+			cbDwOverride.Checked = startupState.DwOverride;
 			ShowValue(nudGdiContrast, startupState.GdiContrast, FontSmoothing.ContrastMin, FontSmoothing.ContrastMax);
 			ShowValue(nudDwContrast, startupState.GammaLevel, GammaLevelMin, GammaLevelMax);
 			ShowValue(nudClearTypeLevel, startupState.ClearTypeLevel, ClearTypeLevelMin, ClearTypeLevelMax);
@@ -303,7 +304,8 @@ namespace BetterClearTypeTuner
 				if (restoringDefaults || AvalonValuesDiffer())
 					dirty = true;
 
-				SetAvalonKeys(restoringDefaults);
+				// Restoring defaults means the clean-installation state, which is the keys absent.
+				SetAvalonKeys(restoringDefaults || !cbDwOverride.Checked);
 				if (rbGrayscale.Checked)
 				{
 					SetFontSmoothingTypeIfNotAlready(FontSmoothingType.Standard);
@@ -414,16 +416,71 @@ namespace BetterClearTypeTuner
 		/// </summary>
 		private bool AvalonValuesDiffer()
 		{
+			// Whether the keys are there at all is itself one of the settings, and the one that
+			// decides whether any of the others are worth comparing.
+			if (AvalonKeysExist() != cbDwOverride.Checked)
+				return true;
+			if (!cbDwOverride.Checked)
+				return false;
+
 			return GetAvalonValue("PixelStructure", -1) != DesiredPixelStructure
-				|| GetAvalonValue("ClearTypeLevel", (int)ClearTypeLevelDefault) != DesiredClearTypeLevel
-				|| GetAvalonValue("GammaLevel", (int)GammaLevelDefault) != DesiredGammaLevel
-				|| GetAvalonValue("EnhancedContrastLevel", (int)EnhancedContrastLevelDefault) != DesiredEnhancedContrastLevel;
+				|| GetAvalonValue("ClearTypeLevel", FallbackClearTypeLevel) != DesiredClearTypeLevel
+				|| GetAvalonValue("GammaLevel", FallbackGammaLevel) != DesiredGammaLevel
+				|| GetAvalonValue("EnhancedContrastLevel", FallbackEnhancedContrastLevel) != DesiredEnhancedContrastLevel;
 		}
 		#endregion
 
-		private void SetAvalonKeys(bool setDefaults)
+		/// <summary>
+		/// Returns true if either hive holds a per-display subkey with at least one value in it,
+		/// which is what "these settings are in force" amounts to.
+		///
+		/// A key with subkeys but no values does not count, and that is not a guess: asked what it
+		/// resolves to with the display subkeys present but empty, DirectWrite gives exactly the
+		/// answer it gives when the whole key is missing.  So an emptied out key - which is what a
+		/// tuner that clears its values without removing its keys leaves behind - is reported here
+		/// the same way DirectWrite treats it, as no override at all.
+		/// </summary>
+		private bool AvalonKeysExist()
 		{
-			if (setDefaults)
+			return HasDisplayValues(Registry.CurrentUser) || HasDisplayValues(Registry.LocalMachine);
+		}
+
+		private bool HasDisplayValues(RegistryKey baseKey)
+		{
+			try
+			{
+				using (RegistryKey key = baseKey.OpenSubKey(AvalonKeyPath, false))
+				{
+					if (key == null)
+						return false;
+					foreach (string subkeyName in key.GetSubKeyNames())
+					{
+						using (RegistryKey display = key.OpenSubKey(subkeyName, false))
+						{
+							if (display != null && display.GetValueNames().Length > 0)
+								return true;
+						}
+					}
+				}
+			}
+			catch
+			{
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Writes the Avalon.Graphics values, or removes them entirely when
+		/// <paramref name="removeKeys"/> is set - which is what both the unticked override checkbox
+		/// and the Restore Defaults button ask for.
+		/// </summary>
+		private void SetAvalonKeys(bool removeKeys)
+		{
+			// Whatever this pass does, it changes what DirectWrite would resolve these values to, so
+			// the measurement taken from it no longer speaks for the current state.
+			InvalidateDirectWriteDefaults();
+
+			if (removeKeys)
 			{
 				DeleteRegistryKeyTree(Registry.LocalMachine, AvalonKeyPath);
 				DeleteRegistryKeyTree(Registry.CurrentUser, AvalonKeyPath);
@@ -469,12 +526,31 @@ namespace BetterClearTypeTuner
 				dirty = true;
 			}
 		}
+		/// <summary>
+		/// Ticking the box does not need to seed the inputs with anything: while it was unticked
+		/// they were already displaying the values DirectWrite falls back to, so writing exactly
+		/// what is on screen is what makes turning the override on leave the text looking the same.
+		/// </summary>
+		private void cbDwOverride_CheckedChanged(object sender, EventArgs e)
+		{
+			ControlsChanged(sender, e);
+			// Unticking removes the keys, after which the inputs should stop showing the values that
+			// were in them and start showing what DirectWrite substitutes instead.  ControlsChanged
+			// only refreshes the display when it decided something changed, so make sure of it.
+			if (!restartingElevated)
+				UpdateStatus();
+		}
+
 		private void BtnRestoreDefaults_Click(object sender, EventArgs e)
 		{
 			DisableEvents();
 			setDefaults = true;
 			cbFontAntialiasing.Checked = true;
 			rbRGB.Checked = true;
+			// The clean-installation state is the Avalon.Graphics keys absent, so Restore Defaults
+			// turns the override off.  The values below are only what the inputs fall back to if
+			// DirectWrite cannot be asked; UpdateStatus replaces them with measured ones.
+			cbDwOverride.Checked = false;
 			nudGdiContrast.Value = FontSmoothing.ContrastDefault;
 			nudDwContrast.Value = GammaLevelDefault;
 			nudClearTypeLevel.Value = ClearTypeLevelDefault;
@@ -516,9 +592,9 @@ namespace BetterClearTypeTuner
 		private void MainForm_DpiChanged(object sender, DpiChangedEventArgs e)
 		{
 			FixFontSizing();
-			SetTimeout.OnGui(CopyZoomedSnapshot, 100, this, ex => MessageBox.Show(ex.ToString()));
-			SetTimeout.OnGui(CopyZoomedSnapshot, 500, this, ex => MessageBox.Show(ex.ToString()));
-			SetTimeout.OnGui(CopyZoomedSnapshot, 1000, this, ex => MessageBox.Show(ex.ToString()));
+			SetTimeout.OnGui(CopyZoomedSnapshot, 100, this, ex => MessageDialog.Show(ex.ToString()));
+			SetTimeout.OnGui(CopyZoomedSnapshot, 500, this, ex => MessageDialog.Show(ex.ToString()));
+			SetTimeout.OnGui(CopyZoomedSnapshot, 1000, this, ex => MessageDialog.Show(ex.ToString()));
 		}
 
 		#region Registry
@@ -535,12 +611,18 @@ namespace BetterClearTypeTuner
 		public const uint ClearTypeLevelDefault = 100;
 		/// <summary>
 		/// DirectWrite contrast (GammaLevel).  Higher numbers give lighter text.  Unlike the GDI
-		/// contrast this also applies to grayscale antialiasing.  Microsoft documents the default
-		/// as 1900.
+		/// contrast this also applies to grayscale antialiasing.
+		///
+		/// Microsoft documents the default as 1900, but that is not the number DirectWrite uses.
+		/// Asked what it resolves to with the Avalon.Graphics values absent - the state of a clean
+		/// Windows installation - it answers with a gamma of 1.8, which is a GammaLevel of 1800.
+		/// This constant is only a last resort for a machine where DirectWrite cannot be reached at
+		/// all; everywhere else the value is measured rather than assumed.  See
+		/// <see cref="DirectWriteDefaults"/>.
 		/// </summary>
 		public const uint GammaLevelMin = 1000;
 		public const uint GammaLevelMax = 2200;
-		public const uint GammaLevelDefault = 1900;
+		public const uint GammaLevelDefault = 1800;
 		/// <summary>
 		/// DirectWrite's second contrast control (EnhancedContrastLevel).  Higher numbers give
 		/// darker text.  Applies to grayscale as well as ClearType, and only under HKCU.
@@ -625,6 +707,61 @@ namespace BetterClearTypeTuner
 			}
 			return defaultValue;
 		}
+		#region What DirectWrite falls back to
+		/// <summary>
+		/// The last measurement taken from DirectWrite, and whether it succeeded.  Measuring means
+		/// creating a DirectWrite factory, which is too expensive to repeat for every keystroke in
+		/// an input box, so the result is cached until something invalidates it.
+		/// </summary>
+		DirectWriteDefaults dwDefaults;
+		bool dwDefaultsValid;
+		bool dwDefaultsMeasured;
+
+		/// <summary>
+		/// Discards the cached measurement.  Called after the Avalon.Graphics values are written or
+		/// deleted, because that is precisely what the measurement depends on.
+		/// </summary>
+		private void InvalidateDirectWriteDefaults()
+		{
+			dwDefaultsMeasured = false;
+		}
+
+		/// <summary>
+		/// Takes the measurement if the cached one has been invalidated.  Returns false if
+		/// DirectWrite could not be reached, in which case the cached values mean nothing.
+		/// </summary>
+		private bool EnsureDwDefaultsMeasured()
+		{
+			if (!dwDefaultsMeasured)
+			{
+				dwDefaultsValid = DirectWriteDefaults.TryMeasure(out dwDefaults);
+				dwDefaultsMeasured = true;
+			}
+			return dwDefaultsValid;
+		}
+
+		/// <summary>
+		/// What a missing Avalon.Graphics value actually resolves to, which is what the window
+		/// should display rather than the value Microsoft documents as the default.  On a clean
+		/// Windows installation none of these values exist and DirectWrite substitutes fallbacks of
+		/// its own - a gamma of 1.8, not the documented 1900 - so displaying the documented number
+		/// would claim a setting that is not in force.  The documented defaults are used only if
+		/// DirectWrite could not be reached at all.
+		/// </summary>
+		private int FallbackGammaLevel
+		{
+			get { return EnsureDwDefaultsMeasured() ? dwDefaults.GammaLevel : (int)GammaLevelDefault; }
+		}
+		private int FallbackClearTypeLevel
+		{
+			get { return EnsureDwDefaultsMeasured() ? dwDefaults.ClearTypeLevel : (int)ClearTypeLevelDefault; }
+		}
+		private int FallbackEnhancedContrastLevel
+		{
+			get { return EnsureDwDefaultsMeasured() ? dwDefaults.EnhancedContrastLevel : (int)EnhancedContrastLevelDefault; }
+		}
+		#endregion
+
 		/// <summary>
 		/// Reads one of the Avalon.Graphics values from HKCU.  Every display is written with the
 		/// same values, so the first display speaks for all of them.
@@ -683,6 +820,7 @@ namespace BetterClearTypeTuner
 			state.AntialiasingEnabled = cbFontAntialiasing.Checked;
 			state.PixelStructure = SelectedPixelStructure;
 			state.GdiContrast = (int)nudGdiContrast.Value;
+			state.DwOverride = cbDwOverride.Checked;
 			state.GammaLevel = (int)nudDwContrast.Value;
 			state.ClearTypeLevel = (int)nudClearTypeLevel.Value;
 			state.EnhancedContrastLevel = (int)nudEnhancedContrast.Value;
@@ -698,7 +836,7 @@ namespace BetterClearTypeTuner
 				return true;
 
 			elevationRefused = true;
-			MessageBox.Show(this,
+			MessageDialog.Show(this,
 				(result == ElevationResult.Refused
 					? "Administrator permission is needed to change this setting for every application on this computer, and it was not granted."
 					: "This application was unable to restart itself as an administrator: " + error)
@@ -713,7 +851,7 @@ namespace BetterClearTypeTuner
 			if (registryFailReported)
 				return;
 			registryFailReported = true;
-			MessageBox.Show(this, message, "Better ClearType Tuner", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			MessageDialog.Show(this, message, "Better ClearType Tuner", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 		}
 		#endregion
 		#region Helpers
@@ -743,14 +881,18 @@ namespace BetterClearTypeTuner
 				FontSmoothingOrientation orientation = FontSmoothing.GetFontSmoothingOrientation();
 				FontSmoothingType smoothingType = FontSmoothing.GetFontSmoothingType();
 				uint gdiContrast = FontSmoothing.GetContrast();
-				int gammaLevel = GetAvalonValue("GammaLevel", (int)GammaLevelDefault);
-				int clearTypeLevel = GetAvalonValue("ClearTypeLevel", (int)ClearTypeLevelDefault);
-				int enhancedContrastLevel = GetAvalonValue("EnhancedContrastLevel", (int)EnhancedContrastLevelDefault);
+				bool avalonKeysExist = AvalonKeysExist();
+				// Where a value is absent from the registry, show what DirectWrite actually
+				// substitutes for it rather than the value Microsoft documents as the default.
+				int gammaLevel = GetAvalonValue("GammaLevel", FallbackGammaLevel);
+				int clearTypeLevel = GetAvalonValue("ClearTypeLevel", FallbackClearTypeLevel);
+				int enhancedContrastLevel = GetAvalonValue("EnhancedContrastLevel", FallbackEnhancedContrastLevel);
 
 				// Update UI controls
 				DisableEvents();
 
 				cbFontAntialiasing.Checked = aaEnabled;
+				cbDwOverride.Checked = avalonKeysExist;
 
 				bool clearTypeSelected = false;
 				if (smoothingType == FontSmoothingType.Standard)
@@ -775,18 +917,21 @@ namespace BetterClearTypeTuner
 				EnableEvents();
 
 				string quick = "The Wizard's lily box. ";
+				// Says that the DirectWrite figures which follow are the ones DirectWrite fell back
+				// to rather than ones anybody chose, so that they are not read as settings in force.
+				string dwSource = avalonKeysExist ? "DirectWrite" : "DirectWrite defaults:";
 				// Update status text
 				if (!aaEnabled)
 					status.Text = quick + "Font Antialiasing is disabled.";
 				else if (smoothingType == FontSmoothingType.ClearType)
 					status.Text = quick + orientation
 						+ "  ·  GDI contrast " + gdiContrast
-						+ "  ·  DirectWrite contrast " + gammaLevel
+						+ "  ·  " + dwSource + " contrast " + gammaLevel
 						+ ", ClearType Level " + clearTypeLevel
 						+ ", enhanced contrast " + enhancedContrastLevel;
 				else
 					status.Text = quick + "Grayscale"
-						+ "  ·  DirectWrite contrast " + gammaLevel
+						+ "  ·  " + dwSource + " contrast " + gammaLevel
 						+ ", enhanced contrast " + enhancedContrastLevel;
 
 				// Snapshot the sample text and render it zoomed-in
@@ -829,16 +974,24 @@ namespace BetterClearTypeTuner
 			// checkbox reaches either renderer.
 			bool aaEnabled = cbFontAntialiasing.Checked;
 			bool clearType = aaEnabled && (rbRGB.Checked || rbBGR.Checked);
+			// With the override off there are no Avalon.Graphics values to edit: the boxes below
+			// display what DirectWrite falls back to, which is not this application's to change.
+			bool dwOverride = aaEnabled && cbDwOverride.Checked;
 
 			rbGrayscale.Enabled = rbRGB.Enabled = rbBGR.Enabled = aaEnabled;
+			cbDwOverride.Enabled = aaEnabled;
+			// The section heading follows the antialiasing switch alone.  Turning the override off
+			// does not stop DirectWrite from drawing this application's text, it only means the
+			// settings under the heading are being reported rather than chosen.
+			lblDwHeader.ForeColor = aaEnabled ? LabelTextColor : DisabledTextColor;
 
 			// GDI applies its contrast only while drawing ClearType; grayscale GDI text ignores it.
 			SetRowEnabled(clearType, nudGdiContrast, lblGdiContrast, lblGdiContrastRange, lblGdiHeader);
 			// Both DirectWrite contrast controls also act on grayscale antialiasing.
-			SetRowEnabled(aaEnabled, nudDwContrast, lblDwContrast, lblDwContrastRange, lblDwHeader);
-			SetRowEnabled(aaEnabled, nudEnhancedContrast, lblEnhancedContrast, lblEnhancedContrastRange);
+			SetRowEnabled(dwOverride, nudDwContrast, lblDwContrast, lblDwContrastRange);
+			SetRowEnabled(dwOverride, nudEnhancedContrast, lblEnhancedContrast, lblEnhancedContrastRange);
 			// ClearType Level is the subpixel blend amount, so it means nothing outside RGB/BGR.
-			SetRowEnabled(clearType, nudClearTypeLevel, lblClearTypeLevel, lblClearTypeLevelRange);
+			SetRowEnabled(clearType && cbDwOverride.Checked, nudClearTypeLevel, lblClearTypeLevel, lblClearTypeLevelRange);
 		}
 
 		private void SetRowEnabled(bool enabled, NumericUpDown nud, params Label[] labels)
@@ -989,6 +1142,7 @@ namespace BetterClearTypeTuner
 		}
 		public void DisableEvents()
 		{
+			cbDwOverride.CheckedChanged -= cbDwOverride_CheckedChanged;
 			cbFontAntialiasing.CheckedChanged -= ControlsChanged;
 			rbGrayscale.CheckedChanged -= ControlsChanged;
 			rbRGB.CheckedChanged -= ControlsChanged;
@@ -1000,6 +1154,7 @@ namespace BetterClearTypeTuner
 		}
 		public void EnableEvents()
 		{
+			cbDwOverride.CheckedChanged += cbDwOverride_CheckedChanged;
 			cbFontAntialiasing.CheckedChanged += ControlsChanged;
 			rbGrayscale.CheckedChanged += ControlsChanged;
 			rbRGB.CheckedChanged += ControlsChanged;
@@ -1081,12 +1236,40 @@ namespace BetterClearTypeTuner
 			+ "grayscale mode.  DirectWrite applications ignore it entirely; they have their own "
 			+ "contrast setting below.";
 
+		private const string HelpDwOverride =
+			"Override DirectWrite defaults - HKCU and HKLM\\" + AvalonKeyPath + "\r\n"
+			+ "\r\n"
+			+ "A clean Windows installation has no Avalon.Graphics registry key at all, and "
+			+ "DirectWrite falls back to settings of its own.  Apps like Firefox may also override "
+			+ "with their own different defaults. Clear this checkbox to return to that "
+			+ "state: the key is removed from both hives and the three settings below become "
+			+ "read-only, showing what DirectWrite falls back to rather than anything chosen here.\r\n"
+			+ "\r\n"
+			+ "Tick it to write the key and take control of those three settings.  They start at the "
+			+ "values that were already in effect, so turning the override on does not by itself "
+			+ "change how anything looks.\r\n"
+			+ "\r\n"
+			+ "It is deliberately all or nothing.  Which of these values DirectWrite honours, and in "
+			+ "which hive, is inconsistent enough that a half-written key produces rendering that "
+			+ "matches neither the defaults nor the settings asked for.\r\n"
+			+ "\r\n"
+			+ "The RGB and BGR buttons above keep working either way.  With the key absent "
+			+ "DirectWrite takes the subpixel order from the Windows font smoothing setting, and "
+			+ "with it present the PixelStructure value written here says the same thing.\r\n"
+			+ "\r\n"
+			+ DirectWriteRestartNote;
+
 		private const string HelpDwContrast =
 			"DirectWrite contrast - HKCU and HKLM\\" + AvalonKeyPath + "\\<display>\\GammaLevel\r\n"
-			+ "Range 1000 to 2200, default 1900.  Higher numbers give lighter text.\r\n"
+			+ "Range 1000 to 2200.  Higher numbers give lighter text.\r\n"
 			+ "\r\n"
 			+ "This is DirectWrite's gamma.  Unlike the GDI contrast it applies to grayscale "
 			+ "antialiasing as well as to ClearType.  GDI ignores it.\r\n"
+			+ "\r\n"
+			+ "Microsoft documents the default as 1900, but that is not what DirectWrite uses.  "
+			+ "Asked what it resolves to with this value absent, DirectWrite answers with a gamma of "
+			+ "1.8 - a GammaLevel of 1800 - so that is what this box shows while the override above "
+			+ "is off, and what it starts from when the override is turned on.\r\n"
 			+ "\r\n"
 			+ DirectWriteRestartNote;
 
@@ -1108,7 +1291,8 @@ namespace BetterClearTypeTuner
 			+ "\r\n"
 			+ "A second contrast control, applied on top of the DirectWrite contrast above and "
 			+ "pulling in the opposite direction.  It applies to grayscale antialiasing as well as "
-			+ "to ClearType.  GDI ignores it, and DirectWrite discards values above 400.\r\n"
+			+ "to ClearType.  GDI ignores it, and DirectWrite discards values above 400.  Some apps "
+			+ "may also ignore this setting while still respecting other DirectWrite font settings.\r\n"
 			+ "\r\n"
 			+ DirectWriteRestartNote;
 
@@ -1119,6 +1303,7 @@ namespace BetterClearTypeTuner
 		private void InitializeHelpText()
 		{
 			SetHelpText(HelpGdiContrast, nudGdiContrast, lblGdiContrast, lblGdiContrastRange, linkGdiContrast);
+			SetHelpText(HelpDwOverride, cbDwOverride, linkDwOverride);
 			SetHelpText(HelpDwContrast, nudDwContrast, lblDwContrast, lblDwContrastRange, linkDwContrast);
 			SetHelpText(HelpClearTypeLevel, nudClearTypeLevel, lblClearTypeLevel, lblClearTypeLevelRange, linkClearTypeLevel);
 			SetHelpText(HelpEnhancedContrast, nudEnhancedContrast, lblEnhancedContrast, lblEnhancedContrastRange, linkEnhancedContrast);
@@ -1133,12 +1318,17 @@ namespace BetterClearTypeTuner
 		private void ShowHelp(LinkLabel link, string title, string text)
 		{
 			link.LinkVisited = true;
-			MessageBox.Show(this, text, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			MessageDialog.Show(this, text, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
 
 		private void linkGdiContrast_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 			ShowHelp(linkGdiContrast, "About GDI Contrast", HelpGdiContrast);
+		}
+
+		private void linkDwOverride_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			ShowHelp(linkDwOverride, "About Overriding DirectWrite Defaults", HelpDwOverride);
 		}
 
 		private void linkDwContrast_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

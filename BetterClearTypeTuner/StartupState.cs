@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.Globalization;
 using System.Text;
@@ -18,6 +18,7 @@ namespace BetterClearTypeTuner
 		private const string ArgAntialiasing = "--antialiasing=";
 		private const string ArgPixelStructure = "--pixel-structure=";
 		private const string ArgGdiContrast = "--gdi-contrast=";
+		private const string ArgDwOverride = "--dw-override=";
 		private const string ArgGammaLevel = "--dw-contrast=";
 		private const string ArgClearTypeLevel = "--cleartype-level=";
 		private const string ArgEnhancedContrast = "--enhanced-contrast=";
@@ -27,9 +28,11 @@ namespace BetterClearTypeTuner
 		/// <summary>
 		/// How many of the arguments above carry a setting.  All of them or none of them are
 		/// replayed, because applying a half-parsed command line would write values the previous
-		/// instance never asked for.
+		/// instance never asked for.  Keep this in step with the settings themselves: if it is left
+		/// too low a missing argument goes unnoticed, and if it is left too high every replay is
+		/// silently discarded and the elevated instance comes up having forgotten the change.
 		/// </summary>
-		private const int SettingCount = 6;
+		private const int SettingCount = 7;
 
 		/// <summary>
 		/// True if this instance was started by another one asking for elevation.  It stops a
@@ -47,6 +50,10 @@ namespace BetterClearTypeTuner
 		/// </summary>
 		public int PixelStructure = -1;
 		public int GdiContrast;
+		/// <summary>
+		/// True if the Avalon.Graphics keys are to be written, false if they are to be removed.
+		/// </summary>
+		public bool DwOverride;
 		public int GammaLevel;
 		public int ClearTypeLevel;
 		public int EnhancedContrastLevel;
@@ -82,6 +89,7 @@ namespace BetterClearTypeTuner
 			Append(sb, ArgAntialiasing, AntialiasingEnabled ? 1 : 0);
 			Append(sb, ArgPixelStructure, PixelStructure);
 			Append(sb, ArgGdiContrast, GdiContrast);
+			Append(sb, ArgDwOverride, DwOverride ? 1 : 0);
 			Append(sb, ArgGammaLevel, GammaLevel);
 			Append(sb, ArgClearTypeLevel, ClearTypeLevel);
 			Append(sb, ArgEnhancedContrast, EnhancedContrastLevel);
@@ -130,6 +138,11 @@ namespace BetterClearTypeTuner
 				else if (TryValue(arg, ArgGdiContrast, out value))
 				{
 					state.GdiContrast = value;
+					settingsSeen++;
+				}
+				else if (TryValue(arg, ArgDwOverride, out value))
+				{
+					state.DwOverride = value != 0;
 					settingsSeen++;
 				}
 				else if (TryValue(arg, ArgGammaLevel, out value))

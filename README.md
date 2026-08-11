@@ -26,7 +26,13 @@ The zip contains two builds of the same program.  Run whichever one suits your m
 
 ## Caveats
 
-As of Windows 10 1903, several pages of Windows' built-in ClearType tuner have little or no effect on **GDI** text rendering.  This program originally omitted those Avalon.Graphics-only knobs and wrote sane defaults instead.  **ClearType Level** is now exposed because it still affects DirectWrite/WPF (and some browsers); the in-app GDI zoom preview will not change when you adjust it.  Other Avalon keys (`EnhancedContrastLevel`, `TextContrastLevel`, `GrayscaleEnhancedContrastLevel`) remain at sane defaults.
+As of Windows 10 1903, several pages of Windows' built-in ClearType tuner have little or no effect on **GDI** text rendering.  The settings that only DirectWrite reads — **DirectWrite contrast** (`GammaLevel`), **ClearType Level** and **Enhanced Contrast** — are therefore grouped separately, and the in-app GDI zoom preview will not change when you adjust them.  Use the DirectWrite preview beside it instead.  `TextContrastLevel` and `GrayscaleEnhancedContrastLevel` are not exposed; they are written at their documented defaults so that a value left behind by another tuner is put back.
+
+**Override DirectWrite defaults** decides whether the `Avalon.Graphics` registry key exists at all.  A clean Windows installation does not have it, and that is not the same as having it with default-looking values in it — DirectWrite falls back to settings of its own, and at least some applications behave differently depending on whether the key is there.  Clearing the box removes the key from both hives and returns to that state; the three boxes then show what DirectWrite falls back to, read from DirectWrite itself rather than assumed.  It is deliberately all-or-nothing, because a partly written key produces rendering that matches neither the defaults nor the settings asked for.
+
+Note that Microsoft documents the `GammaLevel` default as 1900, but DirectWrite does not use that number.  Asked what it resolves to with the key absent, it answers with a gamma of 1.8 — a `GammaLevel` of 1800.  Ticking the override box therefore starts from 1800 and leaves text looking unchanged.  You can see this for yourself with `BCT_Tests.exe --dwrite-defaults`.
+
+The RGB/BGR buttons work either way.  With the key absent DirectWrite takes the subpixel order from the Windows font-smoothing setting; with it present, the `PixelStructure` value written here says the same thing — and, being the higher authority, would override the Windows setting if the two ever disagreed.
 
 There appears to be some level of support for setting different ClearType settings on different monitors.  However, this appears to be entirely non-functional in modern Windows, so this program sets all monitors the same.
 

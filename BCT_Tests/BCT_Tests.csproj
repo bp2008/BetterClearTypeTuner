@@ -61,6 +61,7 @@
     </Compile>
     <Compile Include="Native\DWriteInterop.cs" />
     <Compile Include="Native\NativeMethods.cs" />
+    <Compile Include="DWriteDefaultsProbe.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Rendering\DirectWriteRenderer.cs" />
     <Compile Include="Rendering\GdiRenderer.cs" />
