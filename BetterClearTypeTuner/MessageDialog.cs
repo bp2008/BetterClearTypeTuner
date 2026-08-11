@@ -98,12 +98,22 @@ namespace BetterClearTypeTuner
 			return ShowCore(owner, text, caption, buttons, icon, defaultButton);
 		}
 
-		private static DialogResult ShowCore(IWin32Window owner, string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton defaultButton)
+		/// <summary>
+		/// Shows the dialog without the alert sound.  For a message the user asked to see, such as
+		/// help text behind a link, there is nothing to alert them to.
+		/// </summary>
+		public static DialogResult ShowQuiet(IWin32Window owner, string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
+		{
+			return ShowCore(owner, text, caption, buttons, icon, MessageBoxDefaultButton.Button1, false);
+		}
+
+		private static DialogResult ShowCore(IWin32Window owner, string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton defaultButton, bool playSound = true)
 		{
 			Form ownerForm = FindOwnerForm(owner);
 			using (MessageDialog dialog = new MessageDialog(ownerForm, text, caption, buttons, icon, defaultButton))
 			{
-				PlayAlertSound(icon);
+				if (playSound)
+					PlayAlertSound(icon);
 				if (owner != null)
 					return dialog.ShowDialog(owner);
 				return dialog.ShowDialog();

@@ -69,7 +69,6 @@ namespace BetterClearTypeTuner
 			panelContent.SizeChanged += PanelContent_SizeChanged;
 
 			InitializeDpiScale();
-			InitializeHelpText();
 			GatherFontableControls(this, this.Font.FontFamily.Name);
 
 			this.Text += " " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
@@ -1790,30 +1789,13 @@ namespace BetterClearTypeTuner
 			+ DirectWriteRestartNote;
 
 		/// <summary>
-		/// Hangs the help text off the inputs as tooltips.  The [?] links show the same text in a
-		/// dialog, for anyone who does not think to hover.
+		/// Shows one of the help texts in a dialog.  These are too long to hang off the inputs as
+		/// tooltips without covering most of the window, so the [?] links are the only way to them.
 		/// </summary>
-		private void InitializeHelpText()
-		{
-			SetHelpText(HelpGdiContrast, nudGdiContrast, lblGdiContrast, lblGdiContrastRange, linkGdiContrast);
-			SetHelpText(HelpDwOverride, cbDwOverride, linkDwOverride);
-			SetHelpText(HelpDwContrast, nudDwContrast, lblDwContrast, lblDwContrastRange, linkDwContrast);
-			SetHelpText(HelpClearTypeLevel, nudClearTypeLevel, lblClearTypeLevel, lblClearTypeLevelRange, linkClearTypeLevel);
-			SetHelpText(HelpEnhancedContrast, nudEnhancedContrast, lblEnhancedContrast, lblEnhancedContrastRange, linkEnhancedContrast);
-			SetHelpText(HelpGrayscaleContrast, nudGrayscaleContrast, lblGrayscaleContrast, lblGrayscaleContrastRange, linkGrayscaleContrast);
-			SetHelpText(DirectWritePathNote, lblDwClearTypePath, lblDwGrayscalePath);
-		}
-
-		private void SetHelpText(string text, params Control[] controls)
-		{
-			foreach (Control control in controls)
-				toolTip1.SetToolTip(control, text);
-		}
-
 		private void ShowHelp(LinkLabel link, string title, string text)
 		{
 			link.LinkVisited = true;
-			MessageDialog.Show(this, text, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			MessageDialog.ShowQuiet(this, text, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
 
 		private void linkGdiContrast_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
