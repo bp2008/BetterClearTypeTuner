@@ -11,7 +11,7 @@ Quickly set font-smoothing settings in Windows 7, 10, or 11, and know what you a
 * Preview the results at several font sizes and see a zoomed-in view to better-understand what is going on internally!
 * Compatibility varies between apps. Windows has multiple text rendering APIs and apps typically use one or the other and may not respect all of settings as configured in the operating system.
 
-<img width="1487" height="745" alt="image" src="https://github.com/user-attachments/assets/29c62fb5-10ff-4069-b9ae-6a8ad814d2c4" />
+<img width="1487" height="745" alt="image" src="https://github.com/user-attachments/assets/6acb253e-8f22-432b-8f30-fdc48701a76b" />
 
 ## Usage
 
